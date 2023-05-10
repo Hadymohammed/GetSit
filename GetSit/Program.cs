@@ -1,8 +1,13 @@
-var builder = WebApplication.CreateBuilder(args);
+using GetSit.Data;
+using Microsoft.EntityFrameworkCore;
 
+var builder = WebApplication.CreateBuilder(args);
+var DBconnection= builder.Configuration["DBconnection"];
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
+builder.Services.AddDbContext<AppDBcontext>(options => options.UseSqlServer(
+        DBconnection
+        ));
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
