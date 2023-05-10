@@ -13,14 +13,12 @@ namespace GetSit.Data
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
+            //modelBuilder.Entity<Booking>().HasOne(b=>b.Payment).WithOne(pay=>pay.Booking).HasForeignKe
             modelBuilder.Entity<FavoriteHall>().HasOne(m => m.customer).WithMany(am => am.FavoriteHalls).HasForeignKey(m => m.CustomerId);
             modelBuilder.Entity<FavoriteHall>().HasOne(m => m.SpaceHall).WithMany(am => am.FavoriteHalls).HasForeignKey(m => m.HallId);
             
-            //! TODO : Many to Many relations
-            /*modelBuilder.Entity<BookingHallService>().HasOne(m => m.BookingHall).WithMany(am => am.).HasForeignKey(m => m.CustomerId);
-            modelBuilder.Entity<FavoriteHall>().HasOne(m => m.SpaceHall).WithMany(am => am.FavoriteHalls).HasForeignKey(m => m.HallId);
-            */
+
+            
             base.OnModelCreating(modelBuilder);
         }
         public DbSet<Booking> Booking { get; set; }

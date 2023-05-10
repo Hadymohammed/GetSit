@@ -1,6 +1,7 @@
 ﻿using GetSit.Data.enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 
 namespace GetSit.Models
 {
@@ -14,17 +15,14 @@ namespace GetSit.Models
         [Required]
         public  PaymentType Type { get; set; }
         [ForeignKey("PaymentId")]
-
         public int PaymentId { get; set; }
-        [Required]
-        public Payment Payment { get; set; }
-        [ForeignKey("BookingHallId")]
-        public int BookingHallId { get; set; }
-        public  BookingHall BookingHall { get; set; }
-        [ForeignKey("BookingHallServiceId")]
-        public int BookingHallServiceId { get; set; }
-        [Required]
-        public BookingHallService BookingHallService { get; set; }
+        public Payment? Payment { get; set; }
+        [ForeignKey("BookingHallId"),AllowNull]
+        public int? BookingHallId { get; set; }
+        public  BookingHall? BookingHall { get; set; }
+        [ForeignKey("BookingHallServiceId"), AllowNull]
+        public int? BookingHallServiceId { get; set; }
+        public BookingHallService? BookingHallService { get; set; }
         
     }
 }

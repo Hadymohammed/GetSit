@@ -11,8 +11,8 @@ namespace GetSit.Models
         public int NumberOfUnits { get; set; }
         [Required]
         public float PricePerUnit { get; set; }
-        [Required,ForeignKey("HallId")]
 
+        [Required,ForeignKey("HallId")]
         public int HallId { get; set; }
         [Required]
         public SpaceHall Hall { get; set; }
@@ -20,6 +20,6 @@ namespace GetSit.Models
         public int BookingId { get; set; }
         [Required]
         public Booking Booking { get; set; }
-        public List<BookingHallService> Services { get; set; }
+        public List<BookingHallService>? Services { get; set; }
     }
 }

@@ -16,9 +16,9 @@ namespace GetSit.Models
         public DateTime LastUpdate { get; set; }
         [Required]
         public List<PaymentDetail> Details { get; set; }
-        [ForeignKey("BookingId")]
+        /*[ForeignKey("BookingId")]
         public int BookingId { get; set; }
         [Required]
-        public Booking Booking { get; set; }
+        public Booking Booking { get; set; }*/
     }
 }
