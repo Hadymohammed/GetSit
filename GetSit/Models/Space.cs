@@ -33,5 +33,6 @@ namespace GetSit.Models
         public List<SpaceService> Services { get; set; }
         [Required]
         public List<SpaceHall> Halls { get; set; }
+        public List<SpaceEmployee> Employees { get; set; }
     }
 }

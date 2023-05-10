@@ -1,5 +1,6 @@
 ﻿using GetSit.Data.enums;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GetSit.Models
 {
@@ -27,5 +28,8 @@ namespace GetSit.Models
         public string City { get; set; }
         [Required]
         public SpaceEmployeeRole EmployeeRole { get; set; }
+        [ForeignKey("SpaceId")]
+        public int SpaceId { get; set; }
+        public Space? Space { get; set; }
     }
 }
