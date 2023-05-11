@@ -34,6 +34,5 @@ namespace GetSit.Models
         [Required]
         public List<BookingHall> BookingHalls { get; set; }
 
-
     }
 }
