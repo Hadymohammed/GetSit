@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Diagnostics.CodeAnalysis;
 using System.Security.Principal;
 
 namespace GetSit.Models
@@ -27,20 +26,20 @@ namespace GetSit.Models
         public string ProfilePictureUrl { get; set; }
         [Required]
         public CustomerType CustomerType { get; set; }
-        public string? Country { get; set; }
-        public string? City { get; set; }
-        public int Penality { get; set; } = 0;
+        public string Country { get; set; }
+        public string City { get; set; }
+        public int Penality { get; set; }
         [Required,DefaultValue(false)]
         public bool Blocked { get; set; }
-        [AllowNull,ForeignKey("FacultyId")]
-        public int? FacultyId { get; set; }
-        public Faculty? Faculty { get; set; }
-        [AllowNull,ForeignKey("TitleId")]
-        public int? TitleId { get; set; }
-        public Title? Title { get; set; }
-        public List<PaymentCard>? PaymentCards { get; set; }
-        public List<FavoriteHall>? FavoriteHalls { get; set; }
-        public List<Booking>? Bookings { get; set; }
+        public int FacultyId { get; set; }
+        [ForeignKey("FacultyId")]
+        public Faculty Faculty { get; set; }
+        public int TitleId { get; set; }
+        [ForeignKey("TitleId")]
+        public Title Title { get; set; }
+        public List<PaymentCard> PaymentCards { get; set; }
+        public List<FavoriteHall> FavoriteHalls { get; set; }
+        public List<Booking> Bookings { get; set; }
 
     }
 }   

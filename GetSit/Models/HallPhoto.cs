@@ -12,7 +12,7 @@ namespace GetSit.Models
         [ForeignKey("HallId")]
         public int HallId { get; set; }
         [Required]
-        public SpaceHall? Hall { get; set; }
+        public SpaceHall SpaceHall { get; set; }
 
 
     }
