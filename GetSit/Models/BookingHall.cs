@@ -20,6 +20,7 @@ namespace GetSit.Models
         public int BookingId { get; set; }
         [Required]
         public Booking Booking { get; set; }
-        public List<BookingHallService>? Services { get; set; }
+        public PaymentDetail paymentDetail { get; set; }
+        public List<BookingHallService>? BookedServices { get; set; }
     }
 }

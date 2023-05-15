@@ -17,9 +17,6 @@ namespace GetSit.Models
         public SpaceService Service { get; set; }
         [Required,ForeignKey("ServiceId")]
         public int ServiceId { get; set; }
-        /*[Required]
-        public int PaymentDetailId { get; set; }
-        [Required]
-        public PaymentDetail PaymentDetail { get; set; }*/
+        public PaymentDetail PaymentDetail { get; set; }
     }
 }
