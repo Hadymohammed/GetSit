@@ -25,22 +25,6 @@ namespace GetSit.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Payment",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    TotalCost = table.Column<float>(type: "real", nullable: false),
-                    PaidAmount = table.Column<float>(type: "real", nullable: false),
-                    LastUpdate = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Payment", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Space",
                 columns: table => new
                 {
@@ -130,12 +114,12 @@ namespace GetSit.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    SpaceId = table.Column<int>(type: "int", nullable: false),
                     Capacity = table.Column<int>(type: "int", nullable: false),
                     CostPerHour = table.Column<float>(type: "real", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    Type = table.Column<int>(type: "int", nullable: false),
-                    SpaceId = table.Column<int>(type: "int", nullable: true)
+                    Type = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -144,7 +128,8 @@ namespace GetSit.Migrations
                         name: "FK_SpaceHall_Space_SpaceId",
                         column: x => x.SpaceId,
                         principalTable: "Space",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -215,7 +200,7 @@ namespace GetSit.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Day = table.Column<int>(type: "int", nullable: false),
                     OpeningTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ClosingTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     SpaceId = table.Column<int>(type: "int", nullable: false)
@@ -245,12 +230,12 @@ namespace GetSit.Migrations
                     Birthdate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ProfilePictureUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CustomerType = table.Column<int>(type: "int", nullable: false),
-                    Country = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    City = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Country = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    City = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Penality = table.Column<int>(type: "int", nullable: false),
                     Blocked = table.Column<bool>(type: "bit", nullable: false),
-                    FacultyId = table.Column<int>(type: "int", nullable: false),
-                    TitleId = table.Column<int>(type: "int", nullable: false)
+                    FacultyId = table.Column<int>(type: "int", nullable: true),
+                    TitleId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -259,14 +244,12 @@ namespace GetSit.Migrations
                         name: "FK_Customer_Faculty_FacultyId",
                         column: x => x.FacultyId,
                         principalTable: "Faculty",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Customer_Title_TitleId",
                         column: x => x.TitleId,
                         principalTable: "Title",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -275,16 +258,15 @@ namespace GetSit.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    HallId = table.Column<int>(type: "int", nullable: false),
-                    SpaceHallId = table.Column<int>(type: "int", nullable: false)
+                    Facility = table.Column<int>(type: "int", nullable: false),
+                    HallId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_HallFacility", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_HallFacility_SpaceHall_SpaceHallId",
-                        column: x => x.SpaceHallId,
+                        name: "FK_HallFacility_SpaceHall_HallId",
+                        column: x => x.HallId,
                         principalTable: "SpaceHall",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -297,15 +279,14 @@ namespace GetSit.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Url = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    HallId = table.Column<int>(type: "int", nullable: false),
-                    SpaceHallId = table.Column<int>(type: "int", nullable: false)
+                    HallId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_HallPhoto", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_HallPhoto_SpaceHall_SpaceHallId",
-                        column: x => x.SpaceHallId,
+                        name: "FK_HallPhoto_SpaceHall_HallId",
+                        column: x => x.HallId,
                         principalTable: "SpaceHall",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -318,15 +299,14 @@ namespace GetSit.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Url = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ServiceId = table.Column<int>(type: "int", nullable: false),
-                    SpaceServiceId = table.Column<int>(type: "int", nullable: false)
+                    ServiceId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ServicePhoto", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ServicePhoto_SpaceService_SpaceServiceId",
-                        column: x => x.SpaceServiceId,
+                        name: "FK_ServicePhoto_SpaceService_ServiceId",
+                        column: x => x.ServiceId,
                         principalTable: "SpaceService",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -346,7 +326,6 @@ namespace GetSit.Migrations
                     Paid = table.Column<float>(type: "real", nullable: false),
                     BookingStatus = table.Column<int>(type: "int", nullable: false),
                     BookingType = table.Column<int>(type: "int", nullable: false),
-                    PaymentId = table.Column<int>(type: "int", nullable: false),
                     CustomerId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -356,12 +335,6 @@ namespace GetSit.Migrations
                         name: "FK_Booking_Customer_CustomerId",
                         column: x => x.CustomerId,
                         principalTable: "Customer",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Booking_Payment_PaymentId",
-                        column: x => x.PaymentId,
-                        principalTable: "Payment",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -444,6 +417,29 @@ namespace GetSit.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Payment",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    TotalCost = table.Column<float>(type: "real", nullable: false),
+                    PaidAmount = table.Column<float>(type: "real", nullable: false),
+                    LastUpdate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    BookingId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Payment", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Payment_Booking_BookingId",
+                        column: x => x.BookingId,
+                        principalTable: "Booking",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "BookingHallService",
                 columns: table => new
                 {
@@ -468,7 +464,7 @@ namespace GetSit.Migrations
                         column: x => x.ServiceId,
                         principalTable: "SpaceService",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -511,11 +507,6 @@ namespace GetSit.Migrations
                 column: "CustomerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Booking_PaymentId",
-                table: "Booking",
-                column: "PaymentId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_BookingHall_BookingId",
                 table: "BookingHall",
                 column: "BookingId");
@@ -556,14 +547,20 @@ namespace GetSit.Migrations
                 column: "HallId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_HallFacility_SpaceHallId",
+                name: "IX_HallFacility_HallId",
                 table: "HallFacility",
-                column: "SpaceHallId");
+                column: "HallId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_HallPhoto_SpaceHallId",
+                name: "IX_HallPhoto_HallId",
                 table: "HallPhoto",
-                column: "SpaceHallId");
+                column: "HallId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Payment_BookingId",
+                table: "Payment",
+                column: "BookingId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_PaymentCard_CustomerId",
@@ -573,12 +570,16 @@ namespace GetSit.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_PaymentDetail_BookingHallId",
                 table: "PaymentDetail",
-                column: "BookingHallId");
+                column: "BookingHallId",
+                unique: true,
+                filter: "[BookingHallId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PaymentDetail_BookingHallServiceId",
                 table: "PaymentDetail",
-                column: "BookingHallServiceId");
+                column: "BookingHallServiceId",
+                unique: true,
+                filter: "[BookingHallServiceId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PaymentDetail_PaymentId",
@@ -586,9 +587,9 @@ namespace GetSit.Migrations
                 column: "PaymentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ServicePhoto_SpaceServiceId",
+                name: "IX_ServicePhoto_ServiceId",
                 table: "ServicePhoto",
-                column: "SpaceServiceId");
+                column: "ServiceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SpaceEmployee_SpaceId",
@@ -661,6 +662,9 @@ namespace GetSit.Migrations
                 name: "BookingHallService");
 
             migrationBuilder.DropTable(
+                name: "Payment");
+
+            migrationBuilder.DropTable(
                 name: "BookingHall");
 
             migrationBuilder.DropTable(
@@ -674,9 +678,6 @@ namespace GetSit.Migrations
 
             migrationBuilder.DropTable(
                 name: "Customer");
-
-            migrationBuilder.DropTable(
-                name: "Payment");
 
             migrationBuilder.DropTable(
                 name: "Space");
