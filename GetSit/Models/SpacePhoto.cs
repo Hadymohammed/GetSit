@@ -9,8 +9,8 @@ namespace GetSit.Models
         public int Id { get; set; }
         [Required]
         public string  Url { get; set; }
-        [ForeignKey("SpaceId")]
         public  int SpaceId { get; set; }
+        [ForeignKey("SpaceId")]
         [Required]
         public  Space Space { get; set; }
     }

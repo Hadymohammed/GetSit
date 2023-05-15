@@ -1,18 +1,18 @@
-﻿using GetSit.Data;
+﻿using GetSit.Data.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GetSit.Controllers
 {
     public class SpacesController : Controller
     {
-        public readonly AppDBcontext _context;
-        public SpacesController(AppDBcontext context)
+        public readonly ISpaceService _service;
+        public SpacesController(ISpaceService service)
         {
-            _context = context;
+            _service = service;
         }
-        public IActionResult Index()
+        public async Task<IActionResult >Index()
         {
-            var data = _context.Space.ToList();
+            var data =await _service.GetAll();
             return View(data);
         }
     }

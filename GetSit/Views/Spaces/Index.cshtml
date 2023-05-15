@@ -2,6 +2,20 @@
 @{
     ViewData["Title"] = "Explore Page";
 }
-<div>
-   
+<div class="row">
+   @foreach (var item in Model)
+    {
+        @*@foreach (var imge in item.Photos)
+        {
+            <img class="border-info rounded-circle" src="@imge.Url" style="max-width: 150px" />
+        }*@
+        
+        
+        <p class="card-text">@item.Name</p>
+        <p class="card-text">@item.Bio</p>
+        <p class="card-text">@item.IsFast</p>
+        <p class="card-text">@item.GPSLocation</p>
+        <p class="card-text">@item.Bio</p>
+
+    }
 </div>

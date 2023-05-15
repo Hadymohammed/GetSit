@@ -1,4 +1,6 @@
+using FluentAssertions.Common;
 using GetSit.Data;
+using GetSit.Data.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +10,10 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AppDBcontext>(options => options.UseSqlServer(
         DBconnection
         ));
+
+//services Configuration
+builder.Services.AddScoped<ISpaceService, SpaceServices>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

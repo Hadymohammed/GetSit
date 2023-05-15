@@ -9,9 +9,9 @@ namespace GetSit.Models
         public int Id { get; set; }
         [Required]
         public string PhoneNumber { get; set; }
-        [ForeignKey("SpaceId")]
         public int SpaceId { get; set; }
         [Required]
+        [ForeignKey("SpaceId")]
         public Space Space { get; set; }
     }
 }
