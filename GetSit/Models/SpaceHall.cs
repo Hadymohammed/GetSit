@@ -1,6 +1,5 @@
 ﻿using GetSit.Data.enums;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GetSit.Models
 {
@@ -8,9 +7,6 @@ namespace GetSit.Models
     {
         [Key]
         public int Id { get; set; }
-        [ForeignKey("SpaceId")]
-        public int SpaceId { get; set; }
-        public Space? Space { get; set; }
         [Required]
         public int Capacity { get; set; }
         [Required]
