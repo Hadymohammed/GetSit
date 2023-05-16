@@ -1,5 +1,8 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
+}
+:root {
+    --purple-color: #071A84;
 }
 
 @media (min-width: 768px) {
@@ -13,6 +16,15 @@ html {
   min-height: 100%;
 }
 
-body {
-  margin-bottom: 60px;
+.purple-btn {
+    background-color: var(--purple-color);
+    color: white;
+    border:0px;
+    border-radius:30px;
+    width:150px;
+    height:40px;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    content: url(../resources/site/calendar-days-solid.svg);
 }
