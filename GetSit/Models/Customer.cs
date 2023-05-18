@@ -11,15 +11,15 @@ namespace GetSit.Models
     {
         [Key]
         public int Id { get; set; }
-        [Required, RegularExpression("^[\\w'\\-,.][^0-9_!¡?÷?¿/\\\\+=@#$%ˆ&*(){}|~<>;:[\\]]{2,}$")]
+        [Required, RegularExpression("^[\\w'\\-,.][^0-9_!¡?÷?¿/\\\\+=@#$%ˆ&*(){}|~<>;:[\\]]{2,}$"),Display(Name ="First name")]
         public string FirstName { get; set; }
-        [Required, RegularExpression("^[\\w'\\-,.][^0-9_!¡?÷?¿/\\\\+=@#$%ˆ&*(){}|~<>;:[\\]]{2,}$")]
+        [Required, RegularExpression("^[\\w'\\-,.][^0-9_!¡?÷?¿/\\\\+=@#$%ˆ&*(){}|~<>;:[\\]]{2,}$"), Display(Name = "Last name")]
         public string LastName { get; set; }
         [Required, EmailAddress]
         public string Email { get; set; }
         [Required, MinLength(8), RegularExpression("%[A-Z]%",ErrorMessage ="at least one uppercase letter is required")]
         public string Password { get; set; }
-        [Required,Phone]
+        [Required,Phone, Display(Name = "Phone number")]
         public string PhoneNumber { get; set; }
         [DataType(DataType.Date)]
         public DateTime Birthdate { get; set; }
