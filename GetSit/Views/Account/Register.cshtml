@@ -33,7 +33,8 @@
                         <div class="form-outline mb-2">
                             <label class="form-label" asp-for="@Model.Birthdate"></label>
                             <input type="date" asp-for="@Model.Birthdate" class="form-control form-control-lg" />
-                        </div>
+                            <span asp-validation-for="@Model.Birthdate" class="text-danger"></span>
+                    </div>
                     </div>
                     <div class="row">
                         <div class="form-outline mb-2">

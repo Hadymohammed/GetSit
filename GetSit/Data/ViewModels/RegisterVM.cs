@@ -16,6 +16,7 @@ namespace GetSit.Data.ViewModels
         public string LastName { get; set; }
         [Required(ErrorMessage = "Birthdate is required")]
         [DataType(DataType.Date,ErrorMessage ="Must be a valid date")]
+        [BirthDateValidator(ErrorMessage ="You must be +18")]
         public DateTime Birthdate { get; set; }
 
         [Display(Name = "Email")]
