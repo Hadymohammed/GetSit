@@ -1,4 +1,6 @@
-﻿@model Customer
+﻿@using GetSit.Data.ViewModels
+@using GetSit.Data.enums
+@model RegisterVM
 
 <div class="container-box">
     <div class="bg-img">
@@ -10,7 +12,7 @@
                    <h2>Sign up</h2>
                     <div class="mt-3">Sign up for free to access any of our services </div>
                 </div>
-               <form action="Register" class="form">
+               <form asp-action="Register" class="form">
                    <div class="row">
                         <div class="col-md-6 mb-2">
                             <div class="form-outline">
@@ -60,10 +62,26 @@
                             <span asp-validation-for="@Model.Password" class="text-danger"></span>
                         </div>
                     </div>
+                <div class="row">
+                    <div class="form-outline mb-2">
+                            <div class="mb-3">Which account services you want?</div>
+                        <div class="user-roles">
+                            <div>
+                                <input type="radio" asp-for="@Model.Role" value="@UserRole.Customer">
+                                <label asp-for="@Model.Role">@UserRole.Customer</label>
+                            </div>
+                            <div>
+                                <input type="radio" asp-for="@Model.Role" value="@UserRole.Provider">
+                                <label asp-for="@Model.Role">@UserRole.Provider</label>
+                            </div>
+                        </div>
+                        <span asp-validation-for="@Model.Role" class="text-danger"></span>
+                    </div>
+
                     <div class="row">
                         <div class="form-outline">
                             <input class="purple-btn float-right" type="submit" value="Sign up" >
-                        <div>Already have an account? <a asp-controller="Login">Login</a></div>
+                        <div>Already have an account? <a asp-action="Login">Login</a></div>
                         </div>
                     </div>
                </form>
