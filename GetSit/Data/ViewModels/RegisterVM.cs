@@ -26,7 +26,7 @@ namespace GetSit.Data.ViewModels
 
         [Display(Name = "Phone number")]
         [Required(ErrorMessage = "Phone number is required")]
-        [Phone(ErrorMessage ="Must be a valid number")]
+        [PhoneValidator(ErrorMessage ="Must be 11 length and starts with 011,010,012,015")]
         public string PhoneNumber { get; set; }
 
         [Required(ErrorMessage = "Phone number is required")]
