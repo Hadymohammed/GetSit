@@ -1,4 +1,5 @@
 ﻿using GetSit.Data.enums;
+using GetSit.Data.Validation;
 using System.ComponentModel.DataAnnotations;
 
 namespace GetSit.Data.ViewModels
@@ -28,9 +29,10 @@ namespace GetSit.Data.ViewModels
         public string PhoneNumber { get; set; }
 
         [Required(ErrorMessage = "Phone number is required")]
-        [DataType(DataType.Password), MinLength(8,ErrorMessage ="Must be atleast 8 length"), RegularExpression("%[A-Z]%", ErrorMessage = "at least one uppercase letter is required")]
+        [DataType(DataType.Password), MinLength(8,ErrorMessage ="Must be atleast 8 length"), RegularExpression("(.*[A-Z].*)", ErrorMessage = "at least one uppercase letter is required")]
         public string Password { get; set; }
         [Required(ErrorMessage = "Role is required")]
+        [UserRoleValidator(ErrorMessage ="Must be a Customer or Provider")]
         public UserRole Role { get; set; }
     }
 }
