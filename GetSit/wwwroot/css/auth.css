@@ -25,6 +25,14 @@
     position: relative;
     cursor: pointer;
 }
+.user-roles {
+    display: flex;
+    justify-content: center;
+}
+.user-roles div{
+    margin-right:10px;
+
+}
 @media only screen and (max-width: 950px) {
     /*Big smartphones [426px -> 600px]*/
     .bg-img{
