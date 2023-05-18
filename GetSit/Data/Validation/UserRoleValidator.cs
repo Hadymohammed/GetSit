@@ -5,7 +5,7 @@ namespace GetSit.Data.Validation
 {
     sealed public class UserRoleValidator:ValidationAttribute
     {
-        public override bool IsValid(object value)
+        public override bool IsValid(object? value)
         {
             if (Enum.IsDefined(typeof(UserRole), value))
                 return true;
