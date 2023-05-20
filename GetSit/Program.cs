@@ -1,4 +1,5 @@
 using GetSit.Data;
+using GetSit.Data.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +9,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AppDBcontext>(options => options.UseSqlServer(
         DBconnection
         ));
+builder.Services.AddScoped<ISpaceHallService, SpaceHallServices>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
