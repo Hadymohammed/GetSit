@@ -1,7 +1,5 @@
 ﻿using GetSit.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Numerics;
 
 namespace GetSit.Data
 {
