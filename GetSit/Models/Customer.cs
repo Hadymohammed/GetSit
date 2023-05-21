@@ -1,4 +1,5 @@
 ﻿using GetSit.Data.enums;
+using GetSit.Data.Security;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -7,7 +8,7 @@ using System.Security.Principal;
 
 namespace GetSit.Models
 {
-    public class Customer
+    public class Customer:IAbstractUser
     {
         [Key]
         public int Id { get; set; }
@@ -23,11 +24,12 @@ namespace GetSit.Models
         public string PhoneNumber { get; set; }
         [DataType(DataType.Date)]
         public DateTime Birthdate { get; set; }
-        [DataType(DataType.Url)]
-        public string ProfilePictureUrl { get; set; }
-        [Required]
+        [DataType(DataType.Url), AllowNull]
+        public string ProfilePictureUrl { get; set; } = "resource/site/user-profile-icon.jpg";
         public CustomerType CustomerType { get; set; }
+        [AllowNull]
         public string? Country { get; set; }
+        [AllowNull]
         public string? City { get; set; }
         public int Penality { get; set; } = 0;
         [Required,DefaultValue(false)]

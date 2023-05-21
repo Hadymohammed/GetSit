@@ -1,9 +1,10 @@
 ﻿using GetSit.Data.enums;
+using GetSit.Data.Security;
 using System.ComponentModel.DataAnnotations;
 
 namespace GetSit.Models
 {
-    public class SystemAdmin
+    public class SystemAdmin:IAbstractUser
     {
         [Key]
         public int Id { get; set; }
@@ -21,7 +22,7 @@ namespace GetSit.Models
         [DataType(DataType.Date)]
         public DateTime Birthdate { get; set; }
         [Required]
-        public string ProfilePictureUrl { get; set; }
+        public string ProfilePictureUrl { get; set; } = "resource/site/user-profile-icon.jpg";
         [Required]
         public string Country { get; set; }
         [Required]
