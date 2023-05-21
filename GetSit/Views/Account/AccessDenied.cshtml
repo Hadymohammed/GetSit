@@ -1,0 +1,5 @@
+﻿﻿@using System.Security.Claims;
+<h1>
+    <h2 class="danger">Access Denied</h2>
+    You are @Context.User.Claims.Where(c=>c.Type==ClaimTypes.Role).FirstOrDefault().Value
+</h1>
