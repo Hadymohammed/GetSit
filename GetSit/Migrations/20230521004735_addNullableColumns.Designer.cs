@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GetSit.Migrations
 {
     [DbContext(typeof(AppDBcontext))]
-    [Migration("20230515170809_BuildSchema")]
-    partial class BuildSchema
+    [Migration("20230521004735_addNullableColumns")]
+    partial class addNullableColumns
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
