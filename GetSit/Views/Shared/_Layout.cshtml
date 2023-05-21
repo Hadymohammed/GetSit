@@ -34,6 +34,19 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
+                        @if(Context.User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <form method="post" asp-action="Logout" asp-controller="Account">
+                                    <a onclick="this.parentNode.submit();" style="cursor: pointer;">Logout</a>
+                                </form>
+                            </li>
+                        }
+                        else{
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
