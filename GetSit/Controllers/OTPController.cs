@@ -6,7 +6,9 @@ namespace MVCTutorial.Controllers
 {
     public class OTP : Controller
     {
-
+        public OTP() { }
+        public const string SessionKeyName = "123456";
+        private string? recipient;
         public ActionResult Index()
         {
 
@@ -52,10 +54,6 @@ namespace MVCTutorial.Controllers
         {
             return View();
         }
-
-        public const string SessionKeyName = "123456";
-        private string? recipient;
-
         public string? APIKey { get; private set; }
 
         [HttpPost]
