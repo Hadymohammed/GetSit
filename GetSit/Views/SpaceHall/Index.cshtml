@@ -5,8 +5,129 @@
 }
 
 
+<div class="main">
 
-<div class="body">
+    <!-- Filters-container starts -->
+    <div class="Filters-container">
+        <p class="Filters-label">
+            Filter Spaces
+        </p>
+
+        <div class="edit-container">
+            <div>
+                <button type="button" class="btn btn-dark btn-sm btn-edit">Within 256km</button>
+                <button type="button" class="btn btn-dark btn-sm btn-edit">Up to $ __ / hr</button>
+                <button type="button" class="btn btn-dark btn-sm btn-edit">Capacity</button>
+                <button type="button" class="btn btn-dark btn-sm btn-edit">Activities </button>
+                <button type="button" class="btn btn-dark btn-sm btn-edit">Amenities </button>
+            </div>
+        </div>
+
+        <p class="Clear-Filters">Clear Filters</p>
+    </div>
+    <!-- Filters-container ends -->
+    <!-- search input  -->
+    <form asp-controller="SpaceHall" asp-action="Index">
+        <p>
+            <input class="search-input-edit" type="text" name="Key" placeholder="Search by city, host or space name">
+        </p>
+    </form>
+    <p class="Spaces-near">Spaces near Qena </p>
+    <br><br>
+    <!-- spaces container starts -->
+    <div class="flex grid-container">
+
+        @foreach (var hall in Model)
+        {
+            <!-- card 1 -->
+            <div class="card card-edit grid-item card-img-top">
+
+                <div id="@hall.Id" class="carousel slide">
+                    <div class="carousel-inner">
+                        
+                        @for(int i=0;i<hall.HallPhotos.Count();i++)
+                        {
+                            if(i==0)
+                            {
+                                <div class="carousel-item active">
+                                    <img src="@hall.HallPhotos[i].Url"
+                                         class="d-block w-100" alt="...">
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="carousel-item">
+                                    <img src="@hall.HallPhotos[i].Url"
+                                         class="d-block w-100" alt="...">
+                                </div>
+                            }
+                        }
+                      
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#@hall.Id"
+                            data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#@hall.Id"
+                            data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+
+                <div class="card-body">
+                    <p class="space-name">@hall.Space.Name</p>
+                    <div class="flex div-space-type-loc">
+                        <p class="space-type">@hall.Type</p>
+                        <p class="space-loc">@hall.Space.City ,@hall.Space.Country ,@hall.Space.Street</p>
+                    </div>
+                    <div class="flex div-badges">
+                        @if (false)
+                        {                          
+                            <span class="badge color1">Offer Badges</span>
+                        }
+                        else
+                        {
+                            <span class="badge color2">Offer Badges</span>
+                        }
+                        @if (@hall.Space.IsFast)
+                        {
+                            <span class="badge color1">Fast Booking</span>
+                        }
+                        else
+                        {
+                            <span class="badge color2">Fast Booking</span>
+
+                        }
+
+                        
+                    </div>
+                    <div class="flex div-working">
+                        <p>Working Hours</p>
+                        <div class="flex time-container">
+                            <span class="material-symbols-outlined">
+                                schedule
+                            </span>
+                            <p>from 9:00 to 9:00</p>
+                        </div>
+                    </div>
+                    
+                    <div class="btn btn-dark book-now-btn">Book Now</div>
+                </div>
+            </div>
+        }
+
+        
+
+        
+        <!-- spaces container ends -->
+
+    </div>
+
+</div>
+
+@*<div class="body">
     <div class="main">
 
         <!-- Filters-container starts -->
@@ -40,17 +161,41 @@
             @foreach(var hall in Model)
             {
                 <!-- card 1 -->
-
+               //user without login
+              @* @if()
+                {
+                    <a asp-controller=<!--login controller Name--> asp-action=<!--login action Name-->><i class="bi bi-star"></i></a>
+            ViewBag.ErrorMessage = "Delete failed. Try again, and if the problem persists see your system administrator.";
+                }
+                else if (/*customer*/)
+                {
+                    @if(/*not fav*/)
+                    {
+                        <a asp-action="fav"><i class="bi bi-star"></i></a>
+                    }
+                    else
+                    {
+                        <a asp-action="un_fav"><i class="bi bi-star"></i></a>
+                    }
+                }
+                else
+                {
+                    /*what to do??*/
+                }
+                
                 <div class="card card-edit">
 
                    @foreach(var i in hall.HallPhotos)
                     {
-                    <p>@i.Url</p>
+                    //<p>@i.Url</p>
                     <img src="@i.Url"
                          class="card-img-top" alt="...">
                         
                     }
                     <div class="card-body">
+
+                        <a asp-action="Fav" >fav</a>
+
                         <p><b>@hall.Space.Name</b></p>
                         <p class="card-text">
                             @hall.Description
@@ -65,6 +210,4 @@
         <!-- spaces container ends -->
 
     </div>
-</div>
-
-
+</div>*@

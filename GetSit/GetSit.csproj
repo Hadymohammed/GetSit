@@ -24,7 +24,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Styles\" />
     <Folder Include="wwwroot\resources\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\css\Explorer.css" />
   </ItemGroup>
 
 </Project>
