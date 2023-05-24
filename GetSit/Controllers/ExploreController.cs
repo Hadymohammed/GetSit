@@ -1,3 +1,4 @@
+
 ﻿using GetSit.Data;
 using GetSit.Data.Services;
 using GetSit.Models;
@@ -10,7 +11,8 @@ namespace GetSit.Controllers
 {
     public class ExploreController : Controller
     {
-        public readonly IExploreService _service;
+
+       public readonly IExploreService _service;
         public ExploreController(IExploreService service)
         {
             _service = service;
@@ -30,8 +32,7 @@ namespace GetSit.Controllers
             _service.Fav(HId,CId);
             return View("Index");
         }
-        
-       
+
 
     }
 }

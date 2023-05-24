@@ -23,9 +23,9 @@
     </PackageReference>
   </ItemGroup>
 
-  
-  <ItemGroup>
+   <ItemGroup>
     <None Include="wwwroot\css\Explorer.css" />
   </ItemGroup>
 
+  
 </Project>
