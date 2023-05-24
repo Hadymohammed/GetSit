@@ -234,8 +234,8 @@ namespace GetSit.Migrations
                     City = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Penality = table.Column<int>(type: "int", nullable: false),
                     Blocked = table.Column<bool>(type: "bit", nullable: false),
-                    FacultyId = table.Column<int>(type: "int", nullable: false),
-                    TitleId = table.Column<int>(type: "int", nullable: false)
+                    FacultyId = table.Column<int>(type: "int", nullable: true),
+                    TitleId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -244,14 +244,12 @@ namespace GetSit.Migrations
                         name: "FK_Customer_Faculty_FacultyId",
                         column: x => x.FacultyId,
                         principalTable: "Faculty",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Customer_Title_TitleId",
                         column: x => x.TitleId,
                         principalTable: "Title",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(

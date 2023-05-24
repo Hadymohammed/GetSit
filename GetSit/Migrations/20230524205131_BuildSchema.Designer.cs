@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GetSit.Migrations
 {
     [DbContext(typeof(AppDBcontext))]
-    [Migration("20230524201132_BuildSchema")]
+    [Migration("20230524205131_BuildSchema")]
     partial class BuildSchema
     {
         /// <inheritdoc />
@@ -152,7 +152,7 @@ namespace GetSit.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("FacultyId")
+                    b.Property<int?>("FacultyId")
                         .HasColumnType("int");
 
                     b.Property<string>("FirstName")
@@ -178,7 +178,7 @@ namespace GetSit.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TitleId")
+                    b.Property<int?>("TitleId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -755,15 +755,11 @@ namespace GetSit.Migrations
                 {
                     b.HasOne("GetSit.Models.Faculty", "Faculty")
                         .WithMany("Customers")
-                        .HasForeignKey("FacultyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("FacultyId");
 
                     b.HasOne("GetSit.Models.Title", "Title")
                         .WithMany("Customers")
-                        .HasForeignKey("TitleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TitleId");
 
                     b.Navigation("Faculty");
 
