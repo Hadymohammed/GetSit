@@ -126,15 +126,15 @@ namespace GetSit.Controllers
                 return View(register);
             }
 
-            /*check if the entered email in rrgister is already in database*/
+            /*check if the entered email in register is already in database*/
             bool isEmailExist(string Email)
             {
                 return (_context.SystemAdmin.Where(c => c.Email == Email).FirstOrDefault() != null ||
                 _context.SpaceEmployee.Where(c => c.Email == Email).FirstOrDefault() != null ||
                 _context.Customer.Where(c => c.Email == Email).FirstOrDefault() != null);
-               
+
             }
-            
+
 
 
             switch (register.Role)
