@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace GetSit.Migrations
 {
     /// <inheritdoc />
-    public partial class addNullableColumns : Migration
+    public partial class BuildSchema : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -234,8 +234,8 @@ namespace GetSit.Migrations
                     City = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Penality = table.Column<int>(type: "int", nullable: false),
                     Blocked = table.Column<bool>(type: "bit", nullable: false),
-                    FacultyId = table.Column<int>(type: "int", nullable: true),
-                    TitleId = table.Column<int>(type: "int", nullable: true)
+                    FacultyId = table.Column<int>(type: "int", nullable: false),
+                    TitleId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -244,12 +244,14 @@ namespace GetSit.Migrations
                         name: "FK_Customer_Faculty_FacultyId",
                         column: x => x.FacultyId,
                         principalTable: "Faculty",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Customer_Title_TitleId",
                         column: x => x.TitleId,
                         principalTable: "Title",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
