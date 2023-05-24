@@ -29,8 +29,8 @@ namespace GetSit.Data.ViewModels
         [PhoneValidator(ErrorMessage ="Must be 11 length and starts with 011,010,012,015")]
         public string PhoneNumber { get; set; }
 
-        [Required(ErrorMessage = "Phone number is required")]
-        [DataType(DataType.Password), MinLength(8,ErrorMessage ="Must be atleast 8 length"), RegularExpression("(.*[A-Z].*)", ErrorMessage = "at least one uppercase letter is required")]
+        [Required(ErrorMessage = "Password is required")]
+        [DataType(DataType.Password), MinLength(8,ErrorMessage ="Must be at least 8 Characters"), RegularExpression("(.*[A-Z].*)", ErrorMessage = "at least one uppercase letter is required")]
         public string Password { get; set; }
         [Required(ErrorMessage = "Role is required")]
         [UserRoleValidator(ErrorMessage ="Must be a Customer or Provider")]
