@@ -19,6 +19,7 @@ namespace GetSit.Controllers
 
         /* create an object from PasswordHashing class to encode and decode*/
         PasswordHashing hash = new PasswordHashing();
+
         /* check if the entered password while logging in matches the stored password in database*/
         bool VerifyPassword(string encodedPassword, string password)
         {
@@ -52,14 +53,15 @@ namespace GetSit.Controllers
                     var admin = _context.SystemAdmin.Where(c => c.Email == login.Email).FirstOrDefault();/*Varify user : macthed email and password*/
                     if (admin == null)
                     {
-                        ModelState.AddModelError(string.Empty, "Invalid email");
-                        return View();
+                        // Email not found in database
+                        ModelState.AddModelError("Email", "Invalid email");
+                        return View(login);
                     }
                     if (!VerifyPassword(admin.Password, login.Password))
                     {
                         // Password is incorrect
-                        ModelState.AddModelError(string.Empty, "Invalid login attempt, incorrect password.");
-                        return View();
+                        ModelState.AddModelError("Password", "Invalid login attempt, incorrect password.");
+                        return View(login);
                     }
 
                     break;
@@ -67,14 +69,15 @@ namespace GetSit.Controllers
                     var provider = _context.SpaceEmployee.Where(c => c.Email == login.Email).FirstOrDefault();/*Varify user : macthed email and password*/
                     if (provider == null)
                     {
-                        ModelState.AddModelError(string.Empty, "invalid email");
-                        return View();
+                        // Email not found in database
+                        ModelState.AddModelError("Email", "Invalid email");
+                        return View(login);
                     }
                     if (!VerifyPassword(provider.Password, login.Password))
                     {
                         // Password is incorrect
-                        ModelState.AddModelError(string.Empty, "Invalid login attempt, incorrect password.");
-                        return View();
+                        ModelState.AddModelError("Password", "Invalid login attempt, incorrect password.");
+                        return View(login);
                     }
               
                     break;
@@ -83,14 +86,17 @@ namespace GetSit.Controllers
                     var customer = _context.Customer.Where(c=>c.Email==login.Email).FirstOrDefault();/*Varify user : macthed email and password*/
                     if (customer == null)
                     {
-                        ModelState.AddModelError(string.Empty, "invalid email");
-                        return View();
+                        // Email not found in database
+                        ModelState.AddModelError("Email", "Invalid email");
+                            return View(login);
+                        
                     }
                     if (!VerifyPassword(customer.Password, login.Password))
                     {
                         // Password is incorrect
-                        ModelState.AddModelError(string.Empty, "Invalid login attempt, incorrect password.");
-                        return View();
+                        ModelState.AddModelError("Password", "Invalid login attempt, incorrect password.");
+                            return View(login);
+                        
                     }
                     /*Get DB user*/
                     _userManager.SignIn(HttpContext, customer);
@@ -120,8 +126,8 @@ namespace GetSit.Controllers
                 return View(register);
             }
 
-            
 
+      
             switch (register.Role)
             {
                 case UserRole.Admin:
