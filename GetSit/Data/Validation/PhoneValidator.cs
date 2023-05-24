@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
+
 namespace GetSit.Data.Validation
 {
     public class PhoneValidator:ValidationAttribute
