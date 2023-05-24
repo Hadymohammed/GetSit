@@ -1,0 +1,22 @@
+﻿@using GetSit.Data.ViewModels;
+@model OTPVM
+
+<div id="popupWindow" class="d-flex align-items-center justify-content-center">
+    <div id="popupContent" class="p-4 bg-white">
+        <h1 class="mb-4">Enter OTP</h1>
+        <form id="otpForm" asp-action="VerifyOTP">
+            <div id="otpInputs" class="mb-4">
+                <input type="text" maxlength="1" asp-for="OTP[0]" class="form-control otp-input" autofocus>
+                <input type="text" maxlength="1" asp-for="OTP[1]" class="form-control otp-input">
+                <input type="text" maxlength="1" asp-for="OTP[2]" class="form-control otp-input">
+                <input type="text" maxlength="1" asp-for="OTP[3]" class="form-control otp-input">
+                <input type="text" maxlength="1" asp-for="OTP[4]" class="form-control otp-input">
+                <input type="text" maxlength="1" asp-for="OTP[5]" class="form-control otp-input">
+            </div>
+            <div class="text-center">
+                <button id="verifyButton" type="submit" class="btn btn-primary" disabled>Verify</button>
+            </div>
+        </form>
+    </div>
+    <script src="~/js/OTPinputs.js"></script>
+</div>
