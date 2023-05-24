@@ -2,7 +2,7 @@
 
 namespace GetSit.Data.Services
 {
-    public interface ISpaceHallService
+    public interface IExploreService
     {
         Task<IEnumerable<SpaceHall>> GetAll();
         Task<IEnumerable<SpaceHall>> GetBySearch(String Key);

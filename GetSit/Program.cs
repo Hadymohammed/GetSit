@@ -9,7 +9,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AppDBcontext>(options => options.UseSqlServer(
         DBconnection
         ));
-builder.Services.AddScoped<ISpaceHallService, SpaceHallServices>();
+builder.Services.AddScoped<IExploreService, ExploreServices>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -30,6 +30,6 @@ AppDbInitializer.Seed(app);
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=SpaceHall}/{action=Index}/{id?}");
+    pattern: "{controller=Explore}/{action=Index}/{id?}");
 
 app.Run();

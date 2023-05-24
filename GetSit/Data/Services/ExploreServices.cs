@@ -6,10 +6,10 @@ using System.Security.Cryptography;
 
 namespace GetSit.Data.Services
 {
-    public class SpaceHallServices : ISpaceHallService
+    public class ExploreServices : IExploreService
     {
         public readonly AppDBcontext _context;
-        public SpaceHallServices(AppDBcontext context)
+        public ExploreServices(AppDBcontext context)
         {
             _context = context; 
         }
@@ -55,9 +55,7 @@ namespace GetSit.Data.Services
             _context.SaveChanges();
 
         }
-        
-        
-
+       
 
         public Space GetById(int id)
         {

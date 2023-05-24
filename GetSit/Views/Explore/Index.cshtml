@@ -19,7 +19,7 @@
                 <button type="button" class="btn btn-dark btn-sm btn-edit">Up to $ __ / hr</button>
                 <button type="button" class="btn btn-dark btn-sm btn-edit">Capacity</button>
                 <button type="button" class="btn btn-dark btn-sm btn-edit">Activities </button>
-                <button type="button" class="btn btn-dark btn-sm btn-edit">Amenities </button>
+                @*<button type="button" class="btn btn-dark btn-sm btn-edit">Amenities </button>*@
             </div>
         </div>
 
@@ -112,8 +112,8 @@
                             <p>from 9:00 to 9:00</p>
                         </div>
                     </div>
-                    
-                    <div class="btn btn-dark book-now-btn">Book Now</div>
+
+                    <a asp-controller="Booking" asp-action="Index" asp-route-id="@hall.Id"><div class="btn btn-dark book-now-btn">Book Now</div></a>
                 </div>
             </div>
         }
