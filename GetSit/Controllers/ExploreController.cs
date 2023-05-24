@@ -13,8 +13,8 @@ namespace GetSit.Controllers
     public class ExploreController : Controller
     {
 
-       readonly IExploreService _service;
-        readonly UserManager _userManager;
+        private readonly IExploreService _service;
+        private readonly UserManager _userManager;
         public ExploreController(IExploreService service,UserManager userManager)
         {
             _service = service;
