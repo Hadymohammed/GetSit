@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/GetSit.styles.css" asp-append-version="true" />
-    <!-- added-->
+     <!-- added-->
     <!-- Google Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,8 +22,17 @@
           integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     
     <link href="~/css/Explorer.css" rel="stylesheet" media="all" />
-    
-    <title>Explorer</title>
+    @*pages*@
+    <link rel="stylesheet" href="~/css/auth.css" asp-append-version="true" />
+    @*OTP*@
+    <link rel="stylesheet" href="~/css/OTPpop-up.css" asp-append-version="true" />
+    @*Fonts*@
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;500;700&display=swap" rel="stylesheet">
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
     <header>
@@ -54,7 +63,21 @@
 
                         <li class="nav-item">
                             <a class="nav-link" href="#">My Booking</a>
-                        </li>
+                        </li>                    
+                        @if(Context.User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <form method="post" asp-action="Logout" asp-controller="Account">
+                                    <a onclick="this.parentNode.submit();" style="cursor: pointer;">Logout</a>
+                                </form>
+                            </li>
+                        }
+                        else{
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
+                            </li>
+                        }
+                    </ul>
                 </div>
 
             </div>
@@ -63,17 +86,12 @@
 
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+    <div >
+        <main role="main" >
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2023 - GetSit - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

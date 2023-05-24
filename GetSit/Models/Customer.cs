@@ -1,4 +1,5 @@
 ﻿using GetSit.Data.enums;
+using GetSit.Data.Security;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -6,29 +7,30 @@ using System.Security.Principal;
 
 namespace GetSit.Models
 {
-    public class Customer
+    public class Customer:IAbstractUser
     {
         [Key]
         public int Id { get; set; }
-        [Required, RegularExpression("^[\\w'\\-,.][^0-9_!¡?÷?¿/\\\\+=@#$%ˆ&*(){}|~<>;:[\\]]{2,}$")]
+        [Required, RegularExpression("^[\\w'\\-,.][^0-9_!¡?÷?¿/\\\\+=@#$%ˆ&*(){}|~<>;:[\\]]{2,}$"),Display(Name ="First name")]
         public string FirstName { get; set; }
-        [Required, RegularExpression("^[\\w'\\-,.][^0-9_!¡?÷?¿/\\\\+=@#$%ˆ&*(){}|~<>;:[\\]]{2,}$")]
+        [Required, RegularExpression("^[\\w'\\-,.][^0-9_!¡?÷?¿/\\\\+=@#$%ˆ&*(){}|~<>;:[\\]]{2,}$"), Display(Name = "Last name")]
         public string LastName { get; set; }
         [Required, EmailAddress]
         public string Email { get; set; }
         [Required, MinLength(8), RegularExpression("%[A-Z]%",ErrorMessage ="at least one uppercase letter is required")]
         public string Password { get; set; }
-        [Required,Phone]
+        [Required,Phone, Display(Name = "Phone number")]
         public string PhoneNumber { get; set; }
         [DataType(DataType.Date)]
         public DateTime Birthdate { get; set; }
-        [DataType(DataType.Url)]
-        public string ProfilePictureUrl { get; set; }
-        [Required]
+        [DataType(DataType.Url), AllowNull]
+        public string ProfilePictureUrl { get; set; } = "resource/site/user-profile-icon.jpg";
         public CustomerType CustomerType { get; set; }
-        public string Country { get; set; }
-        public string City { get; set; }
-        public int Penality { get; set; }
+        [AllowNull]
+        public string? Country { get; set; }
+        [AllowNull]
+        public string? City { get; set; }
+        public int Penality { get; set; } = 0;
         [Required,DefaultValue(false)]
         public bool Blocked { get; set; }
         public int FacultyId { get; set; }
