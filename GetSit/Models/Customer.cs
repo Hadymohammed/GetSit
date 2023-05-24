@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 using System.Security.Principal;
+
 namespace GetSit.Models
 {
     public class Customer:IAbstractUser
