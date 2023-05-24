@@ -44,6 +44,7 @@ builder.Services.AddSession(options =>
 builder.Services.AddScoped<IUserManager, UserManager>();
 
 var app = builder.Build();
+AppDbInitializer.Seed(app);
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

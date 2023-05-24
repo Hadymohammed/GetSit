@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace GetSit.Migrations
 {
     /// <inheritdoc />
-    public partial class addNullableColumns : Migration
+    public partial class BuildSchema : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

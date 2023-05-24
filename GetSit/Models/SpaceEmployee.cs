@@ -2,6 +2,7 @@
 using GetSit.Data.Security;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 
 namespace GetSit.Models
 {
@@ -21,14 +22,14 @@ namespace GetSit.Models
         public string PhoneNumber { get; set; }
         [DataType(DataType.Date)]
         public DateTime Birthdate { get; set; }
-        [Required]
+        [Required, AllowNull]
         public string ProfilePictureUrl { get; set; } = "resource/site/user-profile-icon.jpg";
-        [Required]
+        [Required, AllowNull]
         public string Country { get; set; }
-        [Required]
+        [Required, AllowNull]
         public string City { get; set; }
         [Required]
-        public SpaceEmployeeRole EmployeeRole { get; set; }
+        public SpaceEmployeeRole EmployeeRole { get; set; } = SpaceEmployeeRole.Super;
         [ForeignKey("SpaceId")]
         public int SpaceId { get; set; }
         public Space? Space { get; set; }

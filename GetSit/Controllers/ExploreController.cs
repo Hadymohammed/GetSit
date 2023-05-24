@@ -1,5 +1,6 @@
 
 ﻿using GetSit.Data;
+using GetSit.Data.Security;
 using GetSit.Data.Services;
 using GetSit.Models;
 using Microsoft.AspNetCore.Http;
@@ -12,10 +13,12 @@ namespace GetSit.Controllers
     public class ExploreController : Controller
     {
 
-       public readonly IExploreService _service;
+        private readonly IExploreService _service;
+        //private readonly UserManager _userManager;
         public ExploreController(IExploreService service)
         {
             _service = service;
+            //_userManager = userManager;
         }
         public async Task<IActionResult> Index(string Key)
         {
@@ -26,9 +29,10 @@ namespace GetSit.Controllers
             }
             return View(data);
         }
-        public IActionResult Fav(int HId)
+        public IActionResult AddToFavorite(int HId)
         {
             int CId = 1;
+            
             _service.Fav(HId,CId);
             return View("Index");
         }
