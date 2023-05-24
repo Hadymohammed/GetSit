@@ -1,5 +1,6 @@
 ﻿using GetSit.Data.enums;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GetSit.Models
 {

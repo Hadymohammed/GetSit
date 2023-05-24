@@ -1,6 +1,7 @@
 ﻿using GetSit.Data.enums;
 using GetSit.Data.Security;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace GetSit.Models
 {
@@ -21,13 +22,13 @@ namespace GetSit.Models
         [Required]
         [DataType(DataType.Date)]
         public DateTime Birthdate { get; set; }
-        [Required]
+        [Required, AllowNull]
         public string ProfilePictureUrl { get; set; } = "resource/site/user-profile-icon.jpg";
-        [Required]
+        [Required, AllowNull]
         public string Country { get; set; }
-        [Required]
+        [Required, AllowNull]
         public string City { get; set; }
         [Required]
-        public SystemAdminRole AdminRole { get; set; }
+        public SystemAdminRole AdminRole { get; set; } = SystemAdminRole.Super;
     }
 }

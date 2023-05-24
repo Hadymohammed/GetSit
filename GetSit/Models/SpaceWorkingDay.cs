@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using GetSit.Data.enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GetSit.Models
@@ -8,7 +9,7 @@ namespace GetSit.Models
         [Key]
         public int Id { get; set; }
         [Required]
-        public string Name { get; set; }
+        public WeekDay Day { get; set; }
         [Required]
         public DateTime OpeningTime { get; set; }
         [Required]
