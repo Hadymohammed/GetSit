@@ -9,7 +9,7 @@ var DBconnection= builder.Configuration["DBconnection"];
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AppDBcontext>(options => options.UseSqlServer(
-      DBconnection
+       DBconnection
         ));
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 builder.Services.AddAuthentication("Cookies")
