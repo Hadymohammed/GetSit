@@ -21,8 +21,4 @@
     <Folder Include="wwwroot\resources\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Include="..\.editorconfig" Link=".editorconfig" />
-  </ItemGroup>
-
 </Project>
