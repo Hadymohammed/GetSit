@@ -7,6 +7,8 @@ using GetSit.Data;
 using Microsoft.Win32;
 using GetSit.Data.Security;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection.XmlEncryption;
+using GetSit.Common;
 
 namespace GetSit.Controllers
 {
@@ -14,6 +16,16 @@ namespace GetSit.Controllers
     {
         AppDBcontext _context;
         private IUserManager _userManager;
+
+        /* create an object from PasswordHashing class to encode and decode*/
+        PasswordHashing hash = new PasswordHashing();
+        /* check if the entered password while logging in matches the stored password in database*/
+        bool VerifyPassword(string encodedPassword, string password)
+        {
+
+            return (hash.Decode (encodedPassword) == password);
+        }
+
         public AccountController(AppDBcontext context, IUserManager userManager)
         {
             _context = context;
@@ -37,30 +49,51 @@ namespace GetSit.Controllers
             switch (login.Role)
             {
                 case UserRole.Admin:
-                    var admin = new SystemAdmin()
+                    var admin = _context.SystemAdmin.Where(c => c.Email == login.Email).FirstOrDefault();/*Varify user : macthed email and password*/
+                    if (admin == null)
                     {
-                        Email = login.Email,
-                        Password = login.Password,
-                    };
-                    /*Varify user : macthed email and password*/
-                    /*Get DB user*/
-                    /*context sign in */
+                        ModelState.AddModelError(string.Empty, "Invalid email");
+                        return View();
+                    }
+                    if (!VerifyPassword(admin.Password, login.Password))
+                    {
+                        // Password is incorrect
+                        ModelState.AddModelError(string.Empty, "Invalid login attempt, incorrect password.");
+                        return View();
+                    }
+
                     break;
                 case UserRole.Provider:
-                    var provider = new SpaceEmployee()
+                    var provider = _context.SpaceEmployee.Where(c => c.Email == login.Email).FirstOrDefault();/*Varify user : macthed email and password*/
+                    if (provider == null)
                     {
-                        Email = login.Email,
-                        Password = login.Password,/*Here password should be decrypted*/
-                    };
-                    /*Varify user : macthed email and password*/
-                    /*Get DB user*/
-                    /*context sign in */
+                        ModelState.AddModelError(string.Empty, "invalid email");
+                        return View();
+                    }
+                    if (!VerifyPassword(provider.Password, login.Password))
+                    {
+                        // Password is incorrect
+                        ModelState.AddModelError(string.Empty, "Invalid login attempt, incorrect password.");
+                        return View();
+                    }
+              
                     break;
                 case UserRole.Customer:
         
-                    var user = _context.Customer.Where(c=>c.Email==login.Email&&c.Password==login.Password).FirstOrDefault();/*Varify user : macthed email and password*/
+                    var customer = _context.Customer.Where(c=>c.Email==login.Email).FirstOrDefault();/*Varify user : macthed email and password*/
+                    if (customer == null)
+                    {
+                        ModelState.AddModelError(string.Empty, "invalid email");
+                        return View();
+                    }
+                    if (!VerifyPassword(customer.Password, login.Password))
+                    {
+                        // Password is incorrect
+                        ModelState.AddModelError(string.Empty, "Invalid login attempt, incorrect password.");
+                        return View();
+                    }
                     /*Get DB user*/
-                    _userManager.SignIn(HttpContext, user);
+                    _userManager.SignIn(HttpContext, customer);
                     return RedirectToAction("CustomerProfile", "Account");
                     /*context sign in */
                     break;
@@ -86,18 +119,21 @@ namespace GetSit.Controllers
             {
                 return View(register);
             }
+
             
+
             switch (register.Role)
             {
                 case UserRole.Admin:
                     var admin = new SystemAdmin()
                     {
+                       
                         FirstName = register.FirstName,
                         LastName = register.LastName,
                         Email = register.Email,
                         PhoneNumber = register.PhoneNumber,
                         Birthdate = register.Birthdate,
-                        Password = register.Password,/*Here password should be hashed*/
+                        Password = hash.Encode (register.Password),/*Here password should be hashed*/
                     };
                     try
                     {
@@ -119,7 +155,7 @@ namespace GetSit.Controllers
                         Email = register.Email,
                         PhoneNumber = register.PhoneNumber,
                         Birthdate = register.Birthdate,
-                        Password = register.Password,/*Here password should be hashed*/
+                        Password = hash.Encode(register.Password),/*Here password should be hashed*/
                     };
                     try
                     {
@@ -142,7 +178,7 @@ namespace GetSit.Controllers
                         PhoneNumber = register.PhoneNumber,
                         CustomerType=CustomerType.Registered,
                         Birthdate=register.Birthdate,
-                        Password = register.Password,/*Here password should be hashed*/
+                        Password = hash.Encode(register.Password),/*Here password should be hashed*/
                     };
                     try
                     {
