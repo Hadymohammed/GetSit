@@ -126,8 +126,19 @@ namespace GetSit.Controllers
                 return View(register);
             }
 
+            /*check if the entered email in register is already in database*/
+               if (_context.SystemAdmin.Where(c => c.Email == register.Email).FirstOrDefault() != null ||
+                _context.SpaceEmployee.Where(c => c.Email == register.Email).FirstOrDefault() != null ||
+                _context.Customer.Where(c => c.Email == register.Email).FirstOrDefault() != null)
+            {
+                ModelState.AddModelError("Email", "This email already has an account.");
+                return View(register);
+            }
 
-      
+            
+
+
+
             switch (register.Role)
             {
                 case UserRole.Admin:
@@ -141,6 +152,7 @@ namespace GetSit.Controllers
                         Birthdate = register.Birthdate,
                         Password = hash.Encode (register.Password),/*Here password should be hashed*/
                     };
+
                     try
                     {
                     await _context.SystemAdmin.AddAsync(admin);
@@ -163,6 +175,7 @@ namespace GetSit.Controllers
                         Birthdate = register.Birthdate,
                         Password = hash.Encode(register.Password),/*Here password should be hashed*/
                     };
+
                     try
                     {
                     await _context.SpaceEmployee.AddAsync(provider);
@@ -186,8 +199,9 @@ namespace GetSit.Controllers
                         Birthdate=register.Birthdate,
                         Password = hash.Encode(register.Password),/*Here password should be hashed*/
                     };
+
                     try
-                    {
+                    {   
                        await _context.Customer.AddAsync(customer);
                         _context.SaveChanges();
                        await _userManager.SignIn(HttpContext, customer);
