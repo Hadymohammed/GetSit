@@ -14,11 +14,11 @@ namespace GetSit.Controllers
     {
 
         private readonly IExploreService _service;
-        private readonly UserManager _userManager;
-        public ExploreController(IExploreService service,UserManager userManager)
+        //private readonly UserManager _userManager;
+        public ExploreController(IExploreService service)
         {
             _service = service;
-            _userManager = userManager;
+            //_userManager = userManager;
         }
         public async Task<IActionResult> Index(string Key)
         {
@@ -31,7 +31,7 @@ namespace GetSit.Controllers
         }
         public IActionResult AddToFavorite(int HId)
         {
-            int CId = _userManager.GetCurrentUserId(HttpContext);
+            int CId = 1;
             
             _service.Fav(HId,CId);
             return View("Index");
