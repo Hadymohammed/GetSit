@@ -1,4 +1,5 @@
 using GetSit.Data;
+using GetSit.Data.Services;
 using GetSit.Data.enums;
 using GetSit.Data.Security;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AppDBcontext>(options => options.UseSqlServer(
         DBconnection
         ));
+builder.Services.AddScoped<IExploreService, ExploreServices>();
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 builder.Services.AddAuthentication("Cookies")
     .AddCookie("Cookies",config =>
@@ -57,10 +59,9 @@ app.UseSession();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
-AppDbInitializer.Seed(app);
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Explore}/{action=Index}/{id?}");
 
 app.Run();
