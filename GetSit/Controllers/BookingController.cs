@@ -10,7 +10,7 @@ namespace GetSit.Controllers
         {
             _context = context;
         }
-        public IActionResult Index()
+        public IActionResult Index(int HallID)
         {
             return View();
         }
