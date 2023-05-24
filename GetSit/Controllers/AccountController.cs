@@ -126,8 +126,17 @@ namespace GetSit.Controllers
                 return View(register);
             }
 
+            /*check if the entered email in rrgister is already in database*/
+            bool isEmailExist(string Email)
+            {
+                return (_context.SystemAdmin.Where(c => c.Email == Email).FirstOrDefault() != null ||
+                _context.SpaceEmployee.Where(c => c.Email == Email).FirstOrDefault() != null ||
+                _context.Customer.Where(c => c.Email == Email).FirstOrDefault() != null);
+               
+            }
+            
 
-      
+
             switch (register.Role)
             {
                 case UserRole.Admin:
@@ -141,6 +150,11 @@ namespace GetSit.Controllers
                         Birthdate = register.Birthdate,
                         Password = hash.Encode (register.Password),/*Here password should be hashed*/
                     };
+                    if (isEmailExist(register.Email))
+                    {
+                        ModelState.AddModelError("Email", "This email already has an account.");
+                        return View(register);
+                    }
                     try
                     {
                     await _context.SystemAdmin.AddAsync(admin);
@@ -163,6 +177,11 @@ namespace GetSit.Controllers
                         Birthdate = register.Birthdate,
                         Password = hash.Encode(register.Password),/*Here password should be hashed*/
                     };
+                    if (isEmailExist(register.Email))
+                    {
+                        ModelState.AddModelError("Email", "This email already has an account.");
+                        return View(register);
+                    }
                     try
                     {
                     await _context.SpaceEmployee.AddAsync(provider);
@@ -186,8 +205,13 @@ namespace GetSit.Controllers
                         Birthdate=register.Birthdate,
                         Password = hash.Encode(register.Password),/*Here password should be hashed*/
                     };
-                    try
+                    if (isEmailExist(register.Email))
                     {
+                        ModelState.AddModelError("Email", "This email already has an account.");
+                        return View(register);
+                    }
+                    try
+                    {   
                        await _context.Customer.AddAsync(customer);
                         _context.SaveChanges();
                        await _userManager.SignIn(HttpContext, customer);
