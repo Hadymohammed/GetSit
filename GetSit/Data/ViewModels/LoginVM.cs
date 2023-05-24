@@ -12,10 +12,10 @@ namespace GetSit.Data.ViewModels
         public string Email{ get; set; }
 
         [Required]
-        [DataType(DataType.Password),MinLength(8,ErrorMessage ="Must be at least 8 length")]
+        [DataType(DataType.Password),MinLength(8,ErrorMessage ="Must be at least 8 Characters")]
         public string Password { get; set; }
         [Required(ErrorMessage = "Role is required")]
-        [UserRoleValidator(ErrorMessage = "Must be an Admin or Customer or Provider.")]
+        [UserRoleValidator(ErrorMessage = "Must be an Admin, Customer, or Provider.")]
         public UserRole Role { get; set; }
     }
 }
