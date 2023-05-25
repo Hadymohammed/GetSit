@@ -35,7 +35,7 @@
     <p class="Spaces-near">Spaces near Qena </p>
     <br><br>
     <!-- spaces container starts -->
-    <div class="flex grid-container">
+    <div class="flex-wrap grid-container">
 
         @foreach (var hall in Model)
         {
@@ -78,11 +78,11 @@
 
                 <div class="card-body">
                     <p class="space-name">@hall.Space.Name</p>
-                    <div class="flex div-space-type-loc">
-                        <p class="space-type">@hall.Type</p>
-                        <p class="space-loc">@hall.Space.City ,@hall.Space.Country ,@hall.Space.Street</p>
+                    <div class="div-space-type-loc">
+                        <p class="space-type">@hall.Type | @hall.Space.City ,@hall.Space.Country ,@hall.Space.Street</p>
                     </div>
-                    <div class="flex div-badges">
+                    <div class="div-badges">
+                        @*Need add facilities badges*@
                         @if (false)
                         {                          
                             <span class="badge color1">Offer Badges</span>
@@ -103,15 +103,7 @@
 
                         
                     </div>
-                    <div class="flex div-working">
-                        <p>Working Hours</p>
-                        <div class="flex time-container">
-                            <span class="material-symbols-outlined">
-                                schedule
-                            </span>
-                            <p>from 9:00 to 9:00</p>
-                        </div>
-                    </div>
+                    
 
                     <a asp-controller="Booking" asp-action="Index" asp-route-id="@hall.Id"><div class="btn btn-dark book-now-btn">Book Now</div></a>
                 </div>

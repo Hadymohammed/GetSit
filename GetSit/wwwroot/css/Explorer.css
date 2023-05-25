@@ -13,8 +13,9 @@ body {
   border-bottom: 1px solid rgba(102, 102, 102, 0.25);
 }
 
-.flex {
-  display: flex;
+.flex-wrap {
+    display: flex;
+    flex-wrap: wrap;
 }
 
 .avatar {
@@ -160,21 +161,18 @@ body {
 }
 
 .grid-container {
-  display: grid;
-  grid-template-columns: auto auto auto;
-  /* background-color: #2f4252; */
-  padding: 10px;
-  grid-gap: 4%;
+    display: flex;
+    /* grid-template-columns: auto auto auto; */
+    /*background-color: #2f4252;*/
+    padding: 10px;
+    grid-gap: 10px;
+    flex-wrap: wrap;
+    justify-content: space-around;
 }
 
 .grid-item {
   background-color: rgba(255, 255, 255, 0.8);
-  /* padding: 20px; */
-  /* width: 18rem; */
-  /* border: white; */
-  /* margin-left: 4rem; */
-  /* grid-gap: 11%; */
-  width: 95%;
+  width: 350px;
   border: 1px solid white;
 }
 
@@ -186,10 +184,10 @@ body {
 }
 
 .badge {
-  width: 35%;
-  padding: 3%;
-  border-radius: 0%;
-  font-size: 0.8rem;
+    width: 100px;
+    padding: 3%;
+    border-radius: 0%;
+    font-size: 0.8rem;
 }
 
 .color1 {
@@ -215,17 +213,24 @@ body {
 }
 
 .div-badges {
-  justify-content: space-between;
+    justify-content: space-between;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    column-gap: 12px;
+    flex-direction: row;
+    margin-bottom: 15px;
 }
 
 .book-now-btn {
-  width: 42%;
-  font-style: normal;
-  font-weight: 600;
-  /* align-items: center; */
-  text-align: center;
-  letter-spacing: -0.1px;
-  border-radius: 3px;
+    width: 120px;
+    font-style: normal;
+    font-weight: 600;
+    /* align-items: center; */
+    text-align: center;
+    letter-spacing: -0.1px;
+    border-radius: 3px;
 }
 
 .div-working {
