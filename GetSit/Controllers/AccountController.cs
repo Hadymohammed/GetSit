@@ -26,7 +26,12 @@ namespace GetSit.Controllers
 
             return (hash.Decode (encodedPassword) == password);
         }
-
+        bool PresirvedEmail(string email)
+        {
+            return (_context.SystemAdmin.Where(c => c.Email == email).FirstOrDefault() != null ||
+               _context.SpaceEmployee.Where(c => c.Email == email).FirstOrDefault() != null ||
+               _context.Customer.Where(c => c.Email == email).FirstOrDefault() != null);
+        }
         public AccountController(AppDBcontext context, IUserManager userManager)
         {
             _context = context;
@@ -47,14 +52,19 @@ namespace GetSit.Controllers
             {
                 return View(login);
             }
-            switch (login.Role)
+            if(!PresirvedEmail(login.Email))
+            {
+                ModelState.AddModelError("Email", "Invalid email");
+                return View(login);
+            }
+            switch (login.Role)//Which user role?
             {
                 case UserRole.Admin:
-                    var admin = _context.SystemAdmin.Where(c => c.Email == login.Email).FirstOrDefault();/*Varify user : macthed email and password*/
+                    var admin = _context.SystemAdmin.Where(c => c.Email == login.Email).FirstOrDefault();
                     if (admin == null)
                     {
                         // Email not found in database
-                        ModelState.AddModelError("Email", "Invalid email");
+                        ModelState.AddModelError("Role", "Wrong Role");
                         return View(login);
                     }
                     if (!VerifyPassword(admin.Password, login.Password))
@@ -63,14 +73,15 @@ namespace GetSit.Controllers
                         ModelState.AddModelError("Password", "Invalid login attempt, incorrect password.");
                         return View(login);
                     }
-
+                    _userManager.SignIn(HttpContext, admin);
+                    return RedirectToAction("AdminProfile", "Account");
                     break;
                 case UserRole.Provider:
-                    var provider = _context.SpaceEmployee.Where(c => c.Email == login.Email).FirstOrDefault();/*Varify user : macthed email and password*/
+                    var provider = _context.SpaceEmployee.Where(c => c.Email == login.Email).FirstOrDefault();
                     if (provider == null)
                     {
                         // Email not found in database
-                        ModelState.AddModelError("Email", "Invalid email");
+                        ModelState.AddModelError("Role", "Wrong Role");
                         return View(login);
                     }
                     if (!VerifyPassword(provider.Password, login.Password))
@@ -79,15 +90,16 @@ namespace GetSit.Controllers
                         ModelState.AddModelError("Password", "Invalid login attempt, incorrect password.");
                         return View(login);
                     }
-              
+                    _userManager.SignIn(HttpContext, provider);
+                    return RedirectToAction("ProviderProfile", "Account");
                     break;
                 case UserRole.Customer:
         
-                    var customer = _context.Customer.Where(c=>c.Email==login.Email).FirstOrDefault();/*Varify user : macthed email and password*/
+                    var customer = _context.Customer.Where(c=>c.Email==login.Email).FirstOrDefault();
                     if (customer == null)
                     {
                         // Email not found in database
-                        ModelState.AddModelError("Email", "Invalid email");
+                        ModelState.AddModelError("Role", "Wrong Role");
                             return View(login);
                         
                     }
@@ -98,10 +110,8 @@ namespace GetSit.Controllers
                             return View(login);
                         
                     }
-                    /*Get DB user*/
                     _userManager.SignIn(HttpContext, customer);
                     return RedirectToAction("CustomerProfile", "Account");
-                    /*context sign in */
                     break;
                 default:
                     break;
@@ -127,9 +137,7 @@ namespace GetSit.Controllers
             }
 
             /*check if the entered email in register is already in database*/
-               if (_context.SystemAdmin.Where(c => c.Email == register.Email).FirstOrDefault() != null ||
-                _context.SpaceEmployee.Where(c => c.Email == register.Email).FirstOrDefault() != null ||
-                _context.Customer.Where(c => c.Email == register.Email).FirstOrDefault() != null)
+            if (PresirvedEmail(register.Email))
             {
                 ModelState.AddModelError("Email", "This email already has an account.");
                 return View(register);
