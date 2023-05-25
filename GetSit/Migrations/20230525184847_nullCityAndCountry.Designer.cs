@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GetSit.Migrations
 {
     [DbContext(typeof(AppDBcontext))]
-    [Migration("20230510205324_Build Schema")]
-    partial class BuildSchema
+    [Migration("20230525184847_nullCityAndCountry")]
+    partial class nullCityAndCountry
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -54,9 +54,6 @@ namespace GetSit.Migrations
                     b.Property<float>("Paid")
                         .HasColumnType("real");
 
-                    b.Property<int>("PaymentId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
 
@@ -66,8 +63,6 @@ namespace GetSit.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
-
-                    b.HasIndex("PaymentId");
 
                     b.ToTable("Booking");
                 });
@@ -145,11 +140,9 @@ namespace GetSit.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("City")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Country")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("CustomerType")
@@ -159,7 +152,7 @@ namespace GetSit.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("FacultyId")
+                    b.Property<int?>("FacultyId")
                         .HasColumnType("int");
 
                     b.Property<string>("FirstName")
@@ -185,7 +178,7 @@ namespace GetSit.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TitleId")
+                    b.Property<int?>("TitleId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -245,19 +238,15 @@ namespace GetSit.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("HallId")
+                    b.Property<int>("Facility")
                         .HasColumnType("int");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("SpaceHallId")
+                    b.Property<int>("HallId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SpaceHallId");
+                    b.HasIndex("HallId");
 
                     b.ToTable("HallFacility");
                 });
@@ -273,16 +262,13 @@ namespace GetSit.Migrations
                     b.Property<int>("HallId")
                         .HasColumnType("int");
 
-                    b.Property<int>("SpaceHallId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Url")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SpaceHallId");
+                    b.HasIndex("HallId");
 
                     b.ToTable("HallPhoto");
                 });
@@ -294,6 +280,9 @@ namespace GetSit.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BookingId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("LastUpdate")
                         .HasColumnType("datetime2");
@@ -308,6 +297,9 @@ namespace GetSit.Migrations
                         .HasColumnType("real");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BookingId")
+                        .IsUnique();
 
                     b.ToTable("Payment");
                 });
@@ -373,9 +365,13 @@ namespace GetSit.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BookingHallId");
+                    b.HasIndex("BookingHallId")
+                        .IsUnique()
+                        .HasFilter("[BookingHallId] IS NOT NULL");
 
-                    b.HasIndex("BookingHallServiceId");
+                    b.HasIndex("BookingHallServiceId")
+                        .IsUnique()
+                        .HasFilter("[BookingHallServiceId] IS NOT NULL");
 
                     b.HasIndex("PaymentId");
 
@@ -393,16 +389,13 @@ namespace GetSit.Migrations
                     b.Property<int>("ServiceId")
                         .HasColumnType("int");
 
-                    b.Property<int>("SpaceServiceId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Url")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SpaceServiceId");
+                    b.HasIndex("ServiceId");
 
                     b.ToTable("ServicePhoto");
                 });
@@ -497,7 +490,7 @@ namespace GetSit.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SpaceId")
+                    b.Property<int?>("SpaceId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -525,7 +518,7 @@ namespace GetSit.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("SpaceId")
+                    b.Property<int>("SpaceId")
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
@@ -625,9 +618,8 @@ namespace GetSit.Migrations
                     b.Property<DateTime>("ClosingTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Day")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("OpeningTime")
                         .HasColumnType("datetime2");
@@ -718,15 +710,7 @@ namespace GetSit.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("GetSit.Models.Payment", "Payment")
-                        .WithMany()
-                        .HasForeignKey("PaymentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Customer");
-
-                    b.Navigation("Payment");
                 });
 
             modelBuilder.Entity("GetSit.Models.BookingHall", b =>
@@ -751,7 +735,7 @@ namespace GetSit.Migrations
             modelBuilder.Entity("GetSit.Models.BookingHallService", b =>
                 {
                     b.HasOne("GetSit.Models.BookingHall", "BookingHall")
-                        .WithMany("Services")
+                        .WithMany("BookedServices")
                         .HasForeignKey("BookingHallId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -759,7 +743,7 @@ namespace GetSit.Migrations
                     b.HasOne("GetSit.Models.SpaceService", "Service")
                         .WithMany("Bookings")
                         .HasForeignKey("ServiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("BookingHall");
@@ -771,15 +755,11 @@ namespace GetSit.Migrations
                 {
                     b.HasOne("GetSit.Models.Faculty", "Faculty")
                         .WithMany("Customers")
-                        .HasForeignKey("FacultyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("FacultyId");
 
                     b.HasOne("GetSit.Models.Title", "Title")
                         .WithMany("Customers")
-                        .HasForeignKey("TitleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TitleId");
 
                     b.Navigation("Faculty");
 
@@ -807,24 +787,35 @@ namespace GetSit.Migrations
 
             modelBuilder.Entity("GetSit.Models.HallFacility", b =>
                 {
-                    b.HasOne("GetSit.Models.SpaceHall", "SpaceHall")
+                    b.HasOne("GetSit.Models.SpaceHall", "Hall")
                         .WithMany("HallFacilities")
-                        .HasForeignKey("SpaceHallId")
+                        .HasForeignKey("HallId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("SpaceHall");
+                    b.Navigation("Hall");
                 });
 
             modelBuilder.Entity("GetSit.Models.HallPhoto", b =>
                 {
-                    b.HasOne("GetSit.Models.SpaceHall", "SpaceHall")
+                    b.HasOne("GetSit.Models.SpaceHall", "Hall")
                         .WithMany("HallPhotos")
-                        .HasForeignKey("SpaceHallId")
+                        .HasForeignKey("HallId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("SpaceHall");
+                    b.Navigation("Hall");
+                });
+
+            modelBuilder.Entity("GetSit.Models.Payment", b =>
+                {
+                    b.HasOne("GetSit.Models.Booking", "Booking")
+                        .WithOne("Payment")
+                        .HasForeignKey("GetSit.Models.Payment", "BookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Booking");
                 });
 
             modelBuilder.Entity("GetSit.Models.PaymentCard", b =>
@@ -841,12 +832,12 @@ namespace GetSit.Migrations
             modelBuilder.Entity("GetSit.Models.PaymentDetail", b =>
                 {
                     b.HasOne("GetSit.Models.BookingHall", "BookingHall")
-                        .WithMany()
-                        .HasForeignKey("BookingHallId");
+                        .WithOne("paymentDetail")
+                        .HasForeignKey("GetSit.Models.PaymentDetail", "BookingHallId");
 
                     b.HasOne("GetSit.Models.BookingHallService", "BookingHallService")
-                        .WithMany()
-                        .HasForeignKey("BookingHallServiceId");
+                        .WithOne("PaymentDetail")
+                        .HasForeignKey("GetSit.Models.PaymentDetail", "BookingHallServiceId");
 
                     b.HasOne("GetSit.Models.Payment", "Payment")
                         .WithMany("Details")
@@ -865,7 +856,7 @@ namespace GetSit.Migrations
                 {
                     b.HasOne("GetSit.Models.SpaceService", "SpaceService")
                         .WithMany("ServicePhotos")
-                        .HasForeignKey("SpaceServiceId")
+                        .HasForeignKey("ServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -876,18 +867,20 @@ namespace GetSit.Migrations
                 {
                     b.HasOne("GetSit.Models.Space", "Space")
                         .WithMany("Employees")
-                        .HasForeignKey("SpaceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("SpaceId");
 
                     b.Navigation("Space");
                 });
 
             modelBuilder.Entity("GetSit.Models.SpaceHall", b =>
                 {
-                    b.HasOne("GetSit.Models.Space", null)
+                    b.HasOne("GetSit.Models.Space", "Space")
                         .WithMany("Halls")
-                        .HasForeignKey("SpaceId");
+                        .HasForeignKey("SpaceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Space");
                 });
 
             modelBuilder.Entity("GetSit.Models.SpacePhone", b =>
@@ -937,11 +930,23 @@ namespace GetSit.Migrations
             modelBuilder.Entity("GetSit.Models.Booking", b =>
                 {
                     b.Navigation("BookingHalls");
+
+                    b.Navigation("Payment")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("GetSit.Models.BookingHall", b =>
                 {
-                    b.Navigation("Services");
+                    b.Navigation("BookedServices");
+
+                    b.Navigation("paymentDetail")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("GetSit.Models.BookingHallService", b =>
+                {
+                    b.Navigation("PaymentDetail")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("GetSit.Models.Customer", b =>

@@ -11,15 +11,12 @@ namespace GetSit.Models
         public int NumberOfUnits { get; set; }
         [Required]
         public float PricePerUnit { get; set; }
-        [Required,ForeignKey("BookingHallId")]
+        [Required, ForeignKey("BookingHallId")]
         public int BookingHallId { get; set; }
         public BookingHall BookingHall { get; set; }
         public SpaceService Service { get; set; }
-        [Required,ForeignKey("ServiceId")]
+        [Required, ForeignKey("ServiceId")]
         public int ServiceId { get; set; }
-        /*[Required]
-        public int PaymentDetailId { get; set; }
-        [Required]
-        public PaymentDetail PaymentDetail { get; set; }*/
+        public PaymentDetail PaymentDetail { get; set; }
     }
 }
