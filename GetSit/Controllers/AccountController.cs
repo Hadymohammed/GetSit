@@ -17,14 +17,11 @@ namespace GetSit.Controllers
         AppDBcontext _context;
         private IUserManager _userManager;
 
-        /* create an object from PasswordHashing class to encode and decode*/
-        PasswordHashing hash = new PasswordHashing();
-
         /* check if the entered password while logging in matches the stored password in database*/
         bool VerifyPassword(string encodedPassword, string password)
         {
 
-            return (hash.Decode (encodedPassword) == password);
+            return (PasswordHashing.Decode (encodedPassword) == password);
         }
         bool PresirvedEmail(string email)
         {
@@ -158,7 +155,7 @@ namespace GetSit.Controllers
                         Email = register.Email,
                         PhoneNumber = register.PhoneNumber,
                         Birthdate = register.Birthdate,
-                        Password = hash.Encode (register.Password),/*Here password should be hashed*/
+                        Password = PasswordHashing.Encode (register.Password),/*Here password should be hashed*/
                     };
 
                     try
@@ -181,7 +178,7 @@ namespace GetSit.Controllers
                         Email = register.Email,
                         PhoneNumber = register.PhoneNumber,
                         Birthdate = register.Birthdate,
-                        Password = hash.Encode(register.Password),/*Here password should be hashed*/
+                        Password = PasswordHashing.Encode(register.Password),/*Here password should be hashed*/
                     };
 
                     try
@@ -205,7 +202,7 @@ namespace GetSit.Controllers
                         PhoneNumber = register.PhoneNumber,
                         CustomerType=CustomerType.Registered,
                         Birthdate=register.Birthdate,
-                        Password = hash.Encode(register.Password),/*Here password should be hashed*/
+                        Password = PasswordHashing.Encode(register.Password),/*Here password should be hashed*/
                     };
 
                     try
