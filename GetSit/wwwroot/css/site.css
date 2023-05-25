@@ -28,3 +28,12 @@ html {
 input[type="date"]::-webkit-calendar-picker-indicator {
     content: url(../resources/site/calendar-days-solid.svg);
 }
+a{
+    text-decoration:none;
+}
+.color-purple{
+    color:var(--purple-color);
+}
+.color-white{
+    color:white;
+}

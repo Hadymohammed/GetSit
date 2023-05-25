@@ -242,3 +242,10 @@ body {
   justify-content: space-between;
   width: 44%;
 }
+.love-icon {
+    position: absolute;
+    z-index: 2;
+    left: 5px;
+    top: 3px;
+    font-size: 2rem;
+}

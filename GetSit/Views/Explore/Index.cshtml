@@ -1,5 +1,5 @@
 ﻿@model IEnumerable<SpaceHall>
-
+﻿@using System.Security.Claims;
 @{
     ViewData["Title"] = "Explore Page";
 }
@@ -41,7 +41,24 @@
         {
             <!-- card 1 -->
             <div class="card card-edit grid-item card-img-top">
-                
+                @if (Context.User.Identity.IsAuthenticated)
+                {
+                    <div class="love-icon">
+                        <a asp-controller="Explore" asp-action="ToggleFavouriteHall" asp-route-HallId="@hall.Id">
+                                
+                                @if(hall.FavoriteHalls.Where(h=>h.HallId==hall.Id && h.CustomerId.ToString()==Context.User.Claims.Where(c=>c.Type==ClaimTypes.NameIdentifier).FirstOrDefault().Value).FirstOrDefault() is null)
+                                {
+                                    <!--Add to favs-->
+                                    <i class="fa-regular fa-heart color-white"></i>
+                                }
+                                else
+                                {
+                                    <!--Remove from favs-->
+                                    <i class="fa-solid fa-heart color-purple"></i>
+                                }
+                        </a>
+                    </div>
+                }
                 <div id="@hall.Id" class="carousel slide">
                     <div class="carousel-inner">
                         
