@@ -15,7 +15,7 @@ namespace GetSit.Data.Services
         }
         public async Task<IEnumerable<SpaceHall>> GetAll()
         {
-            var result = await _context.SpaceHall.Include(x => x.Space).Include(y=>y.HallPhotos).ToListAsync();
+            var result = await _context.SpaceHall.Include(x => x.Space).Include(y=>y.HallPhotos).Include(z=>z.FavoriteHalls).ToListAsync();
             return result;
         }
         public async Task<IEnumerable<SpaceHall>> GetBySearch(String Key)
