@@ -37,7 +37,7 @@
 <body>
     <header>
         <!-- Navbar -->
-        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <nav class="navbar navbar-expand-lg">
             <div class="container-fluid">
 
                 <a class="navbar-brand" href="#">
@@ -54,7 +54,7 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav links-container-edit">
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Explore</a>
+                            <a class="nav-link" asp-controller="Explore" asp-action="Index">Explore</a>
                         </li>
 
                         <li class="nav-item">
@@ -67,9 +67,7 @@
                         @if(Context.User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
-                                <form method="post" asp-action="Logout" asp-controller="Account">
-                                    <a onclick="this.parentNode.submit();" style="cursor: pointer;">Logout</a>
-                                </form>
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Logout">Logout</a>
                             </li>
                         }
                         else{
