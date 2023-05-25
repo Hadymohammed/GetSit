@@ -108,7 +108,7 @@ namespace GetSit.Controllers
             }
             return View();
         }
-        [HttpPost]
+        [HttpGet]
         public IActionResult logout()
         {
             _userManager.SignOut(HttpContext);
