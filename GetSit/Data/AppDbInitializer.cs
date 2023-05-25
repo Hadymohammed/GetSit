@@ -1,4 +1,5 @@
-﻿using GetSit.Models;
+﻿using GetSit.Common;
+using GetSit.Models;
 
 namespace GetSit.Data
 {
@@ -41,6 +42,21 @@ namespace GetSit.Data
                     });
                     context.SaveChanges();
                 }
+                //Space Employee
+                context.SpaceEmployee.AddRange(new List<SpaceEmployee>()
+                {
+                    new SpaceEmployee
+                    {
+                        FirstName="Ahmed",
+                        LastName="Mahmoud",
+                        Email="Provider@meto.com",
+                        Password= PasswordHashing.Encode("Provider1234"),
+                        Birthdate= new DateTime(1980,7,7),
+                        PhoneNumber= "01013205017",
+                        SpaceId=2
+                    }
+                });
+                context.SaveChanges();
                 //Space Phone
                 if (!context.SpacePhone.Any())
                 {
