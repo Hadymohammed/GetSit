@@ -1,0 +1,98 @@
+﻿@using GetSit.Data.ViewModels
+@model SpaceManagementVM
+<link rel="stylesheet" href="~/css/SpaceManagement.css" asp-append-version="true" />
+<div class="container flex-wrap">
+    <!--Main Container-->
+    <div class="profile-container">
+        <!--Profile Data-->
+        <div class="profile-data">
+            <div class="profile-cover">
+                <img src="@Model.Space.Photos.First().Url"/>
+            </div>
+            <div class="profile-card">
+                <img src="@Model.Space.Photos.First().Url" />
+                <div class="profile-name">@Model.Space.Name</div>
+                <div class="profile-bio">
+                    @Model.Space.Bio
+                </div>
+            </div>
+            <div class="profile-meta">
+                <div class="Location">
+                    <i class="fa-solid fa-location-dot" style="color: #545454;"></i>
+                    <span>@Model.Space.Country, @Model.Space.City</span>
+                </div>
+                <div class="profile-date">
+                    <i class="fa-solid fa-calendar-days" style="color: #545454;"></i>
+                    <span>Opening Date 15 Aug 2020</span>
+                </div>
+            </div>
+        </div>
+        <!--Dashboard Nav-->
+        <div class="dashboard-nav">
+            <script src="~/js/SpaceManagementScript.js"></script>
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item"><a class="nav-link active" href="#schedule">Schedule</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#our-halls">Our Halls</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#our-serivces">Our Services</a></li>
+                </ul>
+            </nav>
+
+            <section id="schedule" class="active">
+                <h2>schedule</h2>
+                <p>This is the content of section 1.</p>
+            </section>
+
+            <section id="our-halls">
+                @foreach(var hall in Model.Halls)
+                {
+                <div class="product-card">
+                    <div class="product-content">
+                        <div class="product-photo">
+                            <img src="@hall.HallPhotos.First().Url" alt="Product Photo">
+                        </div>
+                        <div class="product-details">
+                            <h3 class="product-name">@hall.Type</h3>
+                            <p class="product-description">@hall.Description</p>
+                            <p class="product-price">Price: @hall.CostPerHour.ToString("N2")</p>
+                            <div class="facilities-badges">
+                                <span class="badge">Free Shipping</span>
+                                <span class="badge">1-Year Warranty</span>
+                            </div>
+                            <button class="buy-button">Edit</button>
+                        </div>
+                    </div>
+                </div>
+                }
+            </section>
+
+            <section id="our-serivces">
+                @foreach (var service in Model.Services)
+                {
+                    <div class="product-card">
+                        <div class="product-content">
+                            <div class="product-photo">
+                                <img src="@service.ServicePhotos.First().Url" alt="Product Photo">
+                            </div>
+                            <div class="product-details">
+                                <h3 class="product-name">@service.Name</h3>
+                                <p class="product-description">@service.Description</p>
+                                <p class="product-price">Price: @service.Price.ToString("N2")</p>
+                                <div class="facilities-badges">
+                                    <span class="badge">Free Shipping</span>
+                                    <span class="badge">1-Year Warranty</span>
+                                </div>
+                                <button class="buy-button">Edit</button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </section>
+
+        </div>
+    </divP>
+    <!--Employees-->
+    <div class="members-menu"></div>
+    <!--Top Customers-->
+    <div class="members-menu"></div>
+</div>
