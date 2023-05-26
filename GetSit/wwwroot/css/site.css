@@ -45,3 +45,18 @@ a{
 .color-white{
     color:white;
 }
+
+.fade-in {
+    animation: fadeIn .3s;
+    opacity: 1;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}

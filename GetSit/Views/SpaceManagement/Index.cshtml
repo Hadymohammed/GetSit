@@ -1,7 +1,7 @@
 ﻿@using GetSit.Data.ViewModels
 @model SpaceManagementVM
 <link rel="stylesheet" href="~/css/SpaceManagement.css" asp-append-version="true" />
-<div class="container flex-wrap">
+<div class="container flex-wrap m-2">
     <!--Main Container-->
     <div class="profile-container">
         <!--Profile Data-->
@@ -9,11 +9,13 @@
             <div class="profile-cover">
                 <img src="@Model.Space.Photos.First().Url"/>
             </div>
-            <div class="profile-card">
-                <img src="@Model.Space.Photos.First().Url" />
-                <div class="profile-name">@Model.Space.Name</div>
-                <div class="profile-bio">
-                    @Model.Space.Bio
+            <div>
+                <div class="profile-card">
+                    <img src="@Model.Space.Photos.First().Url" />
+                    <div class="profile-name">@Model.Space.Name</div>
+                    <div class="profile-bio">
+                        @Model.Space.Bio
+                    </div>
                 </div>
             </div>
             <div class="profile-meta">
@@ -28,22 +30,22 @@
             </div>
         </div>
         <!--Dashboard Nav-->
-        <div class="dashboard-nav">
-            <script src="~/js/SpaceManagementScript.js"></script>
+        <script src="~/js/SpaceManagementScript.js"></script>
+        <div class="dashboard">
             <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                <ul class="navbar-nav mr-auto">
+                <ul class="navbar-nav nav-dashboard mr-auto">
                     <li class="nav-item"><a class="nav-link active" href="#schedule">Schedule</a></li>
                     <li class="nav-item"><a class="nav-link" href="#our-halls">Our Halls</a></li>
                     <li class="nav-item"><a class="nav-link" href="#our-serivces">Our Services</a></li>
                 </ul>
             </nav>
 
-            <section id="schedule" class="active">
+            <section id="schedule" class="fade-in active">
                 <h2>schedule</h2>
                 <p>This is the content of section 1.</p>
             </section>
 
-            <section id="our-halls">
+            <section id="our-halls" class="fade-in">
                 @foreach(var hall in Model.Halls)
                 {
                 <div class="product-card">
@@ -66,7 +68,7 @@
                 }
             </section>
 
-            <section id="our-serivces">
+            <section id="our-serivces" class="fade-in">
                 @foreach (var service in Model.Services)
                 {
                     <div class="product-card">

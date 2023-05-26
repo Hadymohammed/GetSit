@@ -16,12 +16,13 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative;
+    top: -30px;
 }
 .profile-card img {
     width: 150px;
     border-radius: 50%;
-    position: relative;
-    top: -30px;
+    
     border: solid white 4px;
 }
 .profile-meta {
@@ -35,6 +36,14 @@
     font-weight: 700;
     font-size: 24px;
     line-height: 36px;
+}
+.dashboard{
+    height:100vh;
+    overflow:scroll;
+}
+.dashboard nav {
+    position: sticky;
+    top:-5px;
 }
 section {
     display: none;
@@ -59,22 +68,14 @@ section.active {
 
 .navbar-nav {
     margin-top: 10px;
+    flex-direction: row;
 }
-
+.nav-dashboard {
+    width: 100%;
+    justify-content: space-around;
+}
 .nav-item {
     margin-right: 10px;
-}
-
-@media (max-width: 768px) {
-    .navbar-nav {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .nav-item {
-        margin-right: 0;
-        margin-bottom: 10px;
-    }
 }
 
 /* Product Card */
@@ -97,10 +98,10 @@ section.active {
     text-align: center;
 }
 
-    .product-photo img {
-        max-width: 100%;
-        height: auto;
-    }
+.product-photo img {
+    max-width: 100%;
+    height: auto;
+}
 
 .product-details {
     flex: 1;

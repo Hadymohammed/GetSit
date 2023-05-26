@@ -1,5 +1,5 @@
 ﻿document.addEventListener('DOMContentLoaded', function () {
-    const navLinks = document.querySelectorAll('nav a');
+    const navLinks = document.querySelectorAll('.dashboard nav a');
     const sections = document.querySelectorAll('section');
 
     // Add click event listeners to navigation links
