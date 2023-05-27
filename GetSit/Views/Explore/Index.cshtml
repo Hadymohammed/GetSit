@@ -1,5 +1,6 @@
 ﻿@model IEnumerable<SpaceHall>
 ﻿@using System.Security.Claims;
+@using GetSit.Data.enums
 @{
     ViewData["Title"] = "Explore Page";
 }
@@ -41,7 +42,7 @@
         {
             <!-- card 1 -->
             <div class="card card-edit grid-item card-img-top">
-                @if (Context.User.Identity.IsAuthenticated)
+                @if (Context.User.Identity.IsAuthenticated && Context.User.IsInRole(UserRole.Customer.ToString()))
                 {
                     <div class="love-icon">
                         <a asp-controller="Explore" asp-action="ToggleFavouriteHall" asp-route-HallId="@hall.Id">

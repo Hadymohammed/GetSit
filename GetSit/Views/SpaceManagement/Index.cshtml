@@ -1,7 +1,9 @@
 ﻿@using GetSit.Data.ViewModels
 @model SpaceManagementVM
+
+<div class="main manage-container">
 <link rel="stylesheet" href="~/css/SpaceManagement.css" asp-append-version="true" />
-<div class="container flex-wrap m-2">
+
     <!--Main Container-->
     <div class="profile-container">
         <!--Profile Data-->
@@ -41,8 +43,26 @@
             </nav>
 
             <section id="schedule" class="fade-in active">
-                <h2>schedule</h2>
-                <p>This is the content of section 1.</p>
+                @for (var i=0;i<4;i++)
+                {
+                    <div class="product-card">
+                        <div class="product-content">
+                            <div class="product-photo">
+                                <div>14</div>
+                                <div>OCT</div>
+                            </div>
+                            <div class="product-details">
+                                <h3 class="product-name">Hall name</h3>
+                                <p class="product-description">Mon 12:00pm <span>(3 hours)</span></p>
+                                <div class="facilities-badges">
+                                    <span class="badge">Free Shipping</span>
+                                    <span class="badge">1-Year Warranty</span>
+                                </div>
+                                <button class="buy-button">Edit</button>
+                            </div>
+                        </div>
+                    </div>
+                }
             </section>
 
             <section id="our-halls" class="fade-in">
@@ -92,9 +112,47 @@
             </section>
 
         </div>
-    </divP>
+    </div>
     <!--Employees-->
-    <div class="members-menu"></div>
+    <div class="members-menu fade-in">
+        <div class="side-menu">
+            <header>Our Staff</header>
+            @for(var i=0;i<3;i++)
+            {
+                <div class="user-profile">
+                    <div class="profile-picture">
+                        <img src="./resources/site/user-profile-icon.jpg" alt="User 1 Photo">
+                    </div>
+                    <div class="user-info">
+                        <div class="member-data">
+                            <h3 class="member-name">John Doe</h3> 
+                            <div class="member-username">@@username</div>
+                        </div>
+                        <button class="follow-button">Follow</button>
+                    </div>
+                </div>
+            }
+            
+        </div>
     <!--Top Customers-->
-    <div class="members-menu"></div>
+        <div class="side-menu">
+            <header>Our Best Costumers</header>
+            @for (var i = 0; i < 3; i++)
+            {
+                <div class="user-profile">
+                    <div class="profile-picture">
+                        <img src="./resources/site/user-profile-icon.jpg" alt="User 1 Photo">
+                    </div>
+                    <div class="user-info">
+                        <div class="member-data">
+                            <h3 class="member-name">John Doe</h3>
+                            <div class="member-username">@@username</div>
+                        </div>
+                        <button class="follow-button">Follow</button>
+                    </div>
+                </div>
+            }
+
+        </div>
+    </div>
 </div>

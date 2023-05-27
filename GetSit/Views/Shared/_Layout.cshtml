@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using System.Security.Claims
+@using GetSit.Data.enums
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -56,14 +58,22 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Explore" asp-action="Index">Explore</a>
                         </li>
+                        @if (Context.User.Identity.IsAuthenticated&&Context.User.Claims.Where(c => c.Type == ClaimTypes.Role).FirstOrDefault().Value == UserRole.Customer.ToString())
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">My Teamwork</a>
+                            </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">My Teamwork</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">My Booking</a>
-                        </li>                    
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">My Booking</a>
+                            </li>                    
+                        }
+                        else if (Context.User.Identity.IsAuthenticated&&Context.User.Claims.Where(c => c.Type == ClaimTypes.Role).FirstOrDefault().Value == UserRole.Provider.ToString())
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="SpaceManagement" asp-action="Index">My Space</a>
+                            </li>
+                        }
                         @if(Context.User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
