@@ -1,9 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using GetSit.Data.Base;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GetSit.Models
 {
-    public class BookingHall
+    public class BookingHall : IEntityBase
     {
         [Key]
         public int Id { get; set; }

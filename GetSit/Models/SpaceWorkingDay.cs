@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GetSit.Models
 {
-    public class SpaceWorkingDay
+    public class SpaceWorkingDay : IEntityBase
     {
         [Key]
         public int Id { get; set; }

@@ -1,4 +1,5 @@
-﻿using GetSit.Data.enums;
+﻿using GetSit.Data.Base;
+using GetSit.Data.enums;
 using GetSit.Data.Security;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -6,7 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace GetSit.Models
 {
-    public class SpaceEmployee:IAbstractUser
+    public class SpaceEmployee:IAbstractUser,IEntityBase
     {
         [Key]
         public int Id { get; set; }
