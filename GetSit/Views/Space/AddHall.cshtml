@@ -1,0 +1,34 @@
+﻿@using GetSit.Data.ViewModels
+@model HallVM
+<h1>
+    @Model.Hall.Space.Name
+</h1>
+<form asp-action="AddHall" method="post">
+    <div class="mb-3">
+        <label class="form-label">Description</label>
+        <input type="text" class="form-control" asp-for="@Model.Hall.Description" placeholder="Add hall description .....">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Capacity</label>
+        <input type="text" class="form-control" asp-for="@Model.Hall.Capacity" placeholder="Enter hall Capacity...">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Cost Per Hour</label>
+        <input type="text" class="form-control" asp-for="@Model.Hall.CostPerHour" placeholder="Enter hall Cost Per Hour...">
+    </div>
+    <select class="form-select" aria-label="Hall type" asp-for="@Model.Hall.Type">
+        <option selected>Select hall type</option>
+        <option value="1">Desk</option>
+        <option value="2">MeetingRoom</option>
+        <option value="3">ClassRoom</option>
+        <option value="4">Office</option>
+    </select>
+    <div class="input-group mb-3">  
+        <input asp-for="@Model.Files" class="form-control" >
+    </div>
+    
+    @*Submit Button*@
+    <button type="submit" class="btn btn-primary">Submit</button>
+    
+</form>

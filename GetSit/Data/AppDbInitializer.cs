@@ -1,4 +1,5 @@
-﻿using GetSit.Models;
+﻿using GetSit.Data.enums;
+using GetSit.Models;
 
 namespace GetSit.Data
 {
@@ -430,6 +431,31 @@ namespace GetSit.Data
                     });
                     context.SaveChanges();
                 }
+                ////Facility
+                //if (!context.HallFacility.Any())
+                //{
+                //    context.HallFacility.AddRange(new List<HallFacility>()
+                //    {
+                //        new HallFacility
+                //        {
+                //            Facility=Facility.FreeWifi,
+                //        },
+                //        new HallFacility
+                //        {
+                //            Facility=Facility.OpenAirView,
+                //        },
+                //        new HallFacility
+                //        {
+                //            Facility=Facility.UnlimitedCoffee,
+                //        },
+                //        new HallFacility
+                //        {
+                //            Facility=Facility.UnlimitedInternet,
+                //        },
+
+                //    }); ;
+                //    context.SaveChanges();
+                //}
             }
         }
     }
