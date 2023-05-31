@@ -3,7 +3,8 @@
 <h1>
     @Model.Hall.Space.Name
 </h1>
-<form asp-action="AddHall" method="post">
+<form  method="post" action="@Url.Action("AddHall", "Space")" enctype="multipart/form-data">
+    
     <div class="mb-3">
         <label class="form-label">Description</label>
         <input type="text" class="form-control" asp-for="@Model.Hall.Description" placeholder="Add hall description .....">
@@ -24,11 +25,13 @@
         <option value="3">ClassRoom</option>
         <option value="4">Office</option>
     </select>
-    <div class="input-group mb-3">  
-        <input asp-for="@Model.Files" class="form-control" >
-    </div>
     
-    @*Submit Button*@
+
+    <div class="mb-3">
+        <label  class="form-label">Multiple files input example</label>
+        <input class="form-control" type="file" asp-for="@Model.Files" multiple>
+    </div>
     <button type="submit" class="btn btn-primary">Submit</button>
     
 </form>
+

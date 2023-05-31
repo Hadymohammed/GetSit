@@ -18,10 +18,9 @@ namespace GetSit.Controllers
         {
             return View();
         }
-        public IActionResult AddHall(/*int SpaceId*/)
+        public IActionResult AddHall(int SpaceId = 1)
         {
             //if (SpaceId == null) { return NotFound(); }
-            int SpaceId = 1;
             HallVM vm = new HallVM();
             var sp = _context.Space.Where(x => x.Id == SpaceId).FirstOrDefault();
             var hall = new SpaceHall()
@@ -43,22 +42,25 @@ namespace GetSit.Controllers
                     {
                         var fileName = Path.GetFileName(file.FileName);
                         var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/resources/HallPhotos", fileName);
+                        
+                        using (var fileSrteam = new FileStream(filePath, FileMode.Create))
+                        {
+                              file.CopyToAsync(fileSrteam);
+                        }
+                        filePath = "./resources/HallPhotos/" + fileName;
                         var tmp = new HallPhoto()
                         {
                             Url = filePath,
                         };
                         temp.Add(tmp);
-                        using (var fileSrteam = new FileStream(filePath, FileMode.Create))
-                        {
-                              file.CopyToAsync(fileSrteam);
-                        }
-                    }
                 }
-                
-             vm.Hall.HallPhotos = temp;
-            
-            //_context.SpaceHall.Add(vm.Hall);
-            //_context.SaveChanges();
+                }
+
+            vm.Hall.SpaceId = 1;
+            vm.Hall.HallPhotos = temp;
+
+            _context.SpaceHall.Add(vm.Hall);
+            _context.SaveChanges();
 
             return RedirectToAction("Index");
         }
