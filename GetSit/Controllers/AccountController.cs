@@ -146,19 +146,21 @@ namespace GetSit.Controllers
                 return View(register);
             }
             HttpContext.Session.SetString("RegisterModel", JsonConvert.SerializeObject(register));
-
-            return RedirectToAction("OTP");
+            var otpVm = new OTPVM();
+            otpVm.Email = register.Email;
+            otpVm.Phone = register.PhoneNumber;
+            return RedirectToAction("PhoneOTP", otpVm);
         }
         [HttpGet]
-        public IActionResult OTP()
+        public IActionResult PhoneOTP(OTPVM? otpVm)
         {
-            
-            
-            OTPServices.SendOTP(HttpContext);
-            return View();
+            if (otpVm is null)
+                RedirectToAction("Register");
+            OTPServices.SendPhoneOTP(HttpContext,otpVm.Phone);
+            return View(otpVm);
         }
         [HttpPost]
-        public async Task<IActionResult> OTPAsync(OTPVM otp)
+        public async Task<IActionResult> PhoneOTPAsync(OTPVM otp)
         {
             if (!ModelState.IsValid)
             {
@@ -168,6 +170,29 @@ namespace GetSit.Controllers
             {
                 ModelState.AddModelError("OTP", "InValid Code");
                 return View(otp); 
+            }
+            
+            return RedirectToAction("EmailOTP",otp);
+        }
+        [HttpGet]
+        public IActionResult EmailOTP(OTPVM? otpVm)
+        {
+            if (otpVm is null)
+                RedirectToAction("Register");
+            OTPServices.SendEmailOTP(HttpContext, otpVm.Email);
+            return View(otpVm);
+        }
+        [HttpPost]
+        public async Task<IActionResult> EmailOTPAsync(OTPVM otp)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(otp);
+            }
+            if (OTPServices.VerifyOTP(HttpContext, otp) == false)
+            {
+                ModelState.AddModelError("OTP", "InValid Code");
+                return View(otp);
             }
             /*Get User model from session*/
             var stringUser = HttpContext.Session.GetString("RegisterModel");
@@ -251,7 +276,7 @@ namespace GetSit.Controllers
                     return View(register);
                     break;
             }
-            return View();
+            return RedirectToAction("Register");
         }
         [Authorize(Roles = "Admin")]//error enum must be used
         public IActionResult AdminProfile()

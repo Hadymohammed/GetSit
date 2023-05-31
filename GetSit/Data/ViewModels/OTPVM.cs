@@ -7,6 +7,8 @@
         {
             OTP = new char[6];
         }*/
+        public string? Email { get; set; }
+        public string? Phone { get; set; }
         public string? OTP { get; set; }
         public char op0 { get; set; }
         public char op1 { get; set; }

@@ -1,0 +1,48 @@
+﻿@using GetSit.Data.ViewModels;
+@model OTPVM
+
+@{
+    Layout = "~/Views/Shared/_Layouts/AuthLayout.cshtml";
+}
+<link rel="stylesheet" href="~/css/OTP.css" asp-append-version="true" />
+
+
+<div class="col">
+    <div id="popupWindow" class="d-flex align-items-center justify-content-center">
+        <div id="popupContent" class="p-4 bg-white">
+
+            <div class="box-header">
+                <h2>Email OTP verification</h2>
+                <div class="mt-3">We sent a verification code to @Model.Email </div>
+            </div>
+            <form id="otpForm" asp-action="EmailOTP">
+                <input type="hidden" asp-for="@Model.Email" />
+                <input type="hidden" asp-for="@Model.Phone" />
+                <div id="otpInputs" class="mb-4">
+                    <input type="text" maxlength="1" asp-for="@Model.op0" value="" class="form-control otp-input" autofocus>
+                    <input type="text" maxlength="1" asp-for="@Model.op1" value="" class="form-control otp-input">
+                    <input type="text" maxlength="1" asp-for="@Model.op2" value="" class="form-control otp-input">
+                    <input type="text" maxlength="1" asp-for="@Model.op3" value="" class="form-control otp-input">
+                    <input type="text" maxlength="1" asp-for="@Model.op4" value="" class="form-control otp-input">
+                    <input type="text" maxlength="1" asp-for="@Model.op5" value="" class="form-control otp-input">
+                </div>
+                <div style="text-align: center;">
+                    <span asp-validation-for="@Model.OTP" class="text-danger"></span>
+                </div>
+                <div class="text-center">
+                    <button id="verifyButton" type="submit" class="btn btn-primary" disabled>Verify</button>
+                </div>
+
+            </form>
+            <div class="dots-navigation">
+                <span class="dot"></span>
+                <span class="dot "></span>
+                <span class="dot dot-active"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/js/OTPinputs.js"></script>
+}

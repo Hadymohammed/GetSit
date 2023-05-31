@@ -13,7 +13,7 @@ namespace GetSit.Common
         private string? recipient;
         public string? APIKey { get; private set; }
        
-        static public bool SendOTP(HttpContext httpContext)
+        static public bool SendPhoneOTP(HttpContext httpContext,string phone)
         {
             try { 
             int otpValue = new Random().Next(100000, 999999);
@@ -50,6 +50,49 @@ namespace GetSit.Common
                 #endregion
                 return true;
             }catch(Exception err)
+            {
+                return false;
+            }
+        }
+        static public bool SendEmailOTP(HttpContext httpContext,string email)
+        {
+            try
+            {
+                int otpValue = new Random().Next(100000, 999999);
+                httpContext.Session.SetString(SessionKey, otpValue.ToString());
+                #region sendingProcess
+                /* 
+                var status = "";
+                try
+                {
+
+                    string message = "Your OTP Number is " + otpValue + " ( Sent By : GetSit )";
+                    String encodedMessage = HttpUtility.UrlEncode(message);
+                    using (var webClient = new WebClient())
+                    {
+                        byte[] response = webClient.UploadValues("", new NameValueCollection(){
+
+                                             {"apikey" , APIKey},
+                                             {"numbers" , recipient},
+                                             {"message" , encodedMessage},
+                                             {"sender" , ""}});
+
+                        string result = System.Text.Encoding.UTF8.GetString(response);
+
+                        JObject jsonObject = JObject.Parse(result);
+                    }
+
+                    return Json(encodedMessage);
+                }
+                catch (Exception e)
+                {
+                    throw (e);
+                }
+                */
+                #endregion
+                return true;
+            }
+            catch (Exception err)
             {
                 return false;
             }
