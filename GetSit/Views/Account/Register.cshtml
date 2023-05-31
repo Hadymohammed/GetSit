@@ -76,14 +76,19 @@
                 </div>
                 <span asp-validation-for="@Model.Role" class="text-danger"></span>
             </div>
-
-            <div class="row">
-                <div class="form-outline">
-                    <input class="purple-btn float-right" type="submit" value="Sign up">
-                    <div>Already have an account? <a asp-action="Login">Login</a></div>
-                </div>
+        </div>
+        <div class="row">
+            <div class="form-outline">
+                <input class="purple-btn float-right" type="submit" value="Sign up">
+                <div>Already have an account? <a asp-action="Login">Login</a></div>
             </div>
+        </div>
     </form>
+    <div class="dots-navigation">
+        <span class="dot dot-active"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+    </div>
 </div>
 @section scripts {
     <script>
