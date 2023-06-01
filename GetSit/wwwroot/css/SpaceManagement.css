@@ -283,6 +283,24 @@ section.active {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.form-control {
+    /*webkit browsers */
+    -webkit-appearance: auto;
+    /*Firefox */
+    -moz-appearance: auto;
+    /* modern browsers */
+    appearance: auto;
+    border-radius: 0;
+}
+
+.addHall-card-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
 @media screen and (max-width: 768px) {
     .addHall-container {
         flex-direction: column;
@@ -294,13 +312,4 @@ section.active {
     .addHall-left-column {
         width: 90%;
     }
-}
-.form-control {
-    /*webkit browsers */
-    -webkit-appearance: auto;
-    /*Firefox */
-    -moz-appearance: auto;
-    /* modern browsers */
-    appearance: auto;
-    border-radius: 0;
 }

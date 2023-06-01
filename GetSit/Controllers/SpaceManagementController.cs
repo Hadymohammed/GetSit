@@ -1,4 +1,5 @@
-﻿using GetSit.Data;
+﻿using GetSit.Common;
+using GetSit.Data;
 using GetSit.Data.enums;
 using GetSit.Data.Security;
 using GetSit.Data.ViewModels;
@@ -64,38 +65,67 @@ namespace GetSit.Controllers
             Space space = _context.Space.Include(s => s.Photos).Where(s => s.Id.ToString() == SpaceId).FirstOrDefault();
             AddHallVM vm = new()
             {
-                Space = space
+                SpaceId = space.Id,
+                SpaceName = space.Name,
+                SpaceBio = space.Bio,
+                SpacePhotoUrl = space.Photos.First().Url
             };
             return View(vm);
         }
         [HttpPost]
-        public IActionResult AddHall(AddHallVM vm)
+        public async Task<IActionResult> AddHall(AddHallVM vm, Facility[] Facilities)
         {
             if (!ModelState.IsValid)
             {
                 return View(vm);
             }
-            var temp = new List<HallPhoto>();
+            /*Add new hall to the database*/
+            var hall = new SpaceHall()
+            {
+                SpaceId=vm.SpaceId,
+                Description = vm.Description,
+                CostPerHour = vm.CostPerHour,
+                Capacity = vm.Capacity,
+                Type = vm.Type,
+                Status = HallStatus.Accepted
+            };
+            await _context.SpaceHall.AddAsync(hall);
+            await _context.SaveChangesAsync();
+
+            /*Add thumbnail*/
+            int cnt = 0;
+            var thumbnailPath = SaveFile.HallPhoto(vm.Thumbnail, vm.SpaceName, hall.Id, cnt);
+            if (thumbnailPath != null)
+            {
+                var thumbnail = new HallPhoto()
+                {
+                    HallId = hall.Id,
+                    Url = thumbnailPath.Result,
+                };
+
+                await _context.HallPhoto.AddAsync(thumbnail);
+                await _context.SaveChangesAsync();
+            }
+            else return View(vm);
+            /*Add hall Photos*/
             foreach (var file in vm.Files)
             {
-                if (file != null && file.Length > 0)
+                cnt++;
+                var filePath = SaveFile.HallPhoto(file, vm.SpaceName, hall.Id, cnt);
+                if (filePath != null)
                 {
-                    var fileName = Path.GetFileName(file.FileName);
-                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/resources/HallPhotos", fileName);
-                    var tmp = new HallPhoto()
+                    /*Add hall photo*/
+                    var photo = new HallPhoto()
                     {
-                        Url = filePath,
+                        HallId=hall.Id,
+                        Url = filePath.Result,
                     };
-                    temp.Add(tmp);
-                    using (var fileSrteam = new FileStream(filePath, FileMode.Create))
-                    {
-                        file.CopyToAsync(fileSrteam);
-                    }
+                    await _context.HallPhoto.AddAsync(photo);
+                    await _context.SaveChangesAsync();
                 }
             }
-
-
-            return View();
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index");
         }
     }
 }
