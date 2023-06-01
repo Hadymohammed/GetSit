@@ -11,9 +11,12 @@
             <div class="profile-cover">
                 <img src="@Model.Space.Photos.First().Url"/>
             </div>
-            <div>
+            <div>>
                 <div class="profile-card">
-                    <img src="@Model.Space.Photos.First().Url" />
+                    @{
+                        var url="../"+Model.Space.Photos.First().Url;
+                        <img src="@url" />
+                    }
                     <div class="profile-name">@Model.Space.Name</div>
                     <div class="profile-bio">
                         @Model.Space.Bio
@@ -63,12 +66,18 @@
                         </div>
                     </div>
                 }
+                <div style="text-align: center;">
+                    <a asp-action="AddBooking" class="add-hall-btn">
+                        <div><i class="fa-solid fa-circle-plus" style="color: #23B000;"></i></div>
+                        <div>Add Booking</div>
+                    </a>
+                </div>
             </section>
 
             <section id="our-halls" class="fade-in">
                 @foreach(var hall in Model.Halls)
                 {
-                <div class="product-card">
+                <div class="product-card">  
                     <div class="product-content">
                         <div class="product-photo">
                             <img src="@hall.HallPhotos.First().Url" alt="Product Photo">
@@ -86,6 +95,12 @@
                     </div>
                 </div>
                 }
+                <div style="text-align: center;">
+                    <a asp-action="AddHall" class="add-hall-btn">
+                        <div><i class="fa-solid fa-circle-plus" style="color: #23B000;"></i></div>
+                        <div>Add new hall</div>
+                    </a>
+                </div>
             </section>
 
             <section id="our-serivces" class="fade-in">
@@ -109,6 +124,12 @@
                         </div>
                     </div>
                 }
+                <div style="text-align: center;">
+                    <a asp-action="AddService" class="add-hall-btn">
+                        <i class="fa-solid fa-circle-plus" style="color: #23B000;"></i>
+                        Add new Service
+                    </a>
+                </div>
             </section>
 
         </div>

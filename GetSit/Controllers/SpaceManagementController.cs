@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GetSit.Controllers
 {
-    [Authorize(Roles = "Provider")]//Convert UserRole to class
+    [Authorize(Roles = "Provider")]//Error:Convert UserRole to class
     public class SpaceManagementController : Controller
     {
         readonly IUserManager _userManager;
@@ -44,6 +44,58 @@ namespace GetSit.Controllers
                 Employees= _context.SpaceEmployee.Where(h => h.SpaceId.ToString() == SpaceId).ToList()
             };
             return View(viewModel);
+        }
+        [HttpGet]
+        public IActionResult AddHall()
+        {
+            var SpaceId = "";
+            if (HttpContext.Request.Cookies.Where(c => c.Key == "SpaceId").FirstOrDefault().Value is null)
+            {
+                var providerId = _userManager.GetCurrentUserId(HttpContext);
+                var provider = _context.SpaceEmployee.Where(e => e.Id == providerId).FirstOrDefault();
+                SpaceId = provider.SpaceId.ToString();
+                if (SpaceId != String.Empty)
+                    HttpContext.Response.Cookies.Append("SpaceId", SpaceId);
+            }
+            else
+            {
+                SpaceId = HttpContext.Request.Cookies.Where(c => c.Key == "SpaceId").FirstOrDefault().Value;
+            }
+            Space space = _context.Space.Include(s => s.Photos).Where(s => s.Id.ToString() == SpaceId).FirstOrDefault();
+            AddHallVM vm = new()
+            {
+                Space = space
+            };
+            return View(vm);
+        }
+        [HttpPost]
+        public IActionResult AddHall(AddHallVM vm)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(vm);
+            }
+            var temp = new List<HallPhoto>();
+            foreach (var file in vm.Files)
+            {
+                if (file != null && file.Length > 0)
+                {
+                    var fileName = Path.GetFileName(file.FileName);
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/resources/HallPhotos", fileName);
+                    var tmp = new HallPhoto()
+                    {
+                        Url = filePath,
+                    };
+                    temp.Add(tmp);
+                    using (var fileSrteam = new FileStream(filePath, FileMode.Create))
+                    {
+                        file.CopyToAsync(fileSrteam);
+                    }
+                }
+            }
+
+
+            return View();
         }
     }
 }

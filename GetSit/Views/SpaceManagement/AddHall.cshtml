@@ -1,0 +1,81 @@
+﻿@using GetSit.Data.ViewModels
+@using GetSit.Data.enums
+@model AddHallVM
+<link rel="stylesheet" href="~/css/SpaceManagement.css"/>
+<div class="container">
+<div>
+    <div class="profile-card" style="top: 0px;">
+        <img src="@Model.Space.Photos.First().Url" />
+        <div class="profile-name">@Model.Space.Name</div>
+        <div class="profile-bio">
+            @Model.Space.Bio
+        </div>
+    </div>
+ </div>
+ <h1>Add new hall</h1>
+<form asp-action="AddHall" enctype="multipart/form-data">
+    <div class="addHall-container">
+    <div class="addHall-left-column">
+        <div class="addHall-main-card">
+            <div class="addHall-sub-card">
+                <div class="form-group">
+                    <label asp-for="Description"></label>
+                        <input type="text" asp-for="Description" class="form-control" required style="height: 30vh;max-height: 100px;">
+                </div>
+                <div class="form-group">
+                    <label>Facilities:</label>
+                    <div class="form-check">
+                        <input type="checkbox" id="facility1" name="facility1" class="form-check-input">
+                        <label for="facility1" class="form-check-label">@Facility.FreeWifi</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" id="facility2" name="facility2" class="form-check-input">
+                        <label for="facility2" class="form-check-label">@Facility.OpenAirView</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" id="facility2" name="facility2" class="form-check-input">
+                        <label for="facility2" class="form-check-label">@Facility.UnlimitedCoffee</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" id="facility2" name="facility2" class="form-check-input">
+                        <label for="facility2" class="form-check-label">@Facility.OpenAirView</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="addHall-main-card">
+            <div class="addHall-sub-card">
+                <div class="input-group mb-3">
+                    <input asp-for="Files" class="form-control">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="addHall-right-column">
+        <div class="addHall-sub-card">
+            <div class="form-group">
+                <label asp-for="CostPerHour">Cost per Hour:</label>
+                <input type="text" asp-for="CostPerHour" class="form-control" required>
+            </div>
+        </div>
+        <div class="addHall-sub-card">
+                <div class="form-group">
+                    <label asp-for="Capacity"></label>
+                    <input type="text" asp-for="Capacity" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Type">Category:</label>
+                    <select asp-for="Type" class="form-control" required>
+                        <option value="@HallType.MeetingRoom">@HallType.MeetingRoom.ToString()</option>
+                        <option value="@HallType.Office">@HallType.Office.ToString()</option>
+                        <option value="@HallType.ClassRoom">@HallType.ClassRoom.ToString()</option>
+                        <option value="@HallType.Desk">@HallType.Desk.ToString()</option>
+                    </select>
+                </div>
+        </div>
+    </div>
+        <button type="submit" class="btn btn-primary">Create</button>
+    </div>
+</form>
+</div>
