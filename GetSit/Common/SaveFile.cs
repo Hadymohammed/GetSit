@@ -28,5 +28,28 @@ namespace GetSit.Common
             }
             return null;
         }
+        public static async Task<string> ServicePhoto(IFormFile file, string SpaceName, int ServiceId, int PhotoNumber)
+        {
+            try
+            {
+                if (file != null && file.Length > 0)
+                {
+                    string ext = Path.GetExtension(file.FileName);
+                    var fileName = SpaceName + "_" + ServiceId.ToString() + "_" + PhotoNumber.ToString() + ext;
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\resources\\ServicePhotos", fileName);//NeedCompletePath
+                    using (var fileSrteam = new FileStream(filePath, FileMode.Create))
+                    {
+                        await file.CopyToAsync(fileSrteam);
+                    }
+                    return ".\\resources\\ServicePhotos\\" + fileName;
+                }
+                return null;
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+            return null;
+        }
     }
 }
