@@ -46,6 +46,7 @@ namespace GetSit.Controllers
             };
             return View(viewModel);
         }
+        #region CreateNewHAll
         [HttpGet]
         public IActionResult AddHall()
         {
@@ -82,7 +83,7 @@ namespace GetSit.Controllers
             /*Add new hall to the database*/
             var hall = new SpaceHall()
             {
-                SpaceId=vm.SpaceId,
+                SpaceId = vm.SpaceId,
                 Description = vm.Description,
                 CostPerHour = vm.CostPerHour,
                 Capacity = vm.Capacity,
@@ -92,7 +93,7 @@ namespace GetSit.Controllers
             await _context.SpaceHall.AddAsync(hall);
             await _context.SaveChangesAsync();
             /*Add Facilities*/
-            foreach(Facility facility in Facilities)
+            foreach (Facility facility in Facilities)
             {
                 await _context.HallFacility.AddAsync(new HallFacility()
                 {
@@ -126,7 +127,7 @@ namespace GetSit.Controllers
                     /*Add hall photo*/
                     var photo = new HallPhoto()
                     {
-                        HallId=hall.Id,
+                        HallId = hall.Id,
                         Url = filePath.Result,
                     };
                     await _context.HallPhoto.AddAsync(photo);
@@ -136,5 +137,88 @@ namespace GetSit.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");
         }
+        #endregion
+
+        #region CreateNewService
+        [HttpGet]
+        public IActionResult AddService()
+        {
+            var SpaceId = "";
+            if (HttpContext.Request.Cookies.Where(c => c.Key == "SpaceId").FirstOrDefault().Value is null)
+            {
+                var providerId = _userManager.GetCurrentUserId(HttpContext);
+                var provider = _context.SpaceEmployee.Where(e => e.Id == providerId).FirstOrDefault();
+                SpaceId = provider.SpaceId.ToString();
+                if (SpaceId != String.Empty)
+                    HttpContext.Response.Cookies.Append("SpaceId", SpaceId);
+            }
+            else
+            {
+                SpaceId = HttpContext.Request.Cookies.Where(c => c.Key == "SpaceId").FirstOrDefault().Value;
+            }
+            Space space = _context.Space.Include(s => s.Photos).Where(s => s.Id.ToString() == SpaceId).FirstOrDefault();
+            AddServiceVM vm = new()
+            {
+                SpaceId = space.Id,
+                SpaceName = space.Name,
+                SpaceBio = space.Bio,
+                SpacePhotoUrl = space.Photos.First().Url
+            };
+            return View(vm);
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddService(AddServiceVM vm)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(vm);
+            }
+            /*Add new Service to the database*/
+            var service = new SpaceService()
+            {
+                SpaceId = vm.SpaceId,
+                Name=vm.SpaceName,
+                Description = vm.Description,
+                Price = vm.CostPerUnit
+            };
+            await _context.SpaceService.AddAsync(service);
+            await _context.SaveChangesAsync();
+            
+            /*Add thumbnail*/
+            int cnt = 0;
+            var thumbnailPath = SaveFile.HallPhoto(vm.Thumbnail, vm.SpaceName, service.Id, cnt);
+            if (thumbnailPath != null)
+            {
+                var thumbnail = new ServicePhoto()
+                {
+                    ServiceId = service.Id,
+                    Url = thumbnailPath.Result,
+                };
+
+                await _context.ServicePhoto.AddAsync(thumbnail);
+                await _context.SaveChangesAsync();
+            }
+            else return View(vm);
+            /*Add hall Photos*/
+            foreach (var file in vm.Files)
+            {
+                cnt++;
+                var filePath = SaveFile.HallPhoto(file, vm.SpaceName, service.Id, cnt);
+                if (filePath != null)
+                {
+                    /*Add hall photo*/
+                    var photo = new ServicePhoto()
+                    {
+                        ServiceId = service.Id,
+                        Url = filePath.Result,
+                    };
+                    await _context.ServicePhoto.AddAsync(photo);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index");
+        }
+        #endregion
     }
 }
