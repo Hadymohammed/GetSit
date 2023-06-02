@@ -91,7 +91,16 @@ namespace GetSit.Controllers
             };
             await _context.SpaceHall.AddAsync(hall);
             await _context.SaveChangesAsync();
-
+            /*Add Facilities*/
+            foreach(Facility facility in Facilities)
+            {
+                await _context.HallFacility.AddAsync(new HallFacility()
+                {
+                    Facility = facility,
+                    HallId = hall.Id
+                });
+                await _context.SaveChangesAsync();
+            }
             /*Add thumbnail*/
             int cnt = 0;
             var thumbnailPath = SaveFile.HallPhoto(vm.Thumbnail, vm.SpaceName, hall.Id, cnt);
