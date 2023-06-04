@@ -8,5 +8,6 @@ namespace GetSit.Data.ViewModels
         public List<SpaceHall> Halls { get; set; }
         public List<SpaceService> Services { get; set; }
         public List<SpaceEmployee> Employees { get; set; }
+        public List<Booking> Bookings { get; set; }
     }
 }

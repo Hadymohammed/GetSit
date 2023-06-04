@@ -72,7 +72,13 @@ section.active {
     flex-direction: row;
     justify-content: space-around;
 }
-
+/*Schedule*/
+.schedule-filters {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px;
+}
 /* Product Card */
 .product-card {
     display: flex;

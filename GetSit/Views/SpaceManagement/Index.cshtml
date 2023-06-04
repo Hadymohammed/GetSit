@@ -15,7 +15,7 @@
                 <div class="profile-card">
                     @{
                         var url="../"+Model.Space.Photos.First().Url;
-                        <img src="@url" />
+                                                            <img src="@url" />
                     }
                     <div class="profile-name">@Model.Space.Name</div>
                     <div class="profile-bio">
@@ -46,21 +46,30 @@
             </nav>
 
             <section id="schedule" class="fade-in active">
-                @for (var i=0;i<4;i++)
+                <div class="schedule-filters">
+                    <div class="form-group"><input type="date" class="form-control form-control-lg" id="date-filter" /></div>
+                    <div class="form-group">
+                        <select class="form-control">
+                            <option value="All">All</option>
+                            @foreach(var hall in Model.Halls){
+                                <option value="@hall.Id">Nu: @hall.Id</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                @foreach (var booking in Model.Bookings)
                 {
-                    <div class="product-card">
+                    <div class="product-card booking-hall">
+                    <div id="BookingDate" hidden>@booking.DesiredDate.ToShortDateString()</div>
                         <div class="product-content">
                             <div class="product-photo">
-                                <div>14</div>
-                                <div>OCT</div>
+                                <div>@booking.DesiredDate.Day</div>
+                                <div>@booking.DesiredDate.ToString("MMM")</div>
                             </div>
                             <div class="product-details">
-                                <h3 class="product-name">Hall name</h3>
-                                <p class="product-description">Mon 12:00pm <span>(3 hours)</span></p>
-                                <div class="facilities-badges">
-                                    <span class="badge">Free Shipping</span>
-                                    <span class="badge">1-Year Warranty</span>
-                                </div>
+                                <h3 class="product-name">Nu : @booking.BookingHalls[0].Hall.Id</h3>
+                                <p class="product-description">@booking.BookingDate.DayOfWeek @booking.StartTime.TimeOfDay <span>(@booking.NumberOfHours hours)</span></p>
+                                <p>@booking.Customer.FirstName @booking.Customer.LastName</p>
                                 <button class="buy-button">Edit</button>
                             </div>
                         </div>
@@ -177,3 +186,32 @@
         </div>
     </div>
 </div>
+
+@section Scripts
+{
+    <script>
+    $(document).ready( ()=> {
+            //Date default Value
+            var currentDate = new Date();
+            var formattedDate = currentDate.toISOString().split('T')[0];
+            $('#date-filter').val(formattedDate);
+            
+            //on date change
+            $('#date-filter').on('change',dateChange);
+    });
+    const dateChange= ()=>{
+            var filterDate = new Date($('#date-filter').val());
+            var bookings = $('.booking-hall');
+            bookings.each(() => {
+                var bookingDate = new Date($(this).find('#BookingDate').text());
+                var isMatch = true;
+                if (bookingDate != filterDate)
+                    isMatch = false;
+
+                $(this).toggle(isMatch);
+            })
+    }
+    
+    </script>
+
+}

@@ -8,6 +8,7 @@ using GetSit.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace GetSit.Controllers
 {
@@ -37,13 +38,20 @@ namespace GetSit.Controllers
                 SpaceId = HttpContext.Request.Cookies.Where(c => c.Key == "SpaceId").FirstOrDefault().Value;
             }
             Space space = _context.Space.Include(s=>s.Photos).Where(s => s.Id.ToString() == SpaceId).FirstOrDefault();
-            SpaceManagementVM viewModel = new ()
+            List<int> hallIds = _context.SpaceHall.Where(h => h.SpaceId.ToString() == SpaceId).Select(h => h.Id).ToList();
+            SpaceManagementVM viewModel = new()
             {
-                Space=space,
-                Halls = _context.SpaceHall.Include(h=>h.HallPhotos).Where(h=>h.SpaceId.ToString()==SpaceId).ToList(),
-                Services= _context.SpaceService.Include(h => h.ServicePhotos).Where(h => h.SpaceId.ToString() == SpaceId).ToList(),
-                Employees= _context.SpaceEmployee.Where(h => h.SpaceId.ToString() == SpaceId).ToList()
-            };
+                Space = space,
+                Halls = _context.SpaceHall.Include(h => h.HallPhotos).Where(h => h.SpaceId.ToString() == SpaceId).ToList(),
+                Services = _context.SpaceService.Include(h => h.ServicePhotos).Where(h => h.SpaceId.ToString() == SpaceId).ToList(),
+                Employees = _context.SpaceEmployee.Where(h => h.SpaceId.ToString() == SpaceId).ToList(),
+                Bookings = _context.Booking
+                            .Where(b => b.BookingHalls.Any(bh => hallIds.Contains(bh.HallId)))
+                            .Include(b => b.Customer)
+                            .Include(b => b.BookingHalls)
+                                .ThenInclude(bh => bh.Hall)
+                            .ToList()
+        };
             return View(viewModel);
         }
         #region CreateNewHAll
