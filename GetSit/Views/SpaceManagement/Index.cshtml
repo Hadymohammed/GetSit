@@ -1,4 +1,5 @@
 ﻿@using GetSit.Data.ViewModels
+@using GetSit.Data.enums
 @model SpaceManagementVM
 
 <div class="main manage-container">
@@ -78,11 +79,40 @@
                                 <div>@booking.DesiredDate.ToString("MMM")</div>
                                 <div>@booking.DesiredDate.Year</div>
                             </div>
-                            <div class="product-details">
-                                <h3 class="product-name">@booking.BookingHalls[0].Hall.Type : @booking.BookingHalls[0].HallId</h3>
-                                <p class="product-description">@booking.BookingDate.DayOfWeek @booking.StartTime.TimeOfDay <span>(@booking.NumberOfHours hours)</span></p>
-                                <p>@booking.Customer.FirstName @booking.Customer.LastName</p>
-                                <button class="buy-button">Edit</button>
+                            <div class="booking-details">
+                                <div>
+                                    <h3 class="product-name">@booking.BookingHalls[0].Hall.Type : @booking.BookingHalls[0].HallId</h3>
+                                    <p class="product-description">@booking.BookingDate.DayOfWeek @booking.StartTime.TimeOfDay <span>(@booking.NumberOfHours hours)</span></p>
+                                    <p>@booking.Customer.FirstName @booking.Customer.LastName</p>
+                                </div>
+                                <div class="booking-actions">
+                                    @if(booking.BookingStatus == BookingStatus.Pending)
+                                    {
+                                        <div class="booking-status pending-color">@booking.BookingStatus</div>
+                                    }
+                                    @if (booking.BookingStatus == BookingStatus.Missed)
+                                    {
+                                        <div class="booking-status missed-color">@booking.BookingStatus</div>
+                                    }
+                                    @if (booking.BookingStatus == BookingStatus.Cancelled)
+                                    {
+                                        <div class="booking-status cancelled-color">@booking.BookingStatus</div>
+                                    }
+                                    @if (booking.BookingStatus == BookingStatus.Accepted)
+                                    {
+                                        <div class="booking-status accepted-color">@booking.BookingStatus</div>
+                                    }
+                                    @if (booking.BookingStatus == BookingStatus.Rejected)
+                                    {
+                                        <div class="booking-status rejected-color">@booking.BookingStatus</div>
+                                    }
+                                    @if (booking.BookingStatus == BookingStatus.Confirmed
+                                    )
+                                    {
+                                        <div class="booking-status confirmed-color">@booking.BookingStatus</div>
+                                    }
+                                    <a>Details and actions</a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -240,13 +270,9 @@
         const matchHallIdFilter = (element, filterHallId) => {
             var bookinghallId = $(element).find('#BookingHallId').text();
             var isMatch = true;
-            console.log(bookinghallId);
-            console.log(filterHallId);
 
             if (filterHallId != "All" && bookinghallId != filterHallId)
                 isMatch = false;
-
-            console.log(isMatch);
 
             return isMatch;
     }

@@ -79,6 +79,46 @@ section.active {
     justify-content: space-between;
     margin: 10px;
 }
+.booking-details {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.booking-status {
+    padding: 10px;
+    border-radius: 20px;
+    color: white;
+    font-weight: 700;
+}
+.pending-color{
+    background-color:#32BEA6;
+}
+.accepted-color {
+    background-color: #23B000;
+}
+.rejected-color {
+    background-color: #E84839;
+}
+.confirmed-color {
+    background-color: #23B000;
+}
+.cancelled-color {
+    background-color: #CCCCCC;
+}
+.booking-actions {
+    display: flex;
+    column-gap: 15px;
+    align-items: center;
+}
+.booking-actions div {
+    height: fit-content;
+}
+.booking-actions a {
+    text-decoration: underline !important;
+    cursor: pointer;
+}
 .empty {
     text-align: center;
     margin: 30px;
