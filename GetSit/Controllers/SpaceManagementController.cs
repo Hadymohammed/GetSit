@@ -50,11 +50,13 @@ namespace GetSit.Controllers
                             .Include(b => b.Customer)
                             .Include(b => b.BookingHalls)
                                 .ThenInclude(bh => bh.Hall)
+                            .OrderBy(b => b.DesiredDate)
+                            .ThenBy(b => b.StartTime)
                             .ToList()
-        };
+             };
             return View(viewModel);
         }
-        #region CreateNewHAll
+        #region Create New Hall
         [HttpGet]
         public IActionResult AddHall()
         {
@@ -147,7 +149,7 @@ namespace GetSit.Controllers
         }
         #endregion
 
-        #region CreateNewService
+        #region Create New Service
         [HttpGet]
         public IActionResult AddService()
         {

@@ -79,6 +79,11 @@ section.active {
     justify-content: space-between;
     margin: 10px;
 }
+.empty {
+    text-align: center;
+    margin: 30px;
+    font-size: 20px;
+}
 /* Product Card */
 .product-card {
     display: flex;
@@ -101,6 +106,7 @@ section.active {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    font-size:20px;
 }
 
 .product-photo img {
