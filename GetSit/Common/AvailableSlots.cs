@@ -2,6 +2,7 @@
 using GetSit.Data.enums;
 using GetSit.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Remoting;
 
@@ -75,15 +76,17 @@ namespace GetSit.Common
             return availableTimeSlots;
         }
 
-        public List<List<TimeSpan>> GetAvailableSlotsForWeek(int hallId, DateTime date)
+        public List<Dictionary<DateTime, List<TimeSpan>>> GetAvailableSlotsForWeek(int hallId, DateTime date)
         {
             
-            List<List<TimeSpan>> availableSlotsForWeek = new List<List<TimeSpan>>();
+            List<Dictionary<DateTime,List <TimeSpan>>> availableSlotsForWeek = new List<Dictionary<DateTime, List<TimeSpan>>>() ;
             for (int i = 0; i < 7; i++)
             {
                 DateTime currentDate = date.AddDays(i);
                 List<TimeSpan> availableSlots = GetAvailableSlotsForDay(hallId, currentDate);
-                availableSlotsForWeek.Add(availableSlots);
+                Dictionary<DateTime, List<TimeSpan>> DaySlots = new Dictionary<DateTime, List<TimeSpan>>();
+                DaySlots.Add(currentDate, availableSlots);
+                availableSlotsForWeek.Add(DaySlots);
             }
             return availableSlotsForWeek;
         }
