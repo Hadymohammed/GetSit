@@ -1,71 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@using GetSit.Data.ViewModels
+@model BookingVM
 
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Google Font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-          rel="stylesheet">
-
-    <!-- Bootstrap  -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
-
-    <!-- my style sheet -->
-    <!-- <link rel="stylesheet" href="./css/booking.css">-->
-    <link href="@Url.Content("~/css/booking.css")" rel="stylesheet" type="text/css" />
-  
-
-    <title>Explorer</title>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            var $dropdown = $(".dropdown-menu");
-
-            $dropdown.on("click", ".counter-btn", function (e) {
-                e.preventDefault();
-                var $counterContainer = $(this).closest(".counter-container");
-                var $counterValue = $counterContainer.find(".counter-value");
-                var currentValue = parseInt($counterValue.text()) || 0;
-                var increment = $(this).hasClass("increment") ? 1 : -1;
-
-                var newValue = currentValue + increment;
-                if (newValue < 0) {
-                    newValue = 0;
-                }
-
-                $counterValue.text(newValue);
-
-                // Update the hidden input field with the selected quantity
-                var $parent = $(this).closest(".edit-list-item");
-                var serviceId = $parent.data("service-id");
-                var $hiddenInput = $parent.find("input[type=hidden]");
-                $hiddenInput.attr("name", "SelectedServices[" + serviceId + "]");
-
-                // Prevent dropdown from closing when clicking on the counter buttons
-                e.stopPropagation();
-            });
-        });
-
-
-        $(document).on('show.bs.modal', '.modal', function () {
-            $(this).appendTo('body');
-        });
-    </script>
-
-
-</head>
-
-<body id="body-id">
+<link href="@Url.Content("~/css/booking.css")" rel="stylesheet" type="text/css" />
+<div id="body-id">
 
 
     <div class="main">
@@ -78,8 +15,6 @@
     </div>
 
     <!-- slider starts  -->
-
-
     <div class="container">
         <div id="carouselExampleControlsNoTouching" class="carousel slide edit-center resize-slider"
              data-bs-touch="false">
@@ -115,20 +50,28 @@
             </button>
         </div>
     </div>
-
-
     <!-- slider end  -->
+
+    <!--Main details-->
     <div class="main">
         <div class="booking-container">
             <div class="left-side col-12 col-md-12 col-lg-8">
                 <div>
                     <div class="flex avatar-container">
-                        <a href="#">
+                        <div>
                             <img class="circle avatar-img"
-                                 src="https://ucarecdn.com/3fefc97d-3f15-4174-876a-3a6c9f1095f3/-/crop/372x372/126,0/-/resize/300x300/"
-                                 alt="">
-                        </a>
-                        <div class="avatar-h"> Hosted by @Model.SelectedSpace.Name </div>
+                                src="@Model.SelectedSpace.Photos.First().Url"
+                                alt="">
+                        </div>
+                        <div>
+                            <div class="avatar-h"> Hosted by @Model.SelectedSpace.Name </div>
+                        
+                            <p>
+                                <span>  @Model.SelectedSpace.Country &nbsp; </span>,
+                                <span>  @Model.SelectedSpace.City &nbsp;‏</span>,
+                                <span>  @Model.SelectedSpace.Street &nbsp; </span>
+                            </p>
+                        </div>
                     </div>
 
                     <button type="button" class="btn-view-spaces d-none d-md-block">View host's other spaces</button>
@@ -147,27 +90,22 @@
                     <div>
                         <h2> Working Times </h2>
                         <div class="grid-wdays">
-                            <div>
-                                <p><b>Monday</b></p>
-                                <p> 8:30am - 4:30pm </p>
-                            </div>
-                            <div>
-                                <p><b>Monday</b></p>
-                                <p> 8:30am - 4:30pm </p>
-                            </div>
-                            <div>
-                                <p><b>Monday</b></p>
-                                <p> 8:30am - 4:30pm </p>
-                            </div>
-                            <div>
-                                <p><b>Monday</b></p>
-                                <p> 8:30am - 4:30pm </p>
-                            </div>
-                            <div>
-                                <p><b>Monday</b></p>
-                                <p> 8:30am - 4:30pm </p>
-                            </div>
-
+                            @foreach(var day in Model.SelectedSpace.WorkingDays)
+                            {
+                                <div>
+                                    <p><b>@day.Day</b></p>
+                                    <p> @{
+                                          var start=  new DateTime(day.OpeningTime.Ticks).ToString("hh:mm tt");
+                                        }
+                                        @start
+                                        - 
+                                        @{
+                                            var end = new DateTime(day.ClosingTime.Ticks).ToString("hh:mm tt");
+                                        } 
+                                        @end
+                                        </p>
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>
@@ -206,50 +144,39 @@
                 <hr>
 
                 <div class="sec">
-                    <div class="container">
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-striped">
-                                <thead>
+                    <div class="schedule-container">
+                        <table class="schedule">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    @foreach(var day in Model.SlotsForWeek){
+                                        <th>
+                                            <div>
+                                                <p>@day.Keys.First().DayOfWeek.ToString()</p>
+                                                <p>@day.Keys.First().Day</p>
+                                            </div>
+                                        </th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Generate rows for each time slot (15-minute intervals) -->
+                                <!-- Example: 16 rows for a 4-hour schedule (08:00 AM to 12:00 PM) -->
+                                @for (DateTime slot = new DateTime(1000, 1, 1, 8, 0, 0, 0); slot<=new DateTime(1000,1,1,24,0,0,0); slot=slot.AddMinutes(15))
+                                {
                                     <tr>
-                                        <th>Time</th>
-                                        <th>Monday</th>
-                                        <th>Tuesday</th>
-                                        <th>Wednesday</th>
-                                        <th>Thursday</th>
-                                        <th>Friday</th>
+                                        <td name="@slot.ToString("hh:mm tt")">@slot.ToString("hh:mm tt")</td>
+                                        @for(var slot=)
                                     </tr>
-                                </thead>
-                                <tbody>
+                                }
                                     <tr>
-                                        <td>9:00 AM</td>
-                                        <td>Event A</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td>Event B</td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td>10:00 AM</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td>Event C</td>
-                                        <td></td>
-                                        <td>Event D</td>
-                                    </tr>
-                                    <tr>
-                                        <td>11:00 AM</td>
-                                        <td>Event E</td>
-                                        <td>Event F</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <!-- Add more rows as needed -->
-                                </tbody>
-                            </table>
-                        </div>
+                                    <td>08:00 AM</td>
+                                    
+                                </tr>
+                                
+                            </tbody>
+                        </table>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -259,18 +186,11 @@
     <div class="sec sec-spectial">
         <div class="booking-form col-12 col-lg-4 col-md-8 col-sm-12">
             <div class="form-container">
-                <h1> $17.50 /hr</h1>
-                <select class="form-select" aria-label="Default select example">
-                    <option selected>select a bookable area</option>
-                    <option value="1">Hall One</option>
-                    <option value="2">Hall Two</option>
-                    <option value="3">Hall Three</option>
-                    <option value="4">Hall Four</option>
-                </select>
+                <h1> $@Model.SelectedHall.CostPerHour /hr</h1>
                 <p class="p-date-picker">
                     <input type="date" id="date">
                 </p>
-
+                <!--Select start & end time-->
                 <div class="flex space-between select-container">
                     <div class="div-1">
                         <label class="small-label" selected>
@@ -315,13 +235,8 @@
 
                 </div>
 
-                <!-- <div class="total-check flex">
-                    <small class="hours"> <b>1.75 hours</b> </small>
-                    <small class="price"> <b>$17.50</b> </small>
-                </div> -->
-
                 <br><br>
-                <!-- Amenities list starts -->
+                <!--Add services to booking -->
                 <div class="btn-group ">
                     <button class="btn btn-secondary dropdown-toggle emen-btn" type="button"
                             id="dropdownMenuClickableInside" data-bs-toggle="dropdown" data-bs-auto-close="outside"
@@ -351,7 +266,7 @@
                         </li>
                     </ul>
                 </div>
-                <!-- Amenities list ends -->
+                <!-- Add services to booking ends -->
 
                 <br>
                 <!-- Button trigger modal -->
@@ -361,63 +276,92 @@
                 </button>
 
 
-                <!-- Modal -->
-                <div class="modal fade" id="exampleModal" data-backdrop="false" tabindex="-1"
-                     aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel"> Confirm new booking </h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <!-- service price -->
-
-                                <div class="flex modal-check">
-                                    <div>cofee/tea</div>
-                                    <div><b>10$</b></div>
-                                </div>
-                                <div class="flex modal-check">
-                                    <div>cofee/tea</div>
-                                    <div><b>10$</b></div>
-                                </div>
-                                <div class="flex modal-check">
-                                    <div>cofee/tea</div>
-                                    <div><b>10$</b></div>
-                                </div>
-                                <div class="flex modal-check">
-                                    <div>cofee/tea</div>
-                                    <div><b>10$</b></div>
-                                </div>
-                                <hr>
-                                <div class="flex modal-check bigger-font">
-                                    <div>Total Check</div>
-                                    <div><b>@Model.TotalCost</b></div>
-                                </div>
-
-
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-dark">Confirm</button>
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-                    </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1"
+            aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel"> Confirm new booking </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
                 </div>
+                <div class="modal-body">
+                    <!-- service price -->
+
+                    <div class="flex modal-check">
+                        <div>cofee/tea</div>
+                        <div><b>10$</b></div>
+                    </div>
+                    <div class="flex modal-check">
+                        <div>cofee/tea</div>
+                        <div><b>10$</b></div>
+                    </div>
+                    <div class="flex modal-check">
+                        <div>cofee/tea</div>
+                        <div><b>10$</b></div>
+                    </div>
+                    <div class="flex modal-check">
+                        <div>cofee/tea</div>
+                        <div><b>10$</b></div>
+                    </div>
+                    <hr>
+                    <div class="flex modal-check bigger-font">
+                        <div>Total Check</div>
+                        <div><b>@Model.TotalCost</b></div>
+                    </div>
 
 
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-dark">Confirm</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
 
 
+@section Scripts
+{
+    <script>
+        $(document).ready(function () {
+            var $dropdown = $(".dropdown-menu");
 
-                <!-- Bootstrap js -->
-                <script src="https://cdn.jsdelivr.net/npm/@@popperjs/core@2.11.7/dist/umd/popper.min.js"
-                        integrity="sha384-zYPOMqeu1DAVkHiLqWBUTcbYfZ8osu1Nd6Z89ify25QV9guujx43ITvfi12/QExE"
-                        crossorigin="anonymous"></script>
-                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.min.js"
-                        integrity="sha384-Y4oOpwW3duJdCWv5ly8SCFYWqFDsfob/3GkgExXKV4idmbt98QcxXYs9UoXAB7BZ"
-                        crossorigin="anonymous"></script>
+            $dropdown.on("click", ".counter-btn", function (e) {
+                e.preventDefault();
+                var $counterContainer = $(this).closest(".counter-container");
+                var $counterValue = $counterContainer.find(".counter-value");
+                var currentValue = parseInt($counterValue.text()) || 0;
+                var increment = $(this).hasClass("increment") ? 1 : -1;
 
-</body>
+                var newValue = currentValue + increment;
+                if (newValue < 0) {
+                    newValue = 0;
+                }
 
-</html>
+                $counterValue.text(newValue);
+
+                // Update the hidden input field with the selected quantity
+                var $parent = $(this).closest(".edit-list-item");
+                var serviceId = $parent.data("service-id");
+                var $hiddenInput = $parent.find("input[type=hidden]");
+                $hiddenInput.attr("name", "SelectedServices[" + serviceId + "]");
+
+                // Prevent dropdown from closing when clicking on the counter buttons
+                e.stopPropagation();
+            });
+        });
+
+
+        $(document).on('show.bs.modal', '.modal', function () {
+            $(this).appendTo('body');
+        });
+    </script>
+
+}

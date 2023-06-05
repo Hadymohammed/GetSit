@@ -116,8 +116,13 @@ body {
 }
 
 .avatar-img {
-    width: 60px;
-    margin-right: 2rem;
+    /* width: 60px; */
+    /* margin-right: 2rem; */
+    /* padding-top: 24px; */
+    /* margin-top: 20px; */
+    height: 50px;
+    width: auto;
+}
 }
 
 .avatar-container {
@@ -148,16 +153,10 @@ body {
     padding: 2rem;
 }
 
-    .sec h2 {
-        margin-bottom: 40px;
-    }
-
-.avatar-img {
-    width: 60px;
-    margin-right: 2rem;
-    /* padding-top: 24px; */
-    margin-top: 20px;
+.sec h2 {
+    margin-bottom: 40px;
 }
+
 
 .pill:hover {
     background-color: rgba(0, 0, 0, 0.04);
@@ -914,3 +913,78 @@ body {
     color: #000;
     background-color: #0000000f;
 }
+
+/*Schedule*/
+.schedule-container {
+    width: width: 100%;
+    overflow-x: auto;
+    max-height: 400px; /* Adjust the max-height as needed */
+}
+
+.schedule {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    .schedule th,
+    .schedule td {
+        border: 1px solid #e2e2e2;
+        padding: 6px;
+        text-align: center;
+    }
+
+        .schedule th:first-child,
+        .schedule td:first-child {
+            background-color: #f5f5f5;
+        }
+
+    .schedule .booking {
+        background-color: #ffcccc;
+    }
+
+    .schedule td,
+    .schedule th {
+        line-height: .5;
+    }
+
+    .schedule th {
+        background-color: #333;
+        color: #fff;
+        min-width: 100px;
+    }
+
+    .schedule td {
+        background-color: #fff;
+    }
+
+        .schedule td:hover {
+            background-color: #f9f9f9;
+            cursor: pointer;
+        }
+
+    .schedule .time-slot {
+        font-weight: bold;
+        color: #333;
+    }
+
+    .schedule .booked-slot {
+        background-color: #f5f5f5;
+        color: #999;
+    }
+
+    .schedule .available-slot {
+        background-color: #e2e2e2;
+        color: #666;
+    }
+
+    .schedule .current-day {
+        background-color: #ffc107;
+        color: #fff;
+        font-weight: bold;
+    }
+
+    .schedule .current-time {
+        background-color: #007bff;
+        color: #fff;
+        font-weight: bold;
+    }
