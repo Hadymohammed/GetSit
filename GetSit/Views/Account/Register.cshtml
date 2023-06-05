@@ -2,91 +2,92 @@
 @using GetSit.Data.enums
 @model RegisterVM
 
-<div class="container-box">
-    <div class="bg-img">
-        <img  src="~/resources/site/AuthBackgound.png"/>
+@{
+    Layout = "~/Views/Shared/_Layouts/AuthLayout.cshtml";
+}
+<div class="col">
+    <div class="box-header">
+        <h2>Sign up</h2>
+        <div class="mt-3">Sign up for free to access any of our services </div>
     </div>
-    <div class="container-side">
-            <div class="col">
-               <div class="box-header">
-                   <h2>Sign up</h2>
-                    <div class="mt-3">Sign up for free to access any of our services </div>
+    <form asp-action="Register" class="form">
+        <div class="row">
+            <div class="col-md-6 mb-2">
+                <div class="form-outline">
+                    <label class="form-label" asp-for="@Model.FirstName"></label>
+                    <input type="text" asp-for="@Model.FirstName" class="form-control form-control-lg" />
+                    <span asp-validation-for="@Model.FirstName" class="text-danger"></span>
                 </div>
-               <form asp-action="Register" class="form">
-                   <div class="row">
-                        <div class="col-md-6 mb-2">
-                            <div class="form-outline">
-                                <label class="form-label" asp-for="@Model.FirstName"></label>
-                                <input type="text" asp-for="@Model.FirstName" class="form-control form-control-lg" />
-                                <span asp-validation-for="@Model.FirstName" class="text-danger"></span>
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-2">
-                            <div class="form-outline">
-                                <label class="form-label" asp-for="@Model.LastName"></label>
-                                <input type="text" asp-for="@Model.LastName" class="form-control form-control-lg" />
-                                <span asp-validation-for="@Model.LastName" class="text-danger"></span>
-                            </div>
-                        </div>
-                   </div>
-                    <div class="row">
-                        <div class="form-outline mb-2">
-                            <label class="form-label" asp-for="@Model.Birthdate"></label>
-                            <input type="date" asp-for="@Model.Birthdate" class="form-control form-control-lg" />
-                            <span asp-validation-for="@Model.Birthdate" class="text-danger"></span>
+            </div>
+            <div class="col-md-6 mb-2">
+                <div class="form-outline">
+                    <label class="form-label" asp-for="@Model.LastName"></label>
+                    <input type="text" asp-for="@Model.LastName" class="form-control form-control-lg" />
+                    <span asp-validation-for="@Model.LastName" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-outline mb-2">
+                <label class="form-label" asp-for="@Model.Birthdate"></label>
+                <input type="date" asp-for="@Model.Birthdate" class="form-control form-control-lg" />
+                <span asp-validation-for="@Model.Birthdate" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-outline mb-2">
+                <label class="form-label" asp-for="@Model.PhoneNumber"></label>
+                <input type="text" asp-for="@Model.PhoneNumber" class="form-control form-control-lg" />
+                <span asp-validation-for="@Model.PhoneNumber" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-outline mb-2">
+                <label class="form-label" asp-for="@Model.Email"></label>
+                <input type="email" asp-for="@Model.Email" class="form-control form-control-lg" />
+                <span asp-validation-for="@Model.Email" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-outline mb-4">
+                <div>
+                    <label class="form-label" asp-for="@Model.Password"></label>
+                    <div class="password-show">
+                        <span class="fa fa-fw fa-eye show-icon"></span>
+                        <span class="show-text">Show</span>
                     </div>
+                </div>
+                <input type="password" asp-for="@Model.Password" class="form-control form-control-lg" />
+                <span asp-validation-for="@Model.Password" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-outline mb-2">
+                <div class="mb-3">Which account services you want?</div>
+                <div class="user-roles">
+                    <div>
+                        <input type="radio" asp-for="@Model.Role" value="@UserRole.Customer">
+                        <label asp-for="@Model.Role">@UserRole.Customer</label>
                     </div>
-                    <div class="row">
-                        <div class="form-outline mb-2">
-                            <label class="form-label" asp-for="@Model.PhoneNumber"></label>
-                            <input type="text" asp-for="@Model.PhoneNumber" class="form-control form-control-lg" />
-                            <span asp-validation-for="@Model.PhoneNumber" class="text-danger"></span>
-                        </div>
+                    <div>
+                        <input type="radio" asp-for="@Model.Role" value="@UserRole.Provider">
+                        <label asp-for="@Model.Role">@UserRole.Provider</label>
                     </div>
-                    <div class="row">
-                        <div class="form-outline mb-2">
-                            <label class="form-label" asp-for="@Model.Email"></label>
-                            <input type="email" asp-for="@Model.Email" class="form-control form-control-lg" />
-                            <span asp-validation-for="@Model.Email" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-outline mb-4">
-                            <div>
-                                <label class="form-label" asp-for="@Model.Password"></label>
-                            <div class="password-show">
-                                    <span class="fa fa-fw fa-eye show-icon"></span>
-                                    <span class="show-text">Show</span>
-                                </div>
-                            </div>
-                            <input type="password" asp-for="@Model.Password" class="form-control form-control-lg" />
-                            <span asp-validation-for="@Model.Password" class="text-danger"></span>
-                        </div>
-                    </div>
-                <div class="row">
-                    <div class="form-outline mb-2">
-                            <div class="mb-3">Which account services you want?</div>
-                        <div class="user-roles">
-                            <div>
-                                <input type="radio" asp-for="@Model.Role" value="@UserRole.Customer">
-                                <label asp-for="@Model.Role">@UserRole.Customer</label>
-                            </div>
-                            <div>
-                                <input type="radio" asp-for="@Model.Role" value="@UserRole.Provider">
-                                <label asp-for="@Model.Role">@UserRole.Provider</label>
-                            </div>
-                        </div>
-                        <span asp-validation-for="@Model.Role" class="text-danger"></span>
-                    </div>
-
-                    <div class="row">
-                        <div class="form-outline">
-                            <input class="purple-btn float-right" type="submit" value="Sign up" >
-                        <div>Already have an account? <a asp-action="Login">Login</a></div>
-                        </div>
-                    </div>
-               </form>
-           </div>
+                </div>
+                <span asp-validation-for="@Model.Role" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-outline">
+                <input class="purple-btn float-right" type="submit" value="Sign up">
+                <div>Already have an account? <a asp-action="Login">Login</a></div>
+            </div>
+        </div>
+    </form>
+    <div class="dots-navigation">
+        <span class="dot dot-active"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
     </div>
 </div>
 @section scripts {
@@ -94,8 +95,8 @@
         $(".password-show").click(function () {
 
             $(".show-icon").toggleClass("fa-eye fa-eye-slash");
-            var text=$(".show-text")[0];
-            if(text.innerHTML==="Show")
+            var text = $(".show-text")[0];
+            if (text.innerHTML === "Show")
                 text.innerHTML = "Hide";
             else text.innerHTML = "Show";
 

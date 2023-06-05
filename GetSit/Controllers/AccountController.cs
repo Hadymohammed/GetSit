@@ -9,6 +9,9 @@ using GetSit.Data.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection.XmlEncryption;
 using GetSit.Common;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
+using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace GetSit.Controllers
 {
@@ -139,17 +142,66 @@ namespace GetSit.Controllers
                 ModelState.AddModelError("Email", "This email already has an account.");
                 return View(register);
             }
-
+            HttpContext.Session.SetString("RegisterModel", JsonConvert.SerializeObject(register));
+            var otpVm = new OTPVM();
+            otpVm.Email = register.Email;
+            otpVm.Phone = register.PhoneNumber;
+            return RedirectToAction("PhoneOTP", otpVm);
+        }
+        [HttpGet]
+        public IActionResult PhoneOTP(OTPVM? otpVm)
+        {
+            if (otpVm is null)
+                RedirectToAction("Register");
+            OTPServices.SendPhoneOTP(HttpContext,otpVm.Phone);
+            return View(otpVm);
+        }
+        [HttpPost]
+        public async Task<IActionResult> PhoneOTPAsync(OTPVM otp)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(otp);
+            }
+            if (OTPServices.VerifyOTP(HttpContext, otp) == false)
+            {
+                ModelState.AddModelError("OTP", "InValid Code");
+                return View(otp); 
+            }
             
-
-
-
+            return RedirectToAction("EmailOTP",otp);
+        }
+        [HttpGet]
+        public IActionResult EmailOTP(OTPVM? otpVm)
+        {
+            if (otpVm is null)
+                RedirectToAction("Register");
+            OTPServices.SendEmailOTP(HttpContext, otpVm.Email);
+            return View(otpVm);
+        }
+        [HttpPost]
+        public async Task<IActionResult> EmailOTPAsync(OTPVM otp)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(otp);
+            }
+            if (OTPServices.VerifyOTP(HttpContext, otp) == false)
+            {
+                ModelState.AddModelError("OTP", "InValid Code");
+                return View(otp);
+            }
+            /*Get User model from session*/
+            var stringUser = HttpContext.Session.GetString("RegisterModel");
+            var register = JsonConvert.DeserializeObject<RegisterVM>(stringUser) as RegisterVM;
+            if (register is null)
+                RedirectToAction("Register");
             switch (register.Role)
             {
                 case UserRole.Admin:
                     var admin = new SystemAdmin()
                     {
-                       
+
                         FirstName = register.FirstName,
                         LastName = register.LastName,
                         Email = register.Email,
@@ -160,10 +212,10 @@ namespace GetSit.Controllers
 
                     try
                     {
-                    await _context.SystemAdmin.AddAsync(admin);
-                    _context.SaveChanges();
-                    await _userManager.SignIn(HttpContext, admin);
-                    return RedirectToAction("AdminProfile", "Account");
+                        await _context.SystemAdmin.AddAsync(admin);
+                        _context.SaveChanges();
+                        await _userManager.SignIn(HttpContext, admin);
+                        return RedirectToAction("AdminProfile", "Account");
                     }
                     catch (Exception error)
                     {
@@ -183,10 +235,10 @@ namespace GetSit.Controllers
 
                     try
                     {
-                    await _context.SpaceEmployee.AddAsync(provider);
-                    _context.SaveChanges();
-                    await _userManager.SignIn(HttpContext, provider);
-                    return RedirectToAction("ProviderProfile", "Account");
+                        await _context.SpaceEmployee.AddAsync(provider);
+                        _context.SaveChanges();
+                        await _userManager.SignIn(HttpContext, provider);
+                        return RedirectToAction("ProviderProfile", "Account");
                     }
                     catch (Exception error)
                     {
@@ -203,14 +255,15 @@ namespace GetSit.Controllers
                         CustomerType=CustomerType.Registered,
                         Birthdate=register.Birthdate,
                         Password = PasswordHashing.Encode(register.Password),/*Here password should be hashed*/
+
                     };
 
                     try
-                    {   
-                       await _context.Customer.AddAsync(customer);
+                    {
+                        await _context.Customer.AddAsync(customer);
                         _context.SaveChanges();
-                       await _userManager.SignIn(HttpContext, customer);
-                       return RedirectToAction("CustomerProfile");
+                        await _userManager.SignIn(HttpContext, customer);
+                        return RedirectToAction("CustomerProfile");
                     }
                     catch (Exception error)
                     {
@@ -221,7 +274,7 @@ namespace GetSit.Controllers
                     return View(register);
                     break;
             }
-            return View(register);
+            return RedirectToAction("Register");
         }
         [Authorize(Roles = "Admin")]//error enum must be used
         public IActionResult AdminProfile()
