@@ -1,3 +1,378 @@
-﻿@*@model SpaceHall 
+﻿@using GetSit.Data.ViewModels
+@model BookingVM
 
-<h1>@Model.Id Booking</h1>*@
+<link href="@Url.Content("~/css/booking.css")" rel="stylesheet" type="text/css" />
+<div id="body-id">
+
+
+    <div class="main">
+        <h1> @Model.SelectedSpace.Name </h1>
+        <div class="loc">
+            <span>  @Model.SelectedSpace.Country &nbsp; </span>
+            <span>  @Model.SelectedSpace.City &nbsp;‏</span>
+            <span>  @Model.SelectedSpace.Street &nbsp; </span>
+        </div>
+    </div>
+
+    <!-- slider starts  -->
+    <div class="container">
+        <div id="carouselExampleControlsNoTouching" class="carousel slide edit-center resize-slider"
+             data-bs-touch="false">
+            <div class="carousel-inner">
+                @for (int i = 0; i < Model.SelectedHall.HallPhotos.Count; i++)
+                {
+                    if (i == 0)
+                    {
+                        <div class="carousel-item active">
+                            <img src="@Model.SelectedHall.HallPhotos[i].Url"
+                                 class="d-block w-100" alt="...">
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="carousel-item">
+                            <img src="@Model.SelectedHall.HallPhotos[i].Url"
+                                 class="d-block w-100" alt="...">
+                        </div>
+                    }
+                }
+
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControlsNoTouching"
+                    data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControlsNoTouching"
+                    data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
+    <!-- slider end  -->
+
+    <!--Main details-->
+    <div class="main">
+        <div class="booking-container">
+            <div class="left-side col-12 col-md-12 col-lg-8">
+                <div>
+                    <div class="flex avatar-container">
+                        <div>
+                            <img class="circle avatar-img"
+                                src="@Model.SelectedSpace.Photos.First().Url"
+                                alt="">
+                        </div>
+                        <div>
+                            <div class="avatar-h"> Hosted by @Model.SelectedSpace.Name </div>
+                        
+                            <p>
+                                <span>  @Model.SelectedSpace.Country &nbsp; </span>,
+                                <span>  @Model.SelectedSpace.City &nbsp;‏</span>,
+                                <span>  @Model.SelectedSpace.Street &nbsp; </span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn-view-spaces d-none d-md-block">View host's other spaces</button>
+
+                </div>
+                <br> <br>
+                <hr>
+                <div class="sec">
+                    <h2> About this space </h2>
+                    <p>
+                        @Model.SelectedSpace.Bio
+                    </p>
+                </div>
+                <hr>
+                <div class="sec flex">
+                    <div>
+                        <h2> Working Times </h2>
+                        <div class="grid-wdays">
+                            @foreach(var day in Model.SelectedSpace.WorkingDays)
+                            {
+                                <div>
+                                    <p><b>@day.Day</b></p>
+                                    <p> @{
+                                          var start=  new DateTime(day.OpeningTime.Ticks).ToString("hh:mm tt");
+                                        }
+                                        @start
+                                        - 
+                                        @{
+                                            var end = new DateTime(day.ClosingTime.Ticks).ToString("hh:mm tt");
+                                        } 
+                                        @end
+                                        </p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <hr>
+
+                <div class="sec">
+                    <h2> Services </h2>
+                    <!-- amenities card starts -->
+                    @foreach (var service in Model.SelectedSpace.Services)
+                    {
+                        <h2>@service.Name</h2>
+                        <p>@service.Description</p>
+                        <p>@service.Price</p>
+
+                        @if (service.ServicePhotos != null)
+                        {
+                            <img src="@service.ServicePhotos[0].Url">
+                        }
+
+                    }
+
+                    <!-- amenities card ends -->
+
+                </div>
+                <hr>
+                <div class="sec">
+                    <h2> Location </h2>
+                    <p>32 Nicholson Street, Coburg VIC, Australia </p>
+                    <br />
+                    <div class="map-container">
+                        <iframe src="https://www.google.com/maps/embed?pb=..." width="600" height="450" frameborder="0"
+                                style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                    </div>
+
+                </div>
+                <hr>
+
+                <div class="sec">
+                    <div class="schedule-container">
+                        <table class="schedule">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    @foreach(var day in Model.SlotsForWeek){
+                                        <th>
+                                            <div>
+                                                <p>@day.Keys.First().DayOfWeek.ToString()</p>
+                                                <p>@day.Keys.First().Day</p>
+                                            </div>
+                                        </th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Generate rows for each time slot (15-minute intervals) -->
+                                <!-- Example: 16 rows for a 4-hour schedule (08:00 AM to 12:00 PM) -->
+                                @for(var slotIdx=32;slotIdx<=96;slotIdx++ )
+                                {
+                                    <tr>
+                                        <td>
+                                            @{
+                                                var span = new DateTime(Model.SlotsForWeek[0].Values.First()[slotIdx].Item1.Ticks).ToString("hh:mm tt");
+                                            }
+                                            @span
+                                        </td>
+                                        @for(var dayIdx=0;dayIdx<7;dayIdx++)
+                                        {
+                                            @if(@Model.SlotsForWeek[dayIdx].Values.First()[slotIdx].Item2==true)
+                                            {
+                                                <td></td>
+                                            }
+                                            else
+                                            {
+                                                <td class="booking"></td>
+                                            }
+                                        }
+                                    </tr>
+                                }
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="sec sec-spectial">
+        <div class="booking-form col-12 col-lg-4 col-md-8 col-sm-12">
+            <div class="form-container">
+                <h1> $@Model.SelectedHall.CostPerHour /hr</h1>
+                <p class="p-date-picker">
+                    <input type="date" id="date">
+                </p>
+                <!--Select start & end time-->
+                <div class="flex space-between select-container">
+                    <div class="div-1">
+                        <label class="small-label" selected>
+                            <span class="material-symbols-outlined">
+                                schedule
+                            </span>
+                            <p>Start Time</p>
+                        </label>
+                        <select class="form-select inputs-margins" aria-label="Default select example">
+                            <option value="9:00">9:00</option>
+                            <option value="9:15">9:15</option>
+                            <option value="9:30">9:30</option>
+                            <option value="9:45">9:45</option>
+
+                            <option value="10:00">10:00</option>
+                            <option value="10:15">10:15</option>
+                            <option value="10:30">10:30</option>
+                            <option value="10:45">10:45</option>
+                            <option value="11:00">11:00</option>
+
+                        </select>
+                    </div>
+
+                    <div class="div-1">
+                        <label class="small-label" selected>
+                            <span class="material-symbols-outlined">schedule</span>
+                            <p>End Time</p>
+                        </label>
+                        <select class="form-select inputs-margins" aria-label="Default select example">
+                            <option value="9:00">9:00</option>
+                            <option value="9:15">9:15</option>
+                            <option value="9:30">9:30</option>
+                            <option value="9:45">9:45</option>
+
+                            <option value="10:00">10:00</option>
+                            <option value="10:15">10:15</option>
+                            <option value="10:30">10:30</option>
+                            <option value="10:45">10:45</option>
+                            <option value="11:00">11:00</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <br><br>
+                <!--Add services to booking -->
+                <div class="btn-group ">
+                    <button class="btn btn-secondary dropdown-toggle emen-btn" type="button"
+                            id="dropdownMenuClickableInside" data-bs-toggle="dropdown" data-bs-auto-close="outside"
+                            aria-expanded="false">
+                        Select Service
+                    </button>
+                    <ul class="dropdown-menu amn-dropdown-list" aria-labelledby="dropdownMenuClickableInside">
+                        <li>
+                            @foreach (var service in @Model.SelectedSpace.Services)
+                            {
+                                <div class="edit-list-item">
+                                    <span class="con-list-item">@service.Name</span>
+                                    <div class="counter-container">
+                                        <button class="counter-btn decrement material-symbols-outlined hover-effect no-border-btn">
+                                            remove
+                                        </button>
+                                        <span class="counter-value">0</span>
+                                        <button class="counter-btn increment material-symbols-outlined hover-effect no-border-btn">
+                                            add
+                                        </button>
+                                    </div>
+                                    @* Hidden input field to store the service ID and quantity data *@
+                                    <input type="hidden" name="SelectedServices[@service.Id]" value="" />
+                                </div>
+                            }
+
+                        </li>
+                    </ul>
+                </div>
+                <!-- Add services to booking ends -->
+
+                <br>
+                <!-- Button trigger modal -->
+                <button type="button" class="btn Book-Now-btn" data-bs-toggle="modal"
+                        data-bs-target="#exampleModal">
+                    Book Now
+                </button>
+
+
+            </div>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1"
+            aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel"> Confirm new booking </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- service price -->
+
+                    <div class="flex modal-check">
+                        <div>cofee/tea</div>
+                        <div><b>10$</b></div>
+                    </div>
+                    <div class="flex modal-check">
+                        <div>cofee/tea</div>
+                        <div><b>10$</b></div>
+                    </div>
+                    <div class="flex modal-check">
+                        <div>cofee/tea</div>
+                        <div><b>10$</b></div>
+                    </div>
+                    <div class="flex modal-check">
+                        <div>cofee/tea</div>
+                        <div><b>10$</b></div>
+                    </div>
+                    <hr>
+                    <div class="flex modal-check bigger-font">
+                        <div>Total Check</div>
+                        <div><b>@Model.TotalCost</b></div>
+                    </div>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-dark">Confirm</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+@section Scripts
+{
+    <script>
+        $(document).ready(function () {
+            var $dropdown = $(".dropdown-menu");
+
+            $dropdown.on("click", ".counter-btn", function (e) {
+                e.preventDefault();
+                var $counterContainer = $(this).closest(".counter-container");
+                var $counterValue = $counterContainer.find(".counter-value");
+                var currentValue = parseInt($counterValue.text()) || 0;
+                var increment = $(this).hasClass("increment") ? 1 : -1;
+
+                var newValue = currentValue + increment;
+                if (newValue < 0) {
+                    newValue = 0;
+                }
+
+                $counterValue.text(newValue);
+
+                // Update the hidden input field with the selected quantity
+                var $parent = $(this).closest(".edit-list-item");
+                var serviceId = $parent.data("service-id");
+                var $hiddenInput = $parent.find("input[type=hidden]");
+                $hiddenInput.attr("name", "SelectedServices[" + serviceId + "]");
+
+                // Prevent dropdown from closing when clicking on the counter buttons
+                e.stopPropagation();
+            });
+        });
+
+
+        $(document).on('show.bs.modal', '.modal', function () {
+            $(this).appendTo('body');
+        });
+    </script>
+
+}
