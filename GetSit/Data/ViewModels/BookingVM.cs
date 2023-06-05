@@ -13,7 +13,7 @@ namespace GetSit.Data.ViewModels
         [Required]
         public Space SelectedSpace { get; set; }
         [Required]
-        public List<TimeSpan>? AvailableSlots { get; set; }
+        public List<Tuple<TimeSpan, bool>>? AvailableSlots { get; set; }
         [AllowNull]
         public Dictionary<int, int> SelectedServicesQuantities { get; set; }
         [Required, DataType(DataType.Date)]
@@ -26,6 +26,6 @@ namespace GetSit.Data.ViewModels
         public TimeSpan EndTime { get; set; }
         [Required]
         public float TotalCost { get; set; }
-        public List<Dictionary<DateTime,List<TimeSpan>>>? SlotsForWeek { get; set; }
+        public List<Dictionary<DateTime, List<Tuple<TimeSpan, bool>>>>? SlotsForWeek { get; set; }
     }
 }
