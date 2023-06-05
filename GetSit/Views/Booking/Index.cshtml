@@ -162,17 +162,28 @@
                             <tbody>
                                 <!-- Generate rows for each time slot (15-minute intervals) -->
                                 <!-- Example: 16 rows for a 4-hour schedule (08:00 AM to 12:00 PM) -->
-                                @for (DateTime slot = new DateTime(1000, 1, 1, 8, 0, 0, 0); slot<=new DateTime(1000,1,1,24,0,0,0); slot=slot.AddMinutes(15))
+                                @for(var slotIdx=32;slotIdx<=96;slotIdx++ )
                                 {
                                     <tr>
-                                        <td name="@slot.ToString("hh:mm tt")">@slot.ToString("hh:mm tt")</td>
-                                        @for(var slot=)
+                                        <td>
+                                            @{
+                                                var span = new DateTime(Model.SlotsForWeek[0].Values.First()[slotIdx].Item1.Ticks).ToString("hh:mm tt");
+                                            }
+                                            @span
+                                        </td>
+                                        @for(var dayIdx=0;dayIdx<7;dayIdx++)
+                                        {
+                                            @if(@Model.SlotsForWeek[dayIdx].Values.First()[slotIdx].Item2==true)
+                                            {
+                                                <td></td>
+                                            }
+                                            else
+                                            {
+                                                <td class="booking"></td>
+                                            }
+                                        }
                                     </tr>
                                 }
-                                    <tr>
-                                    <td>08:00 AM</td>
-                                    
-                                </tr>
                                 
                             </tbody>
                         </table>
