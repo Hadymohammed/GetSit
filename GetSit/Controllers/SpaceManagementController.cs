@@ -42,7 +42,7 @@ namespace GetSit.Controllers
             SpaceManagementVM viewModel = new()
             {
                 Space = space,
-                Halls = _context.SpaceHall.Include(h => h.HallPhotos).Where(h => h.SpaceId.ToString() == SpaceId).ToList(),
+                Halls = _context.SpaceHall.Include(h => h.HallPhotos).Include(h=>h.HallFacilities).Where(h => h.SpaceId.ToString() == SpaceId).ToList(),
                 Services = _context.SpaceService.Include(h => h.ServicePhotos).Where(h => h.SpaceId.ToString() == SpaceId).ToList(),
                 Employees = _context.SpaceEmployee.Where(h => h.SpaceId.ToString() == SpaceId).ToList(),
                 Bookings = _context.Booking

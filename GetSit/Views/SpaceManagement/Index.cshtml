@@ -16,7 +16,7 @@
                 <div class="profile-card">
                     @{
                         var url="../"+Model.Space.Photos.First().Url;
-                                    <img src="@url" />
+                                        <img src="@url" />
                     }
                     <div class="profile-name">@Model.Space.Name</div>
                     <div class="profile-bio">
@@ -144,8 +144,10 @@
                             <p class="product-description">@hall.Description</p>
                             <p class="product-price">Price: @hall.CostPerHour.ToString("N2")</p>
                             <div class="facilities-badges">
-                                <span class="badge">Free Shipping</span>
-                                <span class="badge">1-Year Warranty</span>
+                                @foreach(var facility in hall.HallFacilities)
+                                {
+                                    <span class="badge">@facility.Facility</span>
+                                }
                             </div>
                             <button class="buy-button">Edit</button>
                         </div>
