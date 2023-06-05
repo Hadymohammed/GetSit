@@ -35,6 +35,8 @@ namespace GetSit.Controllers
                 .Where(o => o.Id == HallID).FirstOrDefault();
             var space = _context.Space.
                 Include (s=>s.Services).ThenInclude(h=>h.ServicePhotos)
+                .Include(s=>s.WorkingDays)
+                .Include(s=>s.Photos)
                 .Where(s => s.Halls.Any(h => h.Id == HallID)).FirstOrDefault();
 
 
@@ -51,10 +53,10 @@ namespace GetSit.Controllers
 
 
           /* get the available slots for a week from today*/
-            List<List<TimeSpan>> availableSlotsForWeek = slots.GetAvailableSlotsForWeek(HallID, DateTime.Today);
-            viewModel.SlotsForWeek = availableSlotsForWeek;
+            viewModel.SlotsForWeek = slots.GetAvailableSlotsForWeek(HallID, DateTime.Today);
 
-                return View(viewModel);
+
+            return View(viewModel);
         }
 
         
