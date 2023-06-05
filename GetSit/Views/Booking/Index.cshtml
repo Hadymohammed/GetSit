@@ -85,6 +85,20 @@
                         @Model.SelectedSpace.Bio
                     </p>
                 </div>
+                <!-- facilities starts   -->
+                @if (Model.SelectedHall.HallFacilities.Capacity != 0)
+                {
+                <hr>
+                    <div class="sec">
+                        <h2> Facilities </h2>
+                        @foreach (var facility in Model.SelectedHall.HallFacilities)
+                        {
+                            <button class="pill-btn">&nbsp; @facility.Facility</button>
+                        }
+                        <br />
+                    </div>
+                }
+                <!-- facilities ends   -->
                 <hr>
                 <div class="sec flex">
                     <div>
@@ -162,14 +176,14 @@
                             <tbody>
                                 <!-- Generate rows for each time slot (15-minute intervals) -->
                                 <!-- Example: 16 rows for a 4-hour schedule (08:00 AM to 12:00 PM) -->
-                                @for(var slotIdx=32;slotIdx<=96;slotIdx++ )
+                                @for(var slotIdx=32;slotIdx<96;slotIdx++ )
                                 {
                                     <tr>
-                                        <td>
+                                        <td class="time-span-schedule">
                                             @{
                                                 var span = new DateTime(Model.SlotsForWeek[0].Values.First()[slotIdx].Item1.Ticks).ToString("hh:mm tt");
                                             }
-                                            @span
+                                            <div>@span</div>
                                         </td>
                                         @for(var dayIdx=0;dayIdx<7;dayIdx++)
                                         {
