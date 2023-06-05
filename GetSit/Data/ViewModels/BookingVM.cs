@@ -26,6 +26,6 @@ namespace GetSit.Data.ViewModels
         public TimeSpan EndTime { get; set; }
         [Required]
         public float TotalCost { get; set; }
-        public List<List<TimeSpan>>? SlotsForWeek { get; set; }
+        public List<Dictionary<DateTime,List<TimeSpan>>>? SlotsForWeek { get; set; }
     }
 }
