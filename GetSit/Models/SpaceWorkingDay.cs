@@ -9,7 +9,7 @@ namespace GetSit.Models
         [Key]
         public int Id { get; set; }
         [Required]
-        public WeekDay Day { get; set; }
+        public DayOfWeek Day { get; set; }
         [Required]
         public TimeSpan OpeningTime { get; set; }
         [Required]

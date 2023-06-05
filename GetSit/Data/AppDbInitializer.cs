@@ -89,42 +89,42 @@ namespace GetSit.Data
                         new SpaceWorkingDay
                         {
                             SpaceId=1,
-                            Day=enums.WeekDay.Saturday,
+                            Day=DayOfWeek.Saturday,
                             OpeningTime=new TimeSpan(8,0,0),
                             ClosingTime=new TimeSpan(22,0,0),
                         },
                         new SpaceWorkingDay
                         {
                             SpaceId=1,
-                            Day=enums.WeekDay.Sunday,
+                            Day=DayOfWeek.Sunday,
+                             OpeningTime=new TimeSpan(10,0,0),
+                            ClosingTime=new TimeSpan(22,0,0),
+                        },
+                        new SpaceWorkingDay
+                        {
+                            SpaceId=1,
+                            Day=DayOfWeek.Tuesday,
+                             OpeningTime=new TimeSpan(12,0,0),
+                            ClosingTime=new TimeSpan(20,0,0),
+                        },
+                        new SpaceWorkingDay
+                        {
+                            SpaceId=1,
+                            Day=DayOfWeek.Monday,
+                             OpeningTime=new TimeSpan(8,0,0),
+                            ClosingTime=new TimeSpan(20,0,0),
+                        },
+                        new SpaceWorkingDay
+                        {
+                            SpaceId=1,
+                            Day=DayOfWeek.Thursday,
                              OpeningTime=new TimeSpan(8,0,0),
                             ClosingTime=new TimeSpan(22,0,0),
                         },
                         new SpaceWorkingDay
                         {
                             SpaceId=1,
-                            Day=enums.WeekDay.Tuesday,
-                             OpeningTime=new TimeSpan(8,0,0),
-                            ClosingTime=new TimeSpan(22,0,0),
-                        },
-                        new SpaceWorkingDay
-                        {
-                            SpaceId=1,
-                            Day=enums.WeekDay.Monday,
-                             OpeningTime=new TimeSpan(8,0,0),
-                            ClosingTime=new TimeSpan(22,0,0),
-                        },
-                        new SpaceWorkingDay
-                        {
-                            SpaceId=1,
-                            Day=enums.WeekDay.Thursday,
-                             OpeningTime=new TimeSpan(8,0,0),
-                            ClosingTime=new TimeSpan(22,0,0),
-                        },
-                        new SpaceWorkingDay
-                        {
-                            SpaceId=1,
-                            Day=enums.WeekDay.Wednesday,
+                            Day=DayOfWeek.Wednesday,
                              OpeningTime=new TimeSpan(8,0,0),
                             ClosingTime=new TimeSpan(22,0,0),
                         },
@@ -132,42 +132,42 @@ namespace GetSit.Data
                         new SpaceWorkingDay
                         {
                             SpaceId=2,
-                            Day=enums.WeekDay.Saturday,
+                            Day=DayOfWeek.Saturday,
                             OpeningTime=new TimeSpan(8,0,0),
                             ClosingTime=new TimeSpan(22,0,0),
                         },
                         new SpaceWorkingDay
                         {
                             SpaceId=2,
-                            Day=enums.WeekDay.Sunday,
+                            Day=DayOfWeek.Sunday,
                              OpeningTime=new TimeSpan(8,0,0),
-                            ClosingTime=new TimeSpan(22,0,0),
+                            ClosingTime=new TimeSpan(20,0,0),
                         },
                         new SpaceWorkingDay
                         {
                             SpaceId=2,
-                            Day=enums.WeekDay.Tuesday,
+                            Day=DayOfWeek.Tuesday,
                              OpeningTime=new TimeSpan(8,0,0),
-                            ClosingTime=new TimeSpan(22,0,0),
+                            ClosingTime=new TimeSpan(20,0,0),
                         },
                         new SpaceWorkingDay
                         {
                             SpaceId=2,
-                            Day=enums.WeekDay.Monday,
+                            Day=DayOfWeek.Monday,
                             OpeningTime=new TimeSpan(8,0,0),
-                            ClosingTime=new TimeSpan(22,0,0),
+                            ClosingTime=new TimeSpan(20,0,0),
                         },
                         new SpaceWorkingDay
                         {
                             SpaceId=2,
-                            Day=enums.WeekDay.Thursday,
+                            Day=DayOfWeek.Thursday,
                              OpeningTime=new TimeSpan(8,0,0),
                             ClosingTime=new TimeSpan(22,0,0),
                         },
                         new SpaceWorkingDay
                         {
                             SpaceId=2,
-                            Day=enums.WeekDay.Wednesday,
+                            Day=DayOfWeek.Wednesday,
                              OpeningTime=new TimeSpan(8,0,0),
                             ClosingTime=new TimeSpan(22,0,0),
                         },
