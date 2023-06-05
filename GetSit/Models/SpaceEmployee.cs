@@ -24,14 +24,14 @@ namespace GetSit.Models
         public DateTime Birthdate { get; set; }
         [Required, AllowNull]
         public string ProfilePictureUrl { get; set; } = "resource/site/user-profile-icon.jpg";
-        [Required, AllowNull]
-        public string Country { get; set; }
-        [Required, AllowNull]
-        public string City { get; set; }
+        [AllowNull]
+        public string? Country { get; set; }
+        [AllowNull]
+        public string? City { get; set; }
         [Required]
         public SpaceEmployeeRole EmployeeRole { get; set; } = SpaceEmployeeRole.Super;
-        [ForeignKey("SpaceId")]
-        public int SpaceId { get; set; }
+        [ForeignKey("SpaceId"), AllowNull]
+        public int? SpaceId { get; set; }
         public Space? Space { get; set; }
     }
 }

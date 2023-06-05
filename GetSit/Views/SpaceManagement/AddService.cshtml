@@ -1,0 +1,122 @@
+﻿@using GetSit.Data.ViewModels
+@using GetSit.Data.enums
+@model AddServiceVM
+<link rel="stylesheet" href="~/css/SpaceManagement.css" />
+<div class="container">
+    <div>
+        <!--Space Data-->
+        <div class="profile-card" style="top: 0px;">
+            @{
+                string url = "../" + Model.SpacePhotoUrl;
+            }
+            <img src="@url" />
+            <div class="profile-name">@Model.SpaceName</div>
+            <div class="profile-bio">
+                @Model.SpaceBio
+            </div>
+        </div>
+    </div>
+    <h1>Add new hall</h1>
+    <form asp-action="AddService" enctype="multipart/form-data">
+        <input asp-for="@Model.SpaceName" hidden />
+        <input asp-for="@Model.SpaceId" hidden />
+        <input asp-for="@Model.SpaceBio" hidden />
+        <input asp-for="@Model.SpacePhotoUrl" hidden />
+        <div class="addHall-container">
+            <div class="addHall-left-column">
+                <!--Name & Bio-->
+                <div class="addHall-main-card">
+                    <div class="addHall-sub-card">
+                        <h4>Main</h4>
+                        <div class="form-group">
+                            <label asp-for="ServiceName">Name</label>
+                            <input type="text" asp-for="ServiceName" class="form-control" maxlength="30"/>
+                            <span asp-validation-for="@Model.ServiceName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Description"></label>
+                            <textarea asp-for="Description" class="form-control" maxlength="200" style="height: 30vh;max-height: 100px;">
+                    </textarea>
+                            <span asp-validation-for="@Model.Description" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <!--Media Files-->
+                <div class="addHall-main-card">
+                    <div class="addHall-sub-card">
+                        <div class="addHall-card-header">
+                            <h4>Media</h4>
+                            <button type="button" class="btn btn-primary mt-2" onclick="addFileInput()">Add File</button>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label asp-for="Thumbnail"></label>
+                            <input type="file" asp-for="Thumbnail" class="form-control" accept="image/png, image/png, image/jpeg" />
+                            <span asp-validation-for="@Model.Thumbnail" class="text-danger"></span>
+                        </div>
+                        <div class="input-group mb-3">
+                            <div id="fileInputs">
+                                <div>
+                                    <h5>Service Photos</h5>
+                                    <span asp-validation-for="@Model.Files" class="text-danger"></span>
+                                </div>
+                                <div class="input-group">
+                                    <input type="file" name="Files" class="form-control" />
+                                    <button type="button" class="btn btn-danger" onclick="removeFileInput(this)">Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="addHall-right-column">
+                <div class="addHall-sub-card">
+                    <div class="form-group">
+                        <label asp-for="CostPerUnit">Cost per unit:</label>
+                        <input type="text" asp-for="CostPerUnit" class="form-control">
+                        <span asp-validation-for="@Model.CostPerUnit" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#confirmUploadModal">Create</button>
+        </div>
+        <!--Confirmation Modal-->
+        <div class="modal fade" id="confirmUploadModal" tabindex="-1" role="dialog" aria-labelledby="confirmUploadModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmUploadModalLabel">Confirmation</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to Add this new Service?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Create</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+@section scripts {
+    <script>
+        function addFileInput() {
+            var fileInputsContainer = document.getElementById('fileInputs');
+            var newFileInput = document.createElement('div');
+            newFileInput.classList.add('input-group', 'mt-2');
+            newFileInput.innerHTML = `
+                                <input type="file" name="Files" class="form-control" accept="image/png, image/png, image/jpeg"/>
+                                <button type="button" class="btn btn-danger" onclick="removeFileInput(this)">Remove</button>
+                            `;
+            fileInputsContainer.appendChild(newFileInput);
+        }
+
+        function removeFileInput(button) {
+            var fileInputContainer = button.parentNode;
+            fileInputContainer.parentNode.removeChild(fileInputContainer);
+        }
+    </script>
+}

@@ -22,12 +22,12 @@ namespace GetSit.Models
         [Required]
         [DataType(DataType.Date)]
         public DateTime Birthdate { get; set; }
-        [Required, AllowNull]
+        [Required]
         public string ProfilePictureUrl { get; set; } = "resource/site/user-profile-icon.jpg";
-        [Required, AllowNull]
-        public string Country { get; set; }
-        [Required, AllowNull]
-        public string City { get; set; }
+        [AllowNull]
+        public string? Country { get; set; }
+        [AllowNull]
+        public string? City { get; set; }
         [Required]
         public SystemAdminRole AdminRole { get; set; } = SystemAdminRole.Super;
     }

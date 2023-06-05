@@ -1,5 +1,6 @@
 ﻿@model IEnumerable<SpaceHall>
-
+﻿@using System.Security.Claims;
+@using GetSit.Data.enums
 @{
     ViewData["Title"] = "Explore Page";
 }
@@ -35,13 +36,36 @@
     <p class="Spaces-near">Spaces near Qena </p>
     <br><br>
     <!-- spaces container starts -->
-    <div class="flex grid-container">
+    <div class="flex-wrap grid-container">
 
         @foreach (var hall in Model)
         {
             <!-- card 1 -->
             <div class="card card-edit grid-item card-img-top">
-                
+                @if (Context.User.Identity.IsAuthenticated && Context.User.IsInRole(UserRole.Customer.ToString()))
+                {
+                    <div class="love-icon">
+                        <a asp-controller="Explore" asp-action="ToggleFavouriteHall" asp-route-HallId="@hall.Id">
+                                
+                                @if(hall.FavoriteHalls.Where(h=>h.HallId==hall.Id && h.CustomerId.ToString()==Context.User.Claims.Where(c=>c.Type==ClaimTypes.NameIdentifier).FirstOrDefault().Value).FirstOrDefault() is null)
+                                {
+                                    <!--Add to favs-->
+                                    <i class="fa-regular fa-heart color-white"></i>
+                                }
+                                else
+                                {
+                                    <!--Remove from favs-->
+                                    <i class="fa-solid fa-heart color-purple"></i>
+                                }
+                        </a>
+                    </div>
+                    
+                }
+                <div class="hall-price color1">
+                    <div>
+                        @hall.CostPerHour.ToString("N2") EG / hour
+                    </div>
+                </div>
                 <div id="@hall.Id" class="carousel slide">
                     <div class="carousel-inner">
                         
@@ -78,11 +102,11 @@
 
                 <div class="card-body">
                     <p class="space-name">@hall.Space.Name</p>
-                    <div class="flex div-space-type-loc">
-                        <p class="space-type">@hall.Type</p>
-                        <p class="space-loc">@hall.Space.City ,@hall.Space.Country ,@hall.Space.Street</p>
+                    <div class="div-space-type-loc">
+                        <p class="space-type">@hall.Type | @hall.Space.City ,@hall.Space.Country ,@hall.Space.Street</p>
                     </div>
-                    <div class="flex div-badges">
+                    <div class="div-badges">
+                        @*Need add facilities badges*@
                         @if (false)
                         {                          
                             <span class="badge color1">Offer Badges</span>
@@ -103,15 +127,7 @@
 
                         
                     </div>
-                    <div class="flex div-working">
-                        <p>Working Hours</p>
-                        <div class="flex time-container">
-                            <span class="material-symbols-outlined">
-                                schedule
-                            </span>
-                            <p>from 9:00 to 9:00</p>
-                        </div>
-                    </div>
+                    
 
                     <a asp-controller="Booking" asp-action="Index" asp-route-HallID="@hall.Id"><div class="btn btn-dark book-now-btn">Book Now</div></a>
                 </div>

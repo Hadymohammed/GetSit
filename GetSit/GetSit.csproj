@@ -24,5 +24,9 @@
     <None Include="wwwroot\css\Explorer.css" />
   </ItemGroup>
 
+   <ItemGroup>
+     <Folder Include="wwwroot\resources\ServicePhotos\" />
+   </ItemGroup>
+
   
 </Project>

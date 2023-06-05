@@ -14,11 +14,11 @@ namespace GetSit.Controllers
     {
 
         private readonly IExploreService _service;
-        //private readonly UserManager _userManager;
-        public ExploreController(IExploreService service)
+        private readonly IUserManager _userManager;
+        public ExploreController(IExploreService service, IUserManager userManager)
         {
             _service = service;
-            //_userManager = userManager;
+            _userManager = userManager;
         }
         public async Task<IActionResult> Index(string Key)
         {
@@ -29,12 +29,15 @@ namespace GetSit.Controllers
             }
             return View(data);
         }
-        public IActionResult AddToFavorite(int HId)
+        [HttpGet]
+        public IActionResult ToggleFavouriteHall(int hallId)
         {
-            int CId = 1;
-            
-            _service.Fav(HId,CId);
-            return View("Index");
+            if (HttpContext.User.Identity.IsAuthenticated)
+            {
+                int CustomerId = _userManager.GetCurrentUserId(HttpContext);
+                _service.Fav(hallId, CustomerId);
+            }
+            return RedirectToAction("Index");
         }
 
 
