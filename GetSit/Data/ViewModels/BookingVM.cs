@@ -3,17 +3,17 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
-namespace GetSit.ViewModels
+namespace GetSit.Data.ViewModels
 {
     public class BookingVM
-        
+
     {
         [Required]
         public SpaceHall SelectedHall { get; set; }
         [Required]
         public Space SelectedSpace { get; set; }
         [Required]
-        public List <TimeSpan> AvailableSlots{ get; set; }
+        public List<TimeSpan>? AvailableSlots { get; set; }
         [AllowNull]
         public Dictionary<int, int> SelectedServicesQuantities { get; set; }
         [Required, DataType(DataType.Date)]
@@ -21,10 +21,11 @@ namespace GetSit.ViewModels
         [Required, DataType(DataType.Date)]
         public DateTime DesiredDate { get; set; }
         [Required, DataType(DataType.Date)]
-        public DateTime StartTime { get; set; }
+        public TimeSpan StartTime { get; set; }
         [Required, DataType(DataType.Date)]
-        public DateTime EndTime { get; set; }
+        public TimeSpan EndTime { get; set; }
         [Required]
         public float TotalCost { get; set; }
+        public List<List<TimeSpan>>? SlotsForWeek { get; set; }
     }
 }

@@ -15,7 +15,7 @@ namespace GetSit.Models
         [Required, DataType(DataType.Date)]
         public DateTime DesiredDate { get; set; }
         [Required, DataType(DataType.Time)]
-        public DateTime StartTime { get; set; }
+        public TimeSpan StartTime { get; set; }
         [Required]
         public float NumberOfHours { get; set; }
         public float TotalCost { get; set; }

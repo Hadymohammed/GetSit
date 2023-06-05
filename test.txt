@@ -1,0 +1,85 @@
+    <a onclick="return checkLogin()" ><div class="btn btn-dark book-now-btn">Book Now</div></a>
+                </div>
+            </div>
+            <script>
+                function checkLogin() {
+                    var isAuthenticated = User.Identity.IsAuthenticated;
+
+                    if (isAuthenticated) 
+                    {
+                        window.location.href = "@Url.Action("Book", "Booking");
+                    } 
+                    else 
+                    {
+                         window.location.href = "@Url.Action("Login", "Account")";
+                    }
+
+                    return false;
+                }
+            </script>
+        }
+
+_____________________________________________________________________-
+
+
+
+using GetSit.Data;
+using GetSit.Models;
+using GetSit.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using System;
+
+namespace GetSit.Controllers
+{
+    public class BookingController : Controller
+    {
+        AppDBcontext _context;
+        public BookingController( AppDBcontext context)
+        {
+            _context = context;
+        }
+        public IActionResult Index(int HallID)
+        {
+            var viewModel = new BookingVM
+            {
+                SelectedServicesQuantities = new Dictionary<int, int>()
+                {
+                    { 1, 4 },
+                    { 2, 6 },
+                    { 3, 5 }
+                },
+                AvailableSlots = new List<TimeSpan> { new TimeSpan(8, 0, 0), new TimeSpan(9, 0, 0), new TimeSpan(10, 0, 0) },
+                SelectedSpace = new Space { Id = 1, Name = "Space 1", Services = { new SpaceService { Name = "Alice",Price = 25 },
+    new SpaceService { Name = "Alice",Price = 25 },
+    new SpaceService { Name = "Alice",Price = 25 }} },
+                SelectedHall = new SpaceHall { Id = 1, Description = "aaaaaaaaa" },
+                TotalCost = 0
+
+            };
+
+            viewModel.BookingDate = DateTime.Today;
+            viewModel.DesiredDate = DateTime.Today.AddDays(7);
+            viewModel.StartTime = new DateTime(viewModel.BookingDate.Year, viewModel.BookingDate.Month, viewModel.BookingDate.Day, viewModel.AvailableSlots[0].Hours, viewModel.AvailableSlots[0].Minutes, 0);
+            viewModel.EndTime = viewModel.StartTime.AddHours(1);
+
+            return View(viewModel);
+        }
+        [HttpGet]
+        public IActionResult HallBookingDetails(int HallId)
+        {
+            var Hall = _context.SpaceHall.Where(h => h.Id == HallId).FirstOrDefault();
+            return View(HallId);
+        }
+      
+        [HttpPost]
+        public IActionResult Book(int spaceId, int hallId, DateTime bookingDate, DateTime desiredDate, TimeSpan startTime, TimeSpan endTime, float totalCost, List<int> services, Dictionary<int, int> quantities)
+        {
+            // Save the booking information to the database or perform any other necessary actions
+            // ...
+
+            // Redirect the user to a confirmation page
+            return RedirectToAction("Confirmation");
+        }
+    }
+}
+ 
