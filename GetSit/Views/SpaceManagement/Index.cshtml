@@ -1,0 +1,294 @@
+﻿@using GetSit.Data.ViewModels
+@using GetSit.Data.enums
+@model SpaceManagementVM
+
+<div class="main manage-container">
+<link rel="stylesheet" href="~/css/SpaceManagement.css" asp-append-version="true" />
+
+    <!--Main Container-->
+    <div class="profile-container">
+        <!--Profile Data-->
+        <div class="profile-data">
+            <div class="profile-cover">
+                <img src="@Model.Space.Photos.First().Url"/>
+            </div>
+            <div>>
+                <div class="profile-card">
+                    @{
+                        var url="../"+Model.Space.Photos.First().Url;
+                                        <img src="@url" />
+                    }
+                    <div class="profile-name">@Model.Space.Name</div>
+                    <div class="profile-bio">
+                        @Model.Space.Bio
+                    </div>
+                </div>
+            </div>
+            <div class="profile-meta">
+                <div class="Location">
+                    <i class="fa-solid fa-location-dot" style="color: #545454;"></i>
+                    <span>@Model.Space.Country, @Model.Space.City</span>
+                </div>
+                <div class="profile-date">
+                    <i class="fa-solid fa-calendar-days" style="color: #545454;"></i>
+                    <span>Opening Date 15 Aug 2020</span>
+                </div>
+            </div>
+        </div>
+        <!--Dashboard Nav-->
+        <script src="~/js/SpaceManagementScript.js"></script>
+        <div class="dashboard">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <ul class="navbar-nav nav-dashboard mr-auto">
+                    <li class="nav-item"><a class="nav-link active" href="#schedule">Schedule</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#our-halls">Our Halls</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#our-serivces">Our Services</a></li>
+                </ul>
+            </nav>
+
+            <section id="schedule" class="fade-in active">
+                <div class="schedule-filters">
+                    <div class="form-group" style="display: flex;">
+                        <label>Start from date : </label>
+                        <input type="date" class="form-control form-control-lg" id="date-filter" />
+                        </div>
+                    <div class="form-group" style="display: flex;">
+                        <label>Halls to display : </label>
+                        <select class="form-control" id="hall-id-filter">
+                            <option value="All">All</option>
+                            @foreach(var hall in Model.Halls){
+                                <option value="@hall.Id">@hall.Type: @hall.Id</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                @if(Model.Bookings.Count==0)
+                {
+                    <div class="empty">
+                        No upcoming bookings!
+                    </div>
+                }
+                @foreach (var booking in Model.Bookings)
+                {
+                    <div class="product-card booking-hall fade-in">
+                    <div id="BookingDate" hidden>@booking.DesiredDate.ToShortDateString()</div>
+                    <div id="BookingHallId" hidden>@booking.BookingHalls[0].HallId</div>
+                        <div class="product-content">
+                            <div class="product-photo">
+                                <div>@booking.DesiredDate.Day</div>
+                                <div>@booking.DesiredDate.ToString("MMM")</div>
+                                <div>@booking.DesiredDate.Year</div>
+                            </div>
+                            <div class="booking-details">
+                                <div>
+                                    <h3 class="product-name">@booking.BookingHalls[0].Hall.Type : @booking.BookingHalls[0].HallId</h3>
+                                    <p class="product-description">@booking.BookingDate.DayOfWeek @booking.StartTime <span>(@booking.NumberOfHours hours)</span></p>
+                                    <p>@booking.Customer.FirstName @booking.Customer.LastName</p>
+                                </div>
+                                <div class="booking-actions">
+                                    @if(booking.BookingStatus == BookingStatus.Pending)
+                                    {
+                                        <div class="booking-status pending-color">@booking.BookingStatus</div>
+                                    }
+                                    @if (booking.BookingStatus == BookingStatus.Missed)
+                                    {
+                                        <div class="booking-status missed-color">@booking.BookingStatus</div>
+                                    }
+                                    @if (booking.BookingStatus == BookingStatus.Cancelled)
+                                    {
+                                        <div class="booking-status cancelled-color">@booking.BookingStatus</div>
+                                    }
+                                    @if (booking.BookingStatus == BookingStatus.Accepted)
+                                    {
+                                        <div class="booking-status accepted-color">@booking.BookingStatus</div>
+                                    }
+                                    @if (booking.BookingStatus == BookingStatus.Rejected)
+                                    {
+                                        <div class="booking-status rejected-color">@booking.BookingStatus</div>
+                                    }
+                                    @if (booking.BookingStatus == BookingStatus.Confirmed
+                                    )
+                                    {
+                                        <div class="booking-status confirmed-color">@booking.BookingStatus</div>
+                                    }
+                                    <a>Details and actions</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                <div style="text-align: center;">
+                    <a asp-action="AddBooking" class="add-hall-btn">
+                        <div><i class="fa-solid fa-circle-plus" style="color: #23B000;"></i></div>
+                        <div>Add Booking</div>
+                    </a>
+                </div>
+            </section>
+
+            <section id="our-halls" class="fade-in">
+                @if (Model.Halls.Count == 0)
+                {
+                    <div class="empty">
+                        No halls yet! Add new ones.
+                    </div>
+                }
+                @foreach(var hall in Model.Halls)
+                {
+                <div class="product-card">  
+                    <div class="product-content">
+                        <div class="product-photo">
+                            <img src="@hall.HallPhotos.First().Url" alt="Product Photo">
+                        </div>
+                        <div class="product-details">
+                            <h3 class="product-name">@hall.Type</h3>
+                            <p class="product-description">@hall.Description</p>
+                            <p class="product-price">Price: @hall.CostPerHour.ToString("N2")</p>
+                            <div class="facilities-badges">
+                                @foreach(var facility in hall.HallFacilities)
+                                {
+                                    <span class="badge">@facility.Facility</span>
+                                }
+                            </div>
+                            <button class="buy-button">Edit</button>
+                        </div>
+                    </div>
+                </div>
+                }
+                <div style="text-align: center;">
+                    <a asp-action="AddHall" class="add-hall-btn">
+                        <div><i class="fa-solid fa-circle-plus" style="color: #23B000;"></i></div>
+                        <div>Add new hall</div>
+                    </a>
+                </div>
+            </section>
+
+            <section id="our-serivces" class="fade-in">
+                @if(Model.Services.Count==0)
+                {
+                    <div class="empty">
+                        No services yet! Add new ones.
+                    </div>
+                }
+                @foreach (var service in Model.Services)
+                {
+                    <div class="product-card">
+                        <div class="product-content">
+                            <div class="product-photo">
+                                <img src="@service.ServicePhotos.First().Url" alt="Product Photo">
+                            </div>
+                            <div class="product-details">
+                                <h3 class="product-name">@service.Name</h3>
+                                <p class="product-description">@service.Description</p>
+                                <p class="product-price">Price: @service.Price.ToString("N2")</p>
+                                <div class="facilities-badges">
+                                    <span class="badge">Free Shipping</span>
+                                    <span class="badge">1-Year Warranty</span>
+                                </div>
+                                <button class="buy-button">Edit</button>
+                            </div>
+                        </div>
+                    </div>
+                }
+                <div style="text-align: center;">
+                    <a asp-action="AddService" class="add-hall-btn">
+                        <i class="fa-solid fa-circle-plus" style="color: #23B000;"></i>
+                        Add new Service
+                    </a>
+                </div>
+            </section>
+
+        </div>
+    </div>
+    <!--Employees-->
+    <div class="members-menu fade-in">
+        <div class="side-menu">
+            <header>Our Staff</header>
+            @for(var i=0;i<3;i++)
+            {
+                <div class="user-profile">
+                    <div class="profile-picture">
+                        <img src="./resources/site/user-profile-icon.jpg" alt="User 1 Photo">
+                    </div>
+                    <div class="user-info">
+                        <div class="member-data">
+                            <h3 class="member-name">John Doe</h3> 
+                            <div class="member-username">@@username</div>
+                        </div>
+                        <button class="follow-button">Follow</button>
+                    </div>
+                </div>
+            }
+            
+        </div>
+    <!--Top Customers-->
+        <div class="side-menu">
+            <header>Our Best Costumers</header>
+            @for (var i = 0; i < 3; i++)
+            {
+                <div class="user-profile">
+                    <div class="profile-picture">
+                        <img src="./resources/site/user-profile-icon.jpg" alt="User 1 Photo">
+                    </div>
+                    <div class="user-info">
+                        <div class="member-data">
+                            <h3 class="member-name">John Doe</h3>
+                            <div class="member-username">@@username</div>
+                        </div>
+                        <button class="follow-button">Follow</button>
+                    </div>
+                </div>
+            }
+
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+    $(document).ready( ()=> {
+            //on date change
+            $('#date-filter').on('change',filter);
+            //on hallId change
+            $('#hall-id-filter').on('change', filter);
+
+            //Date default Value
+            var currentDate = new Date();
+            var formattedDate = currentDate.toISOString().split('T')[0];
+            $('#date-filter').val(formattedDate);
+
+            filter();
+            
+    });
+    const matchDateFilter = (element, filterDate) => {
+            var bookingDate = (new Date($(element).find('#BookingDate').text())).getTime();
+            var isMatch = true;
+            if (filterDate > bookingDate)//start displaying from the filterDate
+                isMatch = false;
+
+            return isMatch;
+         
+    };
+        const matchHallIdFilter = (element, filterHallId) => {
+            var bookinghallId = $(element).find('#BookingHallId').text();
+            var isMatch = true;
+
+            if (filterHallId != "All" && bookinghallId != filterHallId)
+                isMatch = false;
+
+            return isMatch;
+    }
+    const filter=()=>{
+            var bookings = $('.booking-hall');
+            var filterDate = (new Date($('#date-filter').val())).getTime();
+            var filterHallId = $('#hall-id-filter').val();
+            bookings.each((index, element) => {
+                var display = matchDateFilter(element, filterDate) && matchHallIdFilter(element, filterHallId);
+
+                $(element).toggle(display);
+            })
+    }
+    
+    </script>
+
+}

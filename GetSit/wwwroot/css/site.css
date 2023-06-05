@@ -1,11 +1,12 @@
 html {
     font-size: 14px;
+    width:100%;
 }
 :root {
     --purple-color: #071A84;
 }
 body {
-    font-family: "Poppins", sans-serif;
+    font-family: "Poppins", sans-serif !important;
 }
 
 .navbar {
@@ -15,14 +16,10 @@ body {
 }
 @media (min-width: 768px) {
   html {
-    font-size: 16px;
+    font-size: 16px;    
   }
 }
 
-html {
-  position: relative;
-  min-height: 100%;
-}
 
 .purple-btn {
     background-color: var(--purple-color);
@@ -44,4 +41,34 @@ a{
 }
 .color-white{
     color:white;
+}
+
+.fade-in {
+    animation: fadeIn .3s;
+    opacity: 1;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: #ebebeb;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    background: #6d6d6d;
 }

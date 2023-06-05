@@ -4,6 +4,7 @@ using GetSit.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GetSit.Migrations
 {
     [DbContext(typeof(AppDBcontext))]
-    partial class AppDBcontextModelSnapshot : ModelSnapshot
+    [Migration("20230601035319_test")]
+    partial class test
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -61,7 +64,7 @@ namespace GetSit.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Booking", (string)null);
+                    b.ToTable("Booking");
                 });
 
             modelBuilder.Entity("GetSit.Models.BookingHall", b =>
@@ -90,7 +93,7 @@ namespace GetSit.Migrations
 
                     b.HasIndex("HallId");
 
-                    b.ToTable("BookingHall", (string)null);
+                    b.ToTable("BookingHall");
                 });
 
             modelBuilder.Entity("GetSit.Models.BookingHallService", b =>
@@ -119,7 +122,7 @@ namespace GetSit.Migrations
 
                     b.HasIndex("ServiceId");
 
-                    b.ToTable("BookingHallService", (string)null);
+                    b.ToTable("BookingHallService");
                 });
 
             modelBuilder.Entity("GetSit.Models.Customer", b =>
@@ -184,7 +187,7 @@ namespace GetSit.Migrations
 
                     b.HasIndex("TitleId");
 
-                    b.ToTable("Customer", (string)null);
+                    b.ToTable("Customer");
                 });
 
             modelBuilder.Entity("GetSit.Models.Faculty", b =>
@@ -201,7 +204,7 @@ namespace GetSit.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Faculty", (string)null);
+                    b.ToTable("Faculty");
                 });
 
             modelBuilder.Entity("GetSit.Models.FavoriteHall", b =>
@@ -224,7 +227,7 @@ namespace GetSit.Migrations
 
                     b.HasIndex("HallId");
 
-                    b.ToTable("FavoriteHall", (string)null);
+                    b.ToTable("FavoriteHall");
                 });
 
             modelBuilder.Entity("GetSit.Models.HallFacility", b =>
@@ -245,7 +248,7 @@ namespace GetSit.Migrations
 
                     b.HasIndex("HallId");
 
-                    b.ToTable("HallFacility", (string)null);
+                    b.ToTable("HallFacility");
                 });
 
             modelBuilder.Entity("GetSit.Models.HallPhoto", b =>
@@ -267,7 +270,7 @@ namespace GetSit.Migrations
 
                     b.HasIndex("HallId");
 
-                    b.ToTable("HallPhoto", (string)null);
+                    b.ToTable("HallPhoto");
                 });
 
             modelBuilder.Entity("GetSit.Models.Payment", b =>
@@ -298,7 +301,7 @@ namespace GetSit.Migrations
                     b.HasIndex("BookingId")
                         .IsUnique();
 
-                    b.ToTable("Payment", (string)null);
+                    b.ToTable("Payment");
                 });
 
             modelBuilder.Entity("GetSit.Models.PaymentCard", b =>
@@ -331,7 +334,7 @@ namespace GetSit.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("PaymentCard", (string)null);
+                    b.ToTable("PaymentCard");
                 });
 
             modelBuilder.Entity("GetSit.Models.PaymentDetail", b =>
@@ -372,7 +375,7 @@ namespace GetSit.Migrations
 
                     b.HasIndex("PaymentId");
 
-                    b.ToTable("PaymentDetail", (string)null);
+                    b.ToTable("PaymentDetail");
                 });
 
             modelBuilder.Entity("GetSit.Models.ServicePhoto", b =>
@@ -394,7 +397,7 @@ namespace GetSit.Migrations
 
                     b.HasIndex("ServiceId");
 
-                    b.ToTable("ServicePhoto", (string)null);
+                    b.ToTable("ServicePhoto");
                 });
 
             modelBuilder.Entity("GetSit.Models.Space", b =>
@@ -438,7 +441,7 @@ namespace GetSit.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Space", (string)null);
+                    b.ToTable("Space");
                 });
 
             modelBuilder.Entity("GetSit.Models.SpaceEmployee", b =>
@@ -494,7 +497,7 @@ namespace GetSit.Migrations
 
                     b.HasIndex("SpaceId");
 
-                    b.ToTable("SpaceEmployee", (string)null);
+                    b.ToTable("SpaceEmployee");
                 });
 
             modelBuilder.Entity("GetSit.Models.SpaceHall", b =>
@@ -528,7 +531,7 @@ namespace GetSit.Migrations
 
                     b.HasIndex("SpaceId");
 
-                    b.ToTable("SpaceHall", (string)null);
+                    b.ToTable("SpaceHall");
                 });
 
             modelBuilder.Entity("GetSit.Models.SpacePhone", b =>
@@ -550,7 +553,7 @@ namespace GetSit.Migrations
 
                     b.HasIndex("SpaceId");
 
-                    b.ToTable("SpacePhone", (string)null);
+                    b.ToTable("SpacePhone");
                 });
 
             modelBuilder.Entity("GetSit.Models.SpacePhoto", b =>
@@ -572,7 +575,7 @@ namespace GetSit.Migrations
 
                     b.HasIndex("SpaceId");
 
-                    b.ToTable("SpacePhoto", (string)null);
+                    b.ToTable("SpacePhoto");
                 });
 
             modelBuilder.Entity("GetSit.Models.SpaceService", b =>
@@ -601,7 +604,7 @@ namespace GetSit.Migrations
 
                     b.HasIndex("SpaceId");
 
-                    b.ToTable("SpaceService", (string)null);
+                    b.ToTable("SpaceService");
                 });
 
             modelBuilder.Entity("GetSit.Models.SpaceWorkingDay", b =>
@@ -628,7 +631,7 @@ namespace GetSit.Migrations
 
                     b.HasIndex("SpaceId");
 
-                    b.ToTable("SpaceWorkingDay", (string)null);
+                    b.ToTable("SpaceWorkingDay");
                 });
 
             modelBuilder.Entity("GetSit.Models.SystemAdmin", b =>
@@ -679,7 +682,7 @@ namespace GetSit.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SystemAdmin", (string)null);
+                    b.ToTable("SystemAdmin");
                 });
 
             modelBuilder.Entity("GetSit.Models.Title", b =>
@@ -696,7 +699,7 @@ namespace GetSit.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Title", (string)null);
+                    b.ToTable("Title");
                 });
 
             modelBuilder.Entity("GetSit.Models.Booking", b =>

@@ -2,7 +2,7 @@
 {
     public class PasswordHashing
     {
-        public string Encode(string password)
+        public static string Encode(string password)
         {
             try
             {
@@ -17,7 +17,7 @@
             }
         }
 
-        public string Decode(string encodedpassword)
+        public static string Decode(string encodedpassword)
         {
             try
             {

@@ -11,8 +11,22 @@ namespace GetSit.Data
         {
 
         }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
+
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                foreach (var property in entityType.GetProperties())
+                {
+                    if (property.ClrType == typeof(TimeSpan))
+                    {
+                        property.SetColumnType("time(7)");
+                    }
+                }
+            }
+
             //Customer Title and faculty
             modelBuilder.Entity<Customer>().HasOne(m => m.Faculty).WithMany(am => am.Customers).HasForeignKey(m => m.FacultyId);
             modelBuilder.Entity<Customer>().HasOne(m => m.Title).WithMany(am => am.Customers).HasForeignKey(m => m.TitleId);

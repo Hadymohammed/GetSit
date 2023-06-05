@@ -9,11 +9,11 @@ namespace GetSit.Models
         [Key]
         public int Id { get; set; }
         [Required]
-        public WeekDay Day { get; set; }
+        public DayOfWeek Day { get; set; }
         [Required]
-        public DateTime OpeningTime { get; set; }
+        public TimeSpan OpeningTime { get; set; }
         [Required]
-        public DateTime ClosingTime { get; set; }
+        public TimeSpan ClosingTime { get; set; }
         [ForeignKey("SpaceId")]
         public int SpaceId { get; set; }
         [Required]
