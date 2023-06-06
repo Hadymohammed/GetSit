@@ -43,19 +43,22 @@ namespace GetSit.Data
                     context.SaveChanges();
                 }
                 //Space Employee
-                context.SpaceEmployee.AddRange(new List<SpaceEmployee>()
+                if(!context.SpaceEmployee.Any())
                 {
-                    new SpaceEmployee
+                    context.SpaceEmployee.AddRange(new List<SpaceEmployee>()
                     {
-                        FirstName="Ahmed",
-                        LastName="Mahmoud",
-                        Email="Provider@meto.com",
-                        Password= PasswordHashing.Encode("Provider1234"),
-                        Birthdate= new DateTime(1980,7,7),
-                        PhoneNumber= "01013205017",
-                        SpaceId=2
-                    }
-                });
+                        new SpaceEmployee
+                        {
+                            FirstName="Ahmed",
+                            LastName="Mahmoud",
+                            Email="Provider@meto.com",
+                            Password= PasswordHashing.Encode("Provider1234"),
+                            Birthdate= new DateTime(1980,7,7),
+                            PhoneNumber= "01013205017",
+                            SpaceId=2
+                        }
+                    });
+                }
                 context.SaveChanges();
                 //Space Phone
                 if (!context.SpacePhone.Any())
