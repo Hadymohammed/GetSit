@@ -1,9 +1,10 @@
-﻿using System.ComponentModel;
+﻿using GetSit.Data.Base;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace GetSit.Models
 {
-    public class Space
+    public class Space : IEntityBase
     {
         [Key]
         public int Id { get; set; }

@@ -1,4 +1,5 @@
-﻿using GetSit.Data.enums;
+﻿using GetSit.Data.Base;
+using GetSit.Data.enums;
 using GetSit.Data.Security;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -8,7 +9,7 @@ using System.Security.Principal;
 
 namespace GetSit.Models
 {
-    public class Customer:IAbstractUser
+    public class Customer:IAbstractUser,IEntityBase
     {
         [Key]
         public int Id { get; set; }
