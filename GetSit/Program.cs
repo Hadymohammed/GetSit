@@ -12,7 +12,6 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AppDBcontext>(options => options.UseSqlServer(
         DBconnection
         ));
-builder.Services.AddScoped<IExploreService, ExploreServices>();
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 builder.Services.AddAuthentication("Cookies")
     .AddCookie("Cookies",config =>
@@ -42,6 +41,28 @@ builder.Services.AddSession(options =>
 });
 
 builder.Services.AddScoped<IUserManager, UserManager>();
+/*Model Services*/
+builder.Services.AddScoped<IBookingService, BookingService>();
+builder.Services.AddScoped<IBookingHall_Service, BookingHall_Service>();
+builder.Services.AddScoped<IBookingHallService_Service, BookingHallService_Service>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IFacultyService, FacultyService>();
+builder.Services.AddScoped<IFavoriteHallService, FavoriteHallService>();
+builder.Services.AddScoped<IHallFacilityService, HallFacilityService>();
+builder.Services.AddScoped<IHallPhotoService, HallPhotoService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IPaymentCardService, PaymentCardService>();
+builder.Services.AddScoped<IPaymentDetailService, PaymentDetailService>();
+builder.Services.AddScoped<IServicePhotoService, ServicePhotoService>();
+builder.Services.AddScoped<ISpaceService, Space_Service>();
+builder.Services.AddScoped<ISpaceEmployeeService, SpaceEmployeeService>();
+builder.Services.AddScoped<ISpaceHallService, SpaceHallService>();
+builder.Services.AddScoped<ISpacePhoneService, SpacePhoneService>();
+builder.Services.AddScoped<ISpacePhotoService, SpacePhotoService>();
+builder.Services.AddScoped<ISpaceService_Service, SpaceService_Service>();
+builder.Services.AddScoped<ISpaceWorkingDayService, SpaceWorkingDayService>();
+builder.Services.AddScoped<ISystemAdminService, SystemAdminService>();
+builder.Services.AddScoped<ITitleService, TitleService>();
 
 var app = builder.Build();
 AppDbInitializer.Seed(app);
