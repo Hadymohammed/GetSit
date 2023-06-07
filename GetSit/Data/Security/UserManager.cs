@@ -1,4 +1,5 @@
 ﻿using GetSit.Data.enums;
+using GetSit.Data.Services;
 using GetSit.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -10,18 +11,24 @@ namespace GetSit.Data.Security
 {
     public class UserManager : IUserManager
     {
-        AppDBcontext _context;
-        public UserManager(AppDBcontext context)
+        private readonly AppDBcontext _context;
+        private readonly ICustomerService _customerService;
+        private readonly ISpaceEmployeeService _spaceEmployeeService;
+        private readonly ISystemAdminService _adminSerivce;
+        public UserManager(AppDBcontext context,ICustomerService customerService,ISpaceEmployeeService spaceEmployeeService,ISystemAdminService systemAdminService)
         {
             _context = context;
+            _customerService = customerService;
+            _spaceEmployeeService = spaceEmployeeService;
+            _adminSerivce = systemAdminService;
         }
 
-        public IAbstractUser GetCurrentUser(HttpContext httpContext)
+        public async Task<IAbstractUser> GetCurrentUserAsync(HttpContext httpContext)
         {
-            int userid = this.GetCurrentUserId(httpContext);
+            int userId = this.GetCurrentUserId(httpContext);
             string userRole = this.GetUserRole(httpContext);
 
-            if (userid == -1)
+            if (userId == -1)
                 return null;
             if (userRole is null)
                 return null;
@@ -29,15 +36,15 @@ namespace GetSit.Data.Security
             IAbstractUser user;
             if (userRole == UserRole.Customer.ToString())
             {
-                user = _context.Customer.Where(c => c.Id == userid).FirstOrDefault();
+                user = await _customerService.GetByIdAsync(userId);
             }
             else if (userRole == UserRole.Admin.ToString())
             {
-                user = _context.SystemAdmin.Where(c => c.Id == userid).FirstOrDefault();
+                user = await _adminSerivce.GetByIdAsync(userId);
             }
             else if (userRole == UserRole.Provider.ToString())
             {
-                user = _context.SpaceEmployee.Where(c => c.Id == userid).FirstOrDefault();
+                user = await _spaceEmployeeService.GetByIdAsync(userId);
             }
             else user = null;
 
@@ -102,7 +109,7 @@ namespace GetSit.Data.Security
             ClaimsPrincipal principal = new ClaimsPrincipal(identity);
 
             await httpContext.SignInAsync(
-              CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties() { IsPersistent = isPersistent }
+                CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties() { IsPersistent = isPersistent }
             );
         }
 

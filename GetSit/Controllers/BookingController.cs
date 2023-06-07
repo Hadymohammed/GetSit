@@ -19,10 +19,12 @@ namespace GetSit.Controllers
     [Authorize (policy : "CustomerPolicy")] 
     public class BookingController : Controller
     {
-        AppDBcontext _context;
-        public BookingController( AppDBcontext context)
+        private readonly AppDBcontext _context;
+        private readonly IUserManager _userManager;
+        public BookingController( AppDBcontext context, IUserManager userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         [HttpGet]
@@ -85,14 +87,12 @@ namespace GetSit.Controllers
             }
 
             // Get the current user 
-            UserManager user = new UserManager(_context);
-            int id = user.GetCurrentUserId(HttpContext);
-            var userobj = user.GetCurrentUser(HttpContext);
+            int id = _userManager.GetCurrentUserId(HttpContext);
+            var userobj = _userManager.GetCurrentUserAsync(HttpContext);
 
             var Booking = new Booking
             {
                 CustomerId = id,
-                Customer = (Customer)userobj,
                 BookingDate = viewModel.BookingDate,
                 DesiredDate = viewModel.DesiredDate,
                 StartTime = viewModel.StartTime,
@@ -120,7 +120,6 @@ namespace GetSit.Controllers
                 PricePerUnit = viewModel.SelectedHall.CostPerHour,
                 HallId = viewModel.SelectedHall.Id,
                 Hall = viewModel.SelectedHall,
-                Booking = Booking,
                 BookingId = Booking.Id,
                 
             };

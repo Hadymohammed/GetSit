@@ -12,14 +12,17 @@ using GetSit.Common;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc.Routing;
+using GetSit.Data.Services;
 
 namespace GetSit.Controllers
 {
     public class AccountController : Controller
     {
         AppDBcontext _context;
-        private IUserManager _userManager;
-
+        private readonly IUserManager _userManager;
+        private readonly ICustomerService _customerService;
+        private readonly ISpaceEmployeeService _spaceEmployeeService;
+        private readonly ISystemAdminService _adminSerivce;
         /* check if the entered password while logging in matches the stored password in database*/
         bool VerifyPassword(string encodedPassword, string password)
         {
@@ -28,14 +31,18 @@ namespace GetSit.Controllers
         }
         bool PresirvedEmail(string email)
         {
-            return (_context.SystemAdmin.Where(c => c.Email == email).FirstOrDefault() != null ||
-               _context.SpaceEmployee.Where(c => c.Email == email).FirstOrDefault() != null ||
-               _context.Customer.Where(c => c.Email == email).FirstOrDefault() != null);
+            return (_customerService.GetByEmail(email) != null ||
+                    _spaceEmployeeService.GetByEmail(email) != null ||
+                    _adminSerivce.GetByEmail(email) != null
+                    );
         }
-        public AccountController(AppDBcontext context, IUserManager userManager)
+        public AccountController(AppDBcontext context, IUserManager userManager,ICustomerService customerService, ISpaceEmployeeService spaceEmployeeService, ISystemAdminService adminSerivce)
         {
             _context = context;
             _userManager = userManager;
+            _customerService = customerService;
+            _spaceEmployeeService = spaceEmployeeService;
+            _adminSerivce = adminSerivce;
         }
         public IActionResult Index()
         {
@@ -46,7 +53,7 @@ namespace GetSit.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult Login(LoginVM login)
+        public async Task<IActionResult> LoginAsync(LoginVM login)
         {
             if (!ModelState.IsValid)
             {
@@ -60,7 +67,7 @@ namespace GetSit.Controllers
             switch (login.Role)//Which user role?
             {
                 case UserRole.Admin:
-                    var admin = _context.SystemAdmin.Where(c => c.Email == login.Email).FirstOrDefault();
+                    var admin = _adminSerivce.GetByEmail(login.Email);
                     if (admin == null)
                     {
                         // Email not found in database
@@ -77,7 +84,7 @@ namespace GetSit.Controllers
                     return RedirectToAction("AdminProfile", "Account");
                     break;
                 case UserRole.Provider:
-                    var provider = _context.SpaceEmployee.Where(c => c.Email == login.Email).FirstOrDefault();
+                    var provider = _spaceEmployeeService.GetByEmail(login.Email);
                     if (provider == null)
                     {
                         // Email not found in database
@@ -95,7 +102,7 @@ namespace GetSit.Controllers
                     break;
                 case UserRole.Customer:
         
-                    var customer = _context.Customer.Where(c=>c.Email==login.Email).FirstOrDefault();
+                    var customer = _customerService.GetByEmail(login.Email);
                     if (customer == null)
                     {
                         // Email not found in database
@@ -110,7 +117,7 @@ namespace GetSit.Controllers
                             return View(login);
                         
                     }
-                    _userManager.SignIn(HttpContext, customer);
+                    await _userManager.SignIn(HttpContext, customer);
                     return RedirectToAction("CustomerProfile", "Account");
                     break;
                 default:
@@ -212,10 +219,9 @@ namespace GetSit.Controllers
 
                     try
                     {
-                        await _context.SystemAdmin.AddAsync(admin);
-                        _context.SaveChanges();
-                        await _userManager.SignIn(HttpContext, admin);
-                        return RedirectToAction("AdminProfile", "Account");
+                       await _adminSerivce.AddAsync(admin);
+                       await _userManager.SignIn(HttpContext, admin);
+                       return RedirectToAction("AdminProfile", "Account");
                     }
                     catch (Exception error)
                     {
@@ -235,8 +241,7 @@ namespace GetSit.Controllers
 
                     try
                     {
-                        await _context.SpaceEmployee.AddAsync(provider);
-                        _context.SaveChanges();
+                        await _spaceEmployeeService.AddAsync(provider);
                         await _userManager.SignIn(HttpContext, provider);
                         return RedirectToAction("ProviderProfile", "Account");
                     }
@@ -260,8 +265,7 @@ namespace GetSit.Controllers
 
                     try
                     {
-                        await _context.Customer.AddAsync(customer);
-                        _context.SaveChanges();
+                        await _customerService.AddAsync(customer);
                         await _userManager.SignIn(HttpContext, customer);
                         return RedirectToAction("CustomerProfile");
                     }
@@ -277,21 +281,21 @@ namespace GetSit.Controllers
             return RedirectToAction("Register");
         }
         [Authorize(Roles = "Admin")]//error enum must be used
-        public IActionResult AdminProfile()
+        public async Task<IActionResult> AdminProfileAsync()
         {
-            var user = _userManager.GetCurrentUser(HttpContext);
+            var user = (SystemAdmin)await _userManager.GetCurrentUserAsync(HttpContext);
             return View(user);
         }
         [Authorize(Roles = "Customer")]//error enum must be used
-        public IActionResult CustomerProfile()
+        public async Task<IActionResult> CustomerProfileAsync()
         {
-            var user = _userManager.GetCurrentUser(HttpContext);
+            var user = (Customer)await _userManager.GetCurrentUserAsync(HttpContext);
             return View(user);
         }
         [Authorize(Roles = "Provider")]//error enum must be used
-        public IActionResult ProviderProfile()
+        public async Task<IActionResult> ProviderProfileAsync()
         {
-            var user = _userManager.GetCurrentUser(HttpContext);
+            var user =(SpaceEmployee) await _userManager.GetCurrentUserAsync(HttpContext);
             return View(user);
         }
         public IActionResult AccessDenied()
