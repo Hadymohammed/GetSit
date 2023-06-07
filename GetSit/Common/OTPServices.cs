@@ -4,6 +4,12 @@ using MVCTutorial.Controllers;
 using System.Collections.Specialized;
 using System.Net;
 using System.Web;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Net.Mail;
+using Twilio;
+using Twilio.Rest.Api.V2010.Account;
+using static System.Net.WebRequestMethods;
 
 namespace GetSit.Common
 {
@@ -12,41 +18,22 @@ namespace GetSit.Common
         public const string SessionKey = "OTP";
         private string? recipient;
         public string? APIKey { get; private set; }
-       
         static public bool SendPhoneOTP(HttpContext httpContext,string phone)
         {
             try { 
             int otpValue = new Random().Next(100000, 999999);
             httpContext.Session.SetString(SessionKey,otpValue.ToString());
                 #region sendingProcess
-                /* 
-                var status = "";
-                try
-                {
+                const string accountSid = "AC05e0b2b4734def1ab1637e37c217f496";
+                const string authToken = "0f9042d2a7c56de397a45db227bed592";
 
-                    string message = "Your OTP Number is " + otpValue + " ( Sent By : GetSit )";
-                    String encodedMessage = HttpUtility.UrlEncode(message);
-                    using (var webClient = new WebClient())
-                    {
-                        byte[] response = webClient.UploadValues("", new NameValueCollection(){
+                TwilioClient.Init(accountSid, authToken);
 
-                                             {"apikey" , APIKey},
-                                             {"numbers" , recipient},
-                                             {"message" , encodedMessage},
-                                             {"sender" , ""}});
-
-                        string result = System.Text.Encoding.UTF8.GetString(response);
-
-                        JObject jsonObject = JObject.Parse(result);
-                    }
-
-                    return Json(encodedMessage);
-                }
-                catch (Exception e)
-                {
-                    throw (e);
-                }
-                */
+                var message = MessageResource.Create(
+                    body: "Your Otp value is " + otpValue.ToString(),
+                    from: new Twilio.Types.PhoneNumber("+13613385724"),
+                    to: new Twilio.Types.PhoneNumber("+2"+phone)
+                );
                 #endregion
                 return true;
             }catch(Exception err)
@@ -61,34 +48,28 @@ namespace GetSit.Common
                 int otpValue = new Random().Next(100000, 999999);
                 httpContext.Session.SetString(SessionKey, otpValue.ToString());
                 #region sendingProcess
-                /* 
-                var status = "";
-                try
+                var fromAddress = new MailAddress("getsit594@gmail.com", "GetSit");
+                var toAddress = new MailAddress(email, "New User");
+                const string fromPassword = "esyqrxcqijyqnpwf";
+                const string subject = "Your OTP";
+                string body = $"Sent from GetSit , Here is your OTP is {otpValue} . ";
+                var smtp = new SmtpClient
                 {
-
-                    string message = "Your OTP Number is " + otpValue + " ( Sent By : GetSit )";
-                    String encodedMessage = HttpUtility.UrlEncode(message);
-                    using (var webClient = new WebClient())
-                    {
-                        byte[] response = webClient.UploadValues("", new NameValueCollection(){
-
-                                             {"apikey" , APIKey},
-                                             {"numbers" , recipient},
-                                             {"message" , encodedMessage},
-                                             {"sender" , ""}});
-
-                        string result = System.Text.Encoding.UTF8.GetString(response);
-
-                        JObject jsonObject = JObject.Parse(result);
-                    }
-
-                    return Json(encodedMessage);
-                }
-                catch (Exception e)
+                    Host = "smtp.gmail.com",
+                    Port = 587,
+                    EnableSsl = true,
+                    DeliveryMethod = SmtpDeliveryMethod.Network,
+                    UseDefaultCredentials = false,
+                    Credentials = new NetworkCredential(fromAddress.Address, fromPassword)
+                };
+                using (var message = new MailMessage(fromAddress, toAddress)
                 {
-                    throw (e);
+                    Subject = subject,
+                    Body = body
+                })
+                {
+                    smtp.Send(message);
                 }
-                */
                 #endregion
                 return true;
             }
@@ -104,7 +85,6 @@ namespace GetSit.Common
             var chars = new char[6];
             chars[0] = receivedOTP.op0; chars[1] = receivedOTP.op1;chars[2] = receivedOTP.op2;chars[3] = receivedOTP.op3;chars[4] = receivedOTP.op4;chars[5] =receivedOTP.op5;
             var resceivedStringOTP = string.Join("",chars);
-
 
             var ValidOTP = httpContext.Session.GetString(SessionKey);
             if (string.IsNullOrEmpty(ValidOTP))
