@@ -4,6 +4,8 @@ using GetSit.Data.enums;
 using GetSit.Data.Security;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 var DBconnection= builder.Configuration["DBconnection"];
@@ -82,8 +84,16 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Explore}/{action=Index}/{id?}");
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllerRoute(
+        name: "notfound",
+        pattern: "/Error/NotFound",
+        defaults: new { controller = "Error", action = "NotFoundPage" });
+
+    endpoints.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Explore}/{action=Index}/{id?}");
+});
 
 app.Run();
