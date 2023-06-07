@@ -21,7 +21,7 @@
 .avatar-md {
     height: 4.5rem;
     width: 4.5rem;
-    border-radius: 0.25rem !important;
+    border-radius: 0.5rem !important;
 }
 .space{
     display: flex;
@@ -39,12 +39,192 @@
 .space-info {
 }
 .slider-card {
-    width: 50%;
+    width: 60%;
 }
-.container {
+.slider-container {
     display: flex;
     justify-content: center;
     align-items: center;
     flex-grow: 1;
+    margin: 20px 0px;
+}
+/*Space-bio*/
+.card-header-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+.card-header-title span{
+    font-size:1.2rem;
+    font-weight:400;
+}
+.space-bio{
+
+}
+.space-bio h3 {
+    
+}
+.bio{
+    font-size:1.3rem;
+    font-weight:400;
+}
+/*Facilities*/
+.pill-btn {
+    background-color: #dddddd14;
+    border: solid 1px #00000026;
+    color: black;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 25px;
+}
+/*Space Services*/
+.services-contanier {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+.product-card {
+    display: flex;
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    width: 35%;
+    min-width: 350px;
+    row-gap: 10px;
 }
 
+.product-content {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.product-photo {
+    flex: 0 0 200px;
+    padding: 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-size: 20px;
+}
+
+    .product-photo img {
+        max-width: 100%;
+        height: auto;
+    }
+
+.product-details {
+    flex: 1;
+    padding: 20px;
+}
+
+.product-name {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.product-description {
+    margin-bottom: 10px;
+}
+
+.product-price {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+/*Working Days*/
+.grid-wdays {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 1rem 5rem;
+}
+/*Schedule*/
+.schedule-container {
+    width: 100%;
+    overflow-x: auto;
+    max-height: 400px; /* Adjust the max-height as needed */
+    margin:20px 0px;
+}
+
+.schedule {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.schedule th,
+.schedule td {
+    border: 1px solid #e2e2e2;
+    padding: 6px;
+    text-align: center;
+}
+
+.schedule th:first-child,
+.schedule td:first-child {
+    background-color: #f5f5f5;
+}
+
+.schedule .booking {
+    background-color: #ffcccc;
+}
+
+.schedule td,
+.schedule th {
+    line-height: .5;
+}
+
+.schedule th {
+    background-color: #333;
+    color: #fff;
+    min-width: 100px;
+}
+
+.schedule td {
+    background-color: #fff;
+}
+
+.schedule td:hover {
+    background-color: #f9f9f9;
+    cursor: pointer;
+}
+
+.schedule .time-slot {
+    font-weight: bold;
+    color: #333;
+}
+
+.schedule .booked-slot {
+    background-color: #f5f5f5;
+    color: #999;
+}
+
+.schedule .available-slot {
+    background-color: #e2e2e2;
+    color: #666;
+}
+
+.schedule .current-day {
+    background-color: #ffc107;
+    color: #fff;
+    font-weight: bold;
+}
+
+    .schedule .current-time {
+        background-color: #007bff;
+        color: #fff;
+        font-weight: bold;
+    }
+
+.time-span-schedule {
+}
+
+    .time-span-schedule div {
+        position: relative;
+        top: -10px;
+        background-color: whitesmoke;
+    }

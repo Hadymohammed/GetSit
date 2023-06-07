@@ -1,6 +1,6 @@
 ﻿@using GetSit.Data.ViewModels
 @model BookingVM
-<link rel="stylesheet" href="./css/Booking.css"/>
+<link rel="stylesheet" href="./css/booking.css"/>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
 <div class="container">
     <div class="header">
@@ -17,7 +17,7 @@
         </div>
     </div>
     <!--slider-->
-    <div class="container">
+    <div class="slider-container">
         <div class="slider-card">
             <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
                 <ol class="carousel-indicators">
@@ -67,6 +67,7 @@
     <div class="hall-booking-main">
         <!--SpaceInfo-->
         <div class="hall-booking-main-left">
+            <!--Space-->
             <div class="space">
                 <div class="space-image">
                     <img class="avatar-md" src="@Model.SelectedSpace.Photos.FirstOrDefault().Url"/>
@@ -74,102 +75,128 @@
                 <div class="space-details">
                     <div class="space-name">@Model.SelectedSpace.Name</div>
                     <div class="space-info">
-                        <div>@Model.SelectedSpace.Name Host since @DateTime.Now.ToShortDateString()</div>
+                        <div>@Model.SelectedSpace.Name Host since @DateTime.Now.ToString("D")</div>
                     </div>
                 </div>
+            </div>
+            <hr />
+            <!--Space-bio-->
+            <div class="space-bio">
+                <h3 class="card-header-title">About this space</h3>
+                <div class="bio">@Model.SelectedSpace.Bio</div>
+            </div>
+             <!-- facilities-->
+                @if (Model.SelectedHall.HallFacilities.Capacity != 0)
+                {
+                <hr>
+                    <div>
+                        <h3 class="card-header-title">Hall Facilities </h3>
+                        @foreach (var facility in Model.SelectedHall.HallFacilities)
+                        {
+                            <button class="pill-btn">&nbsp; @facility.Facility</button>
+                        }
+                        <br />
+                    </div>
+                }
+            <hr />
+            <!--Services-->
+            <h2 class="card-header-title">Space Services </h2>
+            <div class="services-contanier">
+                <!-- amenities card starts -->
+                @foreach (var service in Model.SelectedSpace.Services)
+                {
+                    <div class="product-card">
+                        <div class="product-content">
+                            <div class="product-photo">
+                                <img src="@service.ServicePhotos.First().Url" alt="Product Photo">
+                            </div>
+                            <div class="product-details">
+                                <h3 class="product-name">@service.Name</h3>
+                                <p class="product-description">@service.Description</p>
+                                <p class="product-price">Price: @service.Price.ToString("N2")</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- amenities card ends -->
+
+            </div>
+            <!--Working Times-->
+            <div class="Working-times">
+                <h2 class="card-header-title"> Working Times </h2>
+                <div class="grid-wdays">
+                    @foreach (var day in Model.SelectedSpace.WorkingDays)
+                    {
+                        <div>
+                            <p><b>@day.Day</b></p>
+                            <p>
+                                @{
+                                    var start = new DateTime(day.OpeningTime.Ticks).ToString("hh:mm tt");
+                                }
+                                @start
+                                -
+                                @{
+                                    var end = new DateTime(day.ClosingTime.Ticks).ToString("hh:mm tt");
+                                }
+                                @end
+                            </p>
+                        </div>
+                    }
+                </div>
+            </div>
+            <hr />
+            <!--Schedule-->
+            <h3 class="card-header-title">Booking schedule : <span>@Model.SlotsForWeek[0].Keys.First().ToString("D")</span></h3>
+            <div class="schedule-container">
+                <table class="schedule">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            @foreach (var day in Model.SlotsForWeek)
+                            {
+                                <th>
+                                    <div>
+                                        <p>@day.Keys.First().DayOfWeek.ToString()</p>
+                                        <p>@day.Keys.First().Day</p>
+                                    </div>
+                                </th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Generate rows for each time slot (15-minute intervals) -->
+                        <!-- Example: 16 rows for a 4-hour schedule (08:00 AM to 12:00 PM) -->
+                        @for (var slotIdx = 32; slotIdx < 96; slotIdx++)
+                        {
+                            <tr>
+                                <td class="time-span-schedule">
+                                    @{
+                                        var span = new DateTime(Model.SlotsForWeek[0].Values.First()[slotIdx].Item1.Ticks).ToString("hh:mm tt");
+                                    }
+                                    <div>@span</div>
+                                </td>
+                                @for (var dayIdx = 0; dayIdx < 7; dayIdx++)
+                                {
+                                    @if (@Model.SlotsForWeek[dayIdx].Values.First()[slotIdx].Item2 == true)
+                                    {
+                                        <td></td>
+                                    }
+                                    else
+                                    {
+                                        <td class="booking"></td>
+                                    }
+                                }
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
             </div>
         </div>
         <!--Booking-->
         <div class="hall-booking-main-right">
-            <div class="form-container">
-                <h1> $@Model.SelectedHall.CostPerHour /hr</h1>
-                <p class="p-date-picker">
-                    <input type="date" id="date">
-                </p>
-                <!--Select start & end time-->
-                <div class="flex space-between select-container">
-                    <div class="div-1">
-                        <label class="small-label" selected>
-                            <span class="material-symbols-outlined">
-                                schedule
-                            </span>
-                            <p>Start Time</p>
-                        </label>
-                        <select class="form-select inputs-margins" aria-label="Default select example">
-                            <option value="9:00">9:00</option>
-                            <option value="9:15">9:15</option>
-                            <option value="9:30">9:30</option>
-                            <option value="9:45">9:45</option>
-
-                            <option value="10:00">10:00</option>
-                            <option value="10:15">10:15</option>
-                            <option value="10:30">10:30</option>
-                            <option value="10:45">10:45</option>
-                            <option value="11:00">11:00</option>
-
-                        </select>
-                    </div>
-
-                    <div class="div-1">
-                        <label class="small-label" selected>
-                            <span class="material-symbols-outlined">schedule</span>
-                            <p>End Time</p>
-                        </label>
-                        <select class="form-select inputs-margins" aria-label="Default select example">
-                            <option value="9:00">9:00</option>
-                            <option value="9:15">9:15</option>
-                            <option value="9:30">9:30</option>
-                            <option value="9:45">9:45</option>
-
-                            <option value="10:00">10:00</option>
-                            <option value="10:15">10:15</option>
-                            <option value="10:30">10:30</option>
-                            <option value="10:45">10:45</option>
-                            <option value="11:00">11:00</option>
-                        </select>
-                    </div>
-
-                </div>
-
-                <br><br>
-                <!--Add services to booking -->
-                <div class="btn-group ">
-                    <button class="btn btn-secondary dropdown-toggle emen-btn" type="button"
-                            id="dropdownMenuClickableInside" data-bs-toggle="dropdown" data-bs-auto-close="outside"
-                            aria-expanded="false">
-                        Select Service
-                    </button>
-                    <ul class="dropdown-menu amn-dropdown-list" aria-labelledby="dropdownMenuClickableInside">
-                        <li>
-                            @foreach (var service in @Model.SelectedSpace.Services)
-                            {
-                                <div class="edit-list-item">
-                                    <span class="con-list-item">@service.Name</span>
-                                    <div class="counter-container">
-                                        <button class="counter-btn decrement material-symbols-outlined hover-effect no-border-btn">
-                                            remove
-                                        </button>
-                                        <span class="counter-value">0</span>
-                                        <button class="counter-btn increment material-symbols-outlined hover-effect no-border-btn">
-                                            add
-                                        </button>
-                                    </div>
-                                    @* Hidden input field to store the service ID and quantity data *@
-                                    <input type="hidden" name="SelectedServices[@service.Id]" value="" />
-                                </div>
-                            }
-
-                        </li>
-                    </ul>
-                </div>
-                <!-- Add services to booking ends -->
-
-                <br>
-                <!-- Button trigger modal -->
-                <button type="button" class="btn Book-Now-btn" data-bs-toggle="modal"
-                        data-bs-target="#exampleModal">
-                    Book Now
-                </button>
+            
         </div>
     </div>
     </div>
