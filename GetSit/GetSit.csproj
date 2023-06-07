@@ -20,7 +20,7 @@
   </ItemGroup>
 
    <ItemGroup>
-    <None Include="wwwroot\css\booking.css" />
+    <None Include="wwwroot\css\Nadabooking.css" />
     <None Include="wwwroot\css\Explorer.css" />
   </ItemGroup>
 

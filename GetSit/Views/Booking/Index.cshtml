@@ -1,215 +1,86 @@
 ﻿@using GetSit.Data.ViewModels
 @model BookingVM
-
-<link href="@Url.Content("~/css/booking.css")" rel="stylesheet" type="text/css" />
-<div id="body-id">
-
-
-    <div class="main">
-        <h1> @Model.SelectedSpace.Name </h1>
-        <div class="loc">
-            <span>  @Model.SelectedSpace.Country &nbsp; </span>
-            <span>  @Model.SelectedSpace.City &nbsp;‏</span>
-            <span>  @Model.SelectedSpace.Street &nbsp; </span>
+<link rel="stylesheet" href="./css/Booking.css"/>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+<div class="container">
+    <div class="header">
+        <div class="header-hall">
+        <div class="hall-name">@Model.SelectedHall.Type.ToString()</div>
+            <div>
+                <span>@Model.SelectedSpace.Country,</span>
+                <span>@Model.SelectedSpace.City,</span>
+                <span>@Model.SelectedSpace.Street</span>
+            </div>
+        </div>
+        <div class="header-actions">
+            <i class="fa-regular fa-heart color-red"></i>
         </div>
     </div>
-
-    <!-- slider starts  -->
+    <!--slider-->
     <div class="container">
-        <div id="carouselExampleControlsNoTouching" class="carousel slide edit-center resize-slider"
-             data-bs-touch="false">
-            <div class="carousel-inner">
-                @for (int i = 0; i < Model.SelectedHall.HallPhotos.Count; i++)
-                {
-                    if (i == 0)
-                    {
-                        <div class="carousel-item active">
-                            <img src="@Model.SelectedHall.HallPhotos[i].Url"
-                                 class="d-block w-100" alt="...">
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="carousel-item">
-                            <img src="@Model.SelectedHall.HallPhotos[i].Url"
-                                 class="d-block w-100" alt="...">
-                        </div>
-                    }
-                }
-
-            </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControlsNoTouching"
-                    data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControlsNoTouching"
-                    data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
-        </div>
-    </div>
-    <!-- slider end  -->
-
-    <!--Main details-->
-    <div class="main">
-        <div class="booking-container">
-            <div class="left-side col-12 col-md-12 col-lg-8">
-                <div>
-                    <div class="flex avatar-container">
-                        <div>
-                            <img class="circle avatar-img"
-                                src="@Model.SelectedSpace.Photos.First().Url"
-                                alt="">
-                        </div>
-                        <div>
-                            <div class="avatar-h"> Hosted by @Model.SelectedSpace.Name </div>
-                        
-                            <p>
-                                <span>  @Model.SelectedSpace.Country &nbsp; </span>,
-                                <span>  @Model.SelectedSpace.City &nbsp;‏</span>,
-                                <span>  @Model.SelectedSpace.Street &nbsp; </span>
-                            </p>
-                        </div>
-                    </div>
-
-                    <button type="button" class="btn-view-spaces d-none d-md-block">View host's other spaces</button>
-
-                </div>
-                <br> <br>
-                <hr>
-                <div class="sec">
-                    <h2> About this space </h2>
-                    <p>
-                        @Model.SelectedSpace.Bio
-                    </p>
-                </div>
-                <!-- facilities starts   -->
-                @if (Model.SelectedHall.HallFacilities.Capacity != 0)
-                {
-                <hr>
-                    <div class="sec">
-                        <h2> Facilities </h2>
-                        @foreach (var facility in Model.SelectedHall.HallFacilities)
+        <div class="slider-card">
+            <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+                <ol class="carousel-indicators">
+                    @for(int i=0;i<Model.SelectedHall.HallPhotos.Count();i++)
                         {
-                            <button class="pill-btn">&nbsp; @facility.Facility</button>
-                        }
-                        <br />
-                    </div>
-                }
-                <!-- facilities ends   -->
-                <hr>
-                <div class="sec flex">
-                    <div>
-                        <h2> Working Times </h2>
-                        <div class="grid-wdays">
-                            @foreach(var day in Model.SelectedSpace.WorkingDays)
+                            @if(i==0)
                             {
-                                <div>
-                                    <p><b>@day.Day</b></p>
-                                    <p> @{
-                                          var start=  new DateTime(day.OpeningTime.Ticks).ToString("hh:mm tt");
-                                        }
-                                        @start
-                                        - 
-                                        @{
-                                            var end = new DateTime(day.ClosingTime.Ticks).ToString("hh:mm tt");
-                                        } 
-                                        @end
-                                        </p>
-                                </div>
+                                <li data-target="#carouselExampleIndicators" data-slide-to="@i" class="active"></li>
                             }
-                        </div>
-                    </div>
-                </div>
-                <hr>
-
-                <div class="sec">
-                    <h2> Services </h2>
-                    <!-- amenities card starts -->
-                    @foreach (var service in Model.SelectedSpace.Services)
-                    {
-                        <h2>@service.Name</h2>
-                        <p>@service.Description</p>
-                        <p>@service.Price</p>
-
-                        @if (service.ServicePhotos != null)
-                        {
-                            <img src="@service.ServicePhotos[0].Url">
+                            else{
+                                <li data-target="#carouselExampleIndicators" data-slide-to="@i"></li>
+                            }
                         }
-
+                </ol>
+                <div class="carousel-inner">
+                    @{
+                        var j = 0;
                     }
-
-                    <!-- amenities card ends -->
-
+                    @foreach (var photo in Model.SelectedHall.HallPhotos)
+                    {
+                        @if (j++ == 0)
+                        {
+                            <div class="carousel-item active">
+                                <img class="d-block w-100" src="@photo.Url" alt="@j slide">
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="carousel-item">
+                                <img class="d-block w-100" src="@photo.Url" alt="@j slide">
+                            </div>
+                        }
+                    }
                 </div>
-                <hr>
-                <div class="sec">
-                    <h2> Location </h2>
-                    <p>32 Nicholson Street, Coburg VIC, Australia </p>
-                    <br />
-                    <div class="map-container">
-                        <iframe src="https://www.google.com/maps/embed?pb=..." width="600" height="450" frameborder="0"
-                                style="border:0;" allowfullscreen="" loading="lazy"></iframe>
-                    </div>
-
+                <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <!--Main-->
+    <div class="hall-booking-main">
+        <!--SpaceInfo-->
+        <div class="hall-booking-main-left">
+            <div class="space">
+                <div class="space-image">
+                    <img class="avatar-md" src="@Model.SelectedSpace.Photos.FirstOrDefault().Url"/>
                 </div>
-                <hr>
-
-                <div class="sec">
-                    <div class="schedule-container">
-                        <table class="schedule">
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    @foreach(var day in Model.SlotsForWeek){
-                                        <th>
-                                            <div>
-                                                <p>@day.Keys.First().DayOfWeek.ToString()</p>
-                                                <p>@day.Keys.First().Day</p>
-                                            </div>
-                                        </th>
-                                    }
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Generate rows for each time slot (15-minute intervals) -->
-                                <!-- Example: 16 rows for a 4-hour schedule (08:00 AM to 12:00 PM) -->
-                                @for(var slotIdx=32;slotIdx<96;slotIdx++ )
-                                {
-                                    <tr>
-                                        <td class="time-span-schedule">
-                                            @{
-                                                var span = new DateTime(Model.SlotsForWeek[0].Values.First()[slotIdx].Item1.Ticks).ToString("hh:mm tt");
-                                            }
-                                            <div>@span</div>
-                                        </td>
-                                        @for(var dayIdx=0;dayIdx<7;dayIdx++)
-                                        {
-                                            @if(@Model.SlotsForWeek[dayIdx].Values.First()[slotIdx].Item2==true)
-                                            {
-                                                <td></td>
-                                            }
-                                            else
-                                            {
-                                                <td class="booking"></td>
-                                            }
-                                        }
-                                    </tr>
-                                }
-                                
-                            </tbody>
-                        </table>
+                <div class="space-details">
+                    <div class="space-name">@Model.SelectedSpace.Name</div>
+                    <div class="space-info">
+                        <div>@Model.SelectedSpace.Name Host since @DateTime.Now.ToShortDateString()</div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-
-
-    <div class="sec sec-spectial">
-        <div class="booking-form col-12 col-lg-4 col-md-8 col-sm-12">
+        <!--Booking-->
+        <div class="hall-booking-main-right">
             <div class="form-container">
                 <h1> $@Model.SelectedHall.CostPerHour /hr</h1>
                 <p class="p-date-picker">
@@ -299,62 +170,14 @@
                         data-bs-target="#exampleModal">
                     Book Now
                 </button>
-
-
-            </div>
         </div>
     </div>
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1"
-            aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel"> Confirm new booking </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                            aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <!-- service price -->
-
-                    <div class="flex modal-check">
-                        <div>cofee/tea</div>
-                        <div><b>10$</b></div>
-                    </div>
-                    <div class="flex modal-check">
-                        <div>cofee/tea</div>
-                        <div><b>10$</b></div>
-                    </div>
-                    <div class="flex modal-check">
-                        <div>cofee/tea</div>
-                        <div><b>10$</b></div>
-                    </div>
-                    <div class="flex modal-check">
-                        <div>cofee/tea</div>
-                        <div><b>10$</b></div>
-                    </div>
-                    <hr>
-                    <div class="flex modal-check bigger-font">
-                        <div>Total Check</div>
-                        <div><b>@Model.TotalCost</b></div>
-                    </div>
-
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-dark">Confirm</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
     </div>
-
 </div>
 
-
 @section Scripts
-{
-    <script>
+    {
+       <script>
         $(document).ready(function () {
             var $dropdown = $(".dropdown-menu");
 
