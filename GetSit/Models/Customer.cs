@@ -19,7 +19,8 @@ namespace GetSit.Models
         public string LastName { get; set; }
         [Required, EmailAddress]
         public string Email { get; set; }
-        [Required, MinLength(8), RegularExpression("%[A-Z]%",ErrorMessage ="at least one uppercase letter is required")]
+        [Required, MinLength(8), 
+            RegularExpression("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$", ErrorMessage = "Must be at least 8 characters and contain at least one letter and one number.")]
         public string Password { get; set; }
         [Required,Phone, Display(Name = "Phone number")]
         public string PhoneNumber { get; set; }
