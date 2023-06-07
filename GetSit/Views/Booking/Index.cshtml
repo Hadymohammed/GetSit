@@ -98,30 +98,35 @@
                         <br />
                     </div>
                 }
+
             <hr />
             <!--Services-->
-            <h2 class="card-header-title">Space Services </h2>
-            <div class="services-contanier">
-                <!-- amenities card starts -->
-                @foreach (var service in Model.SelectedSpace.Services)
-                {
-                    <div class="product-card">
-                        <div class="product-content">
-                            <div class="product-photo">
-                                <img src="@service.ServicePhotos.First().Url" alt="Product Photo">
-                            </div>
-                            <div class="product-details">
-                                <h3 class="product-name">@service.Name</h3>
-                                <p class="product-description">@service.Description</p>
-                                <p class="product-price">Price: @service.Price.ToString("N2")</p>
+            <div class="sec-box">
+                <h2 class="card-header-title">Space Services </h2>
+                <div class="services-contanier">
+                    <!-- amenities card starts -->
+                    @foreach (var service in Model.SelectedSpace.Services)
+                    {
+                        <div class="product-card">
+                            <div class="product-content">
+                                <div class="product-photo">
+                                    <img src="@service.ServicePhotos.First().Url" alt="Product Photo">
+                                </div>
+                                <div class="product-details">
+                                    <h3 class="product-name">@service.Name</h3>
+                                    <p class="product-description">@service.Description</p>
+                                    <p class="product-price">Price: @service.Price.ToString("N2")</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                }
+                    }
 
-                <!-- amenities card ends -->
+                    <!-- amenities card ends -->
 
+                </div>
             </div>
+
+            <hr />
             <!--Working Times-->
             <div class="Working-times">
                 <h2 class="card-header-title"> Working Times </h2>
@@ -196,16 +201,171 @@
         </div>
         <!--Booking-->
         <div class="hall-booking-main-right">
-            
-        </div>
-    </div>
+            <div class="booking">
+                <div class="form-container">
+                    <h1> $@Model.SelectedHall.CostPerHour /hr</h1>
+                    <input type="date" asp-for="@Model.DesiredDate" class="p-date-picker">
+                    <!--Select start & end time-->
+                    <div class="select-time">
+                    <div class="select-wrapper">
+                        <label class="select-label select-start-label" for="start-time">Start Time</label>
+                        <div class="select-container select-start">
+                            <input type="text" id="start-time" class="select-input" readonly>
+                            <span class="material-symbols-outlined">schedule</span>
+                            <ul class="select-options select-start-options">
+                                <li>8:00 AM</li>
+                                <li>9:00 AM</li>
+                                <li>10:00 AM</li>
+                                <!-- Add more options as needed -->
+                            </ul>
+                        </div>
+                    </div>
+                        <div class="select-wrapper">
+                            <label class="select-label select-end-label" for="end-time">End Time</label>
+                            <div class="select-container select-end disabled">
+                                <input type="text" id="end-time" class="select-input" readonly>
+                                <span class="material-symbols-outlined">schedule</span>
+                                <ul class="select-options select-end-options">
+                                    <li>8:00 AM</li>
+                                    <li>9:00 AM</li>
+                                    <li>10:00 AM</li>
+                                    <!-- Add more options as needed -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--Add services to booking -->
+                    <div class="btn-group ">
+                        <button class="btn btn-secondary dropdown-toggle emen-btn" type="button"
+                                id="dropdownMenuClickableInside" data-bs-toggle="dropdown" data-bs-auto-close="outside"
+                                aria-expanded="false">
+                            Select Service
+                        </button>
+                        <ul class="dropdown-menu amn-dropdown-list" aria-labelledby="dropdownMenuClickableInside">
+                           
+                                @foreach (var service in @Model.SelectedSpace.Services)
+                                {
+                                    <li>
+                                    <div class="edit-list-item">
+                                        <span class="con-list-item">@service.Name</span>
+                                        <div class="counter-container">
+                                            <button class="counter-btn decrement material-symbols-outlined hover-effect no-border-btn">
+                                                remove
+                                            </button>
+                                            <span class="counter-value">0</span>
+                                            <button class="counter-btn increment material-symbols-outlined hover-effect no-border-btn">
+                                                add
+                                            </button>
+                                        </div>
+                                        @* Hidden input field to store the service ID and quantity data *@
+                                        <input type="hidden" name="SelectedServices[@service.Id]" value="" />
+                                    </div>
+                                    </li>
+                                }
+
+                           
+                        </ul>
+                    </div>
+                    <!-- Add services to booking ends -->
+
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn Book-Now-btn" data-bs-toggle="modal"
+                            data-bs-target="#exampleModal">
+                        Book Now
+                    </button>
+                </div>
+            </div>
+         </div>
     </div>
 </div>
 
 @section Scripts
     {
        <script>
-        $(document).ready(function () {
+            $(document).ready(setupSelectStartTime);
+            $(document).ready(setupSelectEndTime);
+            $(document).ready(setupDropDownService);
+
+            $(document).on('show.bs.modal', '.modal', function () {
+                $(this).appendTo('body');
+            });
+
+            function setupSelectStartTime() {
+                $('.select-start').on('click', function () {
+                    $(this).find('.select-options').toggle();
+                });
+
+                $('.select-start-options li').on('click', function () {
+                    var selectedOption = $(this).text();
+                    $('#start-time').val(selectedOption);
+                    $('.select-start-options').hide();
+                    $('.select-start-label').addClass('top-label');
+
+                    // Enable the end-time selection
+                    $('.select-end').removeClass('disabled');
+                });
+
+                $('#start-time').on('focus', function () {
+                    $('.select-start-label').addClass('top-label');
+                }).on('blur', function () {
+                    if ($(this).val() === '') {
+                        $('.select-start-label').removeClass('top-label');
+
+                        // Disable the end-time selection
+                        $('.select-end').addClass('disabled');
+                        $('#end-time').val('');
+                        $('.select-end-label').removeClass('top-label');
+                    }
+                });
+
+                $(document).on('click', function (event) {
+                    if (!$(event.target).closest('.select-wrapper').length) {
+                        $('.select-options').hide();
+                        if ($('#start-time').val() === '') {
+                            $('.select-start-label').removeClass('top-label');
+
+                            // Disable the end-time selection
+                            $('.select-end').addClass('disabled');
+                            $('#end-time').val('');
+                            $('.select-end-label').removeClass('top-label');
+                        }
+                    }
+                });
+            }
+
+            function setupSelectEndTime() {
+                $('.select-end').on('click', function (e) {
+                    if ($('#start-time').val() === '') return;
+                    $(this).find('.select-options').toggle();
+                });
+
+                $('.select-end-options li').on('click', function () {
+                    var selectedOption = $(this).text();
+                    $('#end-time').val(selectedOption);
+                    $('.select-end-options').hide();
+                    $('.select-end-label').addClass('top-label');
+                });
+
+                $('#end-time').on('focus', function () {
+                    if ($('#start-time').val() === '') return;
+                    $('.select-end-label').addClass('top-label');
+                }).on('blur', function () {
+                    if ($(this).val() === '') {
+                        $('.select-end-label').removeClass('top-label');
+                    }
+                });
+
+                $(document).on('click', function (event) {
+                    if (!$(event.target).closest('.select-wrapper').length) {
+                        $('.select-options').hide();
+                        if ($('#end-time').val() === '') {
+                            $('.select-end-label').removeClass('top-label');
+                        }
+                    }
+                });
+            }
+        function setupDropDownService() {
             var $dropdown = $(".dropdown-menu");
 
             $dropdown.on("click", ".counter-btn", function (e) {
@@ -231,12 +391,7 @@
                 // Prevent dropdown from closing when clicking on the counter buttons
                 e.stopPropagation();
             });
-        });
-
-
-        $(document).on('show.bs.modal', '.modal', function () {
-            $(this).appendTo('body');
-        });
+        }
     </script>
 
 }
