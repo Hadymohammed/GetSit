@@ -209,7 +209,7 @@ namespace GetSit.Controllers
             var service = new SpaceService()
             {
                 SpaceId = vm.SpaceId,
-                Name=vm.SpaceName,
+                Name=vm.ServiceName,
                 Description = vm.Description,
                 Price = vm.CostPerUnit
             };
