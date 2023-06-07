@@ -58,7 +58,8 @@ namespace GetSit.Controllers
             {
                 var providerId = _userManager.GetCurrentUserId(HttpContext);
                 var provider = await _providerService.GetByIdAsync(providerId);
-                SpaceIdStirng = provider.SpaceId.ToString();
+                spaceIdInt = (int)provider.SpaceId;
+                SpaceIdStirng = provider.ToString();
                 if(SpaceIdStirng != String.Empty)
                     HttpContext.Response.Cookies.Append("SpaceId", SpaceIdStirng);
             }
