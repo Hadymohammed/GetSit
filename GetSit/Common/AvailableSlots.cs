@@ -15,7 +15,7 @@ namespace GetSit.Common
         {
             _context = context;
         }
-         public List<Tuple<TimeSpan,bool>> GetAvailableSlotsForDay(int hallId, DateTime date)
+        public List<Tuple<TimeSpan,bool>> GetAvailableSlotsForDay(int hallId, DateTime date)
         {
             var bookings = _context.Booking
                            .Where(b => b.BookingHalls.Any(h => h.HallId == hallId && b.DesiredDate == date))
@@ -56,7 +56,8 @@ namespace GetSit.Common
                     foreach (var booking in bookings)
                     {
                         var EndTime = booking.StartTime.Add(TimeSpan.FromHours(booking.NumberOfHours));
-                        if (booking.StartTime <= endTimeSlot && EndTime > timeSlots[slotIdx].Item1)
+                        // 8                     10:00                        11        10:15
+                        if (booking.StartTime <= timeSlots[slotIdx].Item1 && EndTime >= endTimeSlot)
                         {
                             isAvailable = false;
                             break;
@@ -76,7 +77,6 @@ namespace GetSit.Common
             }
             return timeSlots;
         }
-
         public List<Dictionary<DateTime, List<Tuple<TimeSpan, bool>>>> GetAvailableSlotsForWeek(int hallId, DateTime date)
         {
             
@@ -91,5 +91,21 @@ namespace GetSit.Common
             }
             return availableSlotsForWeek;
         }
+        public bool IsTimeSlotAvailable(int hallId, DateTime desiredDate, TimeSpan startTime, TimeSpan endTime)
+        {
+            TimeSpan duration = endTime - startTime;
+            var bookings = _context.Booking
+                .Where(b =>
+                    b.BookingHalls.Any(bh => bh.HallId == hallId) &&
+                    b.DesiredDate.Date == desiredDate.Date)
+                .ToList();
+            bool NotAvailable = bookings
+                .Any(b =>
+                    (b.StartTime >= startTime && b.StartTime < endTime) ||
+                    (b.StartTime < startTime && b.StartTime.Add(TimeSpan.FromHours(b.NumberOfHours)) > startTime));
+
+            return !NotAvailable;
+        }
+
     }
 }
