@@ -130,7 +130,7 @@
 }
 
 .product-name {
-    font-size: 24px;
+    font-size: 20px;
     font-weight: bold;
     margin-bottom: 10px;
 }
@@ -156,19 +156,23 @@
     overflow-x: auto;
     max-height: 400px; /* Adjust the max-height as needed */
     margin:20px 0px;
+    position:relative
 }
 
 .schedule {
     width: 100%;
     border-collapse: collapse;
 }
-
-.schedule th,
-.schedule td {
-    border: 1px solid #e2e2e2;
-    padding: 6px;
-    text-align: center;
-}
+    .schedule th{
+        position:sticky;
+        top:-1px;
+    }
+    .schedule th,
+    .schedule td {
+        border: 1px solid #e2e2e2;
+        padding: 6px;
+        text-align: center;
+    }
 
 .schedule th:first-child,
 .schedule td:first-child {
@@ -236,11 +240,11 @@
     }
 
 /*Booking form*/
-.booking {
+.booking-form {
     position: sticky;
     top: 5px;
 }
-    .booking .form-container {
+    .booking-form .form-container {
         padding: 10px;
         background-color: white;
         border-radius: 10px;
@@ -471,6 +475,9 @@
     border: 1px solid #ccc;
     border-radius: 4px;
     padding: 5px;
+    height: fit-content;
+    max-height: 250px;
+    overflow: overlay;
 }
 
 .select-options li {
@@ -481,6 +488,7 @@
 .select-options li:hover {
     background-color: #f0f0f0;
 }
+
 
 .select-input:focus + .icon-clock {
     color: #80bdff;
@@ -505,6 +513,10 @@
         background-color: white;
         color: #000000;
     }
+.counter-container {
+    display: flex;
+    align-items: center;
+}
 .con-list-item {
     width: 50%;
 }
@@ -555,8 +567,14 @@
     .hall-booking-main-left{
         width:100%;
     }
-    .hall-booking-main-right{
-        width:50%;
+    .hall-booking-main-right {
+        width: 100%;
         margin: 20px;
     }
+    .product-card {
+        width: 100%;
+    }
+}
+.none{
+    display:none;
 }

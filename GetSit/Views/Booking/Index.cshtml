@@ -1,7 +1,9 @@
 ﻿@using GetSit.Data.ViewModels
 @model BookingVM
+
 <link rel="stylesheet" href="./css/booking.css"/>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+<input hidden asp-for="FilterDate"/>
 <div class="container">
     <div class="header">
         <div class="header-hall">
@@ -35,20 +37,21 @@
                 <div class="carousel-inner">
                     @{
                         var j = 0;
-                    }
-                    @foreach (var photo in Model.SelectedHall.HallPhotos)
-                    {
-                        @if (j++ == 0)
+                    
+                                                                                                                                    @foreach (var photo in Model.SelectedHall.HallPhotos)
                         {
-                            <div class="carousel-item active">
-                                <img class="d-block w-100" src="@photo.Url" alt="@j slide">
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="carousel-item">
-                                <img class="d-block w-100" src="@photo.Url" alt="@j slide">
-                            </div>
+                                                                                                                                        @if (j++ == 0)
+                            {
+                                                                                                                                                <div class="carousel-item active">
+                                                                                                                                                    <img class="d-block w-100" src="@photo.Url" alt="@j slide">
+                                                                                                                                                </div>
+                            }
+                            else
+                            {
+                                                                                                                                                <div class="carousel-item">
+                                                                                                                                                    <img class="d-block w-100" src="@photo.Url" alt="@j slide">
+                                                                                                                                                </div>
+                            }
                         }
                     }
                 </div>
@@ -201,10 +204,12 @@
         </div>
         <!--Booking-->
         <div class="hall-booking-main-right">
-            <div class="booking">
+            <div class="booking-form">
                 <div class="form-container">
+                    <input id="hallId" hidden asp-for="SelectedHall.Id" />
                     <h1> $@Model.SelectedHall.CostPerHour /hr</h1>
-                    <input type="date" asp-for="@Model.DesiredDate" class="p-date-picker">
+                    <input type="date" asp-for="DesiredDate" class="p-date-picker" id="date-input" value="@Model.FilterDate">
+                    <a id="date-filter" asp-action="Index" asp-route-date="@DateTime.Now" asp-route-HallID="@Model.SelectedHall.Id">Check Date Availability</a>
                     <!--Select start & end time-->
                     <div class="select-time">
                     <div class="select-wrapper">
@@ -212,117 +217,161 @@
                         <div class="select-container select-start">
                             <input type="text" id="start-time" class="select-input" readonly>
                             <span class="material-symbols-outlined">schedule</span>
-                            <ul class="select-options select-start-options">
-                                <li>8:00 AM</li>
-                                <li>9:00 AM</li>
-                                <li>10:00 AM</li>
-                                <!-- Add more options as needed -->
+                            <ul class="starts select-options select-start-options">
+                                    @{
+                                        var k = 0;
+                                    }
+                                @foreach (var span in Model.SlotsForWeek[0].Values.First())
+                                    {
+                                        @if(span.Item2){
+                                            var spanString= new DateTime(span.Item1.Ticks).ToString("hh:mm tt");
+                                            <li index="@k">@spanString</li>
+                                        }
+                                        k++;
+
+                                    }
+
                             </ul>
                         </div>
                     </div>
-                        <div class="select-wrapper">
-                            <label class="select-label select-end-label" for="end-time">End Time</label>
-                            <div class="select-container select-end disabled">
-                                <input type="text" id="end-time" class="select-input" readonly>
-                                <span class="material-symbols-outlined">schedule</span>
+                    <div class="select-wrapper">
+                        <label class="select-label select-end-label" for="end-time">End Time</label>
+                        <div class="select-container select-end disabled">
+                            <input type="text" id="end-time" class="select-input" readonly>
+                            <span class="material-symbols-outlined">schedule</span>
                                 <ul class="select-options select-end-options">
-                                    <li>8:00 AM</li>
-                                    <li>9:00 AM</li>
-                                    <li>10:00 AM</li>
-                                    <!-- Add more options as needed -->
+                                    
+                                    @foreach (var span in  Model.SlotsForWeek[0].Values.First())
+                                    {
+                                        var spanString = new DateTime(span.Item1.Ticks).ToString("hh:mm tt");
+                                        @if (span.Item2)
+                                        {
+                                            <li >@spanString</li>
+                                        }
+                                        else{
+                                            <li class="none" invalid>@spanString</li>
+                                        }
+                                    }
+
                                 </ul>
-                            </div>
                         </div>
                     </div>
-
-                    <!--Add services to booking -->
-                    <div class="btn-group ">
-                        <button class="btn btn-secondary dropdown-toggle emen-btn" type="button"
-                                id="dropdownMenuClickableInside" data-bs-toggle="dropdown" data-bs-auto-close="outside"
-                                aria-expanded="false">
-                            Select Service
-                        </button>
-                        <ul class="dropdown-menu amn-dropdown-list" aria-labelledby="dropdownMenuClickableInside">
-                           
-                                @foreach (var service in @Model.SelectedSpace.Services)
-                                {
-                                    <li>
-                                    <div class="edit-list-item">
-                                        <span class="con-list-item">@service.Name</span>
-                                        <div class="counter-container">
-                                            <button class="counter-btn decrement material-symbols-outlined hover-effect no-border-btn">
-                                                remove
-                                            </button>
-                                            <span class="counter-value">0</span>
-                                            <button class="counter-btn increment material-symbols-outlined hover-effect no-border-btn">
-                                                add
-                                            </button>
-                                        </div>
-                                        @* Hidden input field to store the service ID and quantity data *@
-                                        <input type="hidden" name="SelectedServices[@service.Id]" value="" />
-                                    </div>
-                                    </li>
-                                }
-
-                           
-                        </ul>
                     </div>
-                    <!-- Add services to booking ends -->
 
-                    <!-- Button trigger modal -->
+                <!--Add services to booking -->
+                <div class="btn-group ">
+                    <button class="btn btn-secondary dropdown-toggle emen-btn" type="button"
+                        id="dropdownMenuClickableInside" data-bs-toggle="dropdown" data-bs-auto-close="outside"
+                        aria-expanded="false">
+                        Select Service
+                    </button>
+                    <ul class="dropdown-menu amn-dropdown-list" aria-labelledby="dropdownMenuClickableInside">
+
+                        @foreach (var service in @Model.SelectedSpace.Services)
+                        {
+                            <li>
+                                <div class="edit-list-item">
+                                    <span class="con-list-item">@service.Name</span>
+                                    <div class="counter-container">
+                                        <button class="counter-btn decrement material-symbols-outlined hover-effect no-border-btn">
+                                            remove
+                                        </button>
+                                        <span class="counter-value">0</span>
+                                        <button class="counter-btn increment material-symbols-outlined hover-effect no-border-btn">
+                                            add
+                                        </button>
+                                    </div>
+                                    @* Hidden input field to store the service ID and quantity data *@
+                                    <input type="hidden" name="SelectedServices[@service.Id]" value="" />
+                                </div>
+                            </li>
+                        }
+
+
+                    </ul>
+                </div>
+                <!-- Add services to booking ends -->
+
+                <!-- Button trigger modal -->
                     <button type="button" class="btn Book-Now-btn" data-bs-toggle="modal"
-                            data-bs-target="#exampleModal">
+                        data-bs-target="#exampleModal">
                         Book Now
                     </button>
                 </div>
             </div>
-         </div>
+        </div>
     </div>
 </div>
 
 @section Scripts
-    {
-       <script>
-            $(document).ready(setupSelectStartTime);
-            $(document).ready(setupSelectEndTime);
-            $(document).ready(setupDropDownService);
+{
+        <script>
+                $(document).ready(setupSelectDate);
+                $(document).ready(setupSelectStartTime);
+                $(document).ready(setupSelectEndTime);
+                $(document).ready(setupDropDownService);
 
-            $(document).on('show.bs.modal', '.modal', function () {
-                $(this).appendTo('body');
-            });
+                $(document).on('show.bs.modal', '.modal', function () {
+                    $(this).appendTo('body');
+                })
 
-            function setupSelectStartTime() {
-                $('.select-start').on('click', function () {
-                    $(this).find('.select-options').toggle();
-                });
+                function setupSelectDate(){
+                    //Date default Value
+                    var date = new Date($("#FilterDate").val());
+            date.setDate(date.getDate() + 1);
+            var formattedDate = date.toISOString().split('T')[0];
+                    $('#date-input').val(formattedDate);
+            console.log(formattedDate);
 
-                $('.select-start-options li').on('click', function () {
-                    var selectedOption = $(this).text();
-                    $('#start-time').val(selectedOption);
-                    $('.select-start-options').hide();
-                    $('.select-start-label').addClass('top-label');
+                    $('#date-input').on('change',()=>{
+                        var date= $('#date-input').val();
+                        var hallId= $("#hallId").val();
+                    $('#date-filter').attr('href', `/Booking?date=${date}&HallID=${hallId}`);
 
-                    // Enable the end-time selection
-                    $('.select-end').removeClass('disabled');
-                });
+                     
+                        
+                    })
+                }
+               
+                function setupSelectStartTime() {
+                    $('.select-start').on('click', function () {
+                        $(this).find('.select-options').toggle();
+                    });
 
-                $('#start-time').on('focus', function () {
-                    $('.select-start-label').addClass('top-label');
-                }).on('blur', function () {
-                    if ($(this).val() === '') {
-                        $('.select-start-label').removeClass('top-label');
+                    $('.select-start-options li').on('click', function () {
+                        var selectedOption = $(this).text();
+                        var selectedSpanIdx= $(this).attr("index");
+                        $('#start-time').val(selectedOption);
+                        $('.select-start-options').hide();
+                        $('.select-start-label').addClass('top-label');
+                        /*Update valid end spans*/
+                        var notValid=0;
+                        $('.select-end-options li').each((index,element)=>{
+                    console.log($(this));
+                            if(index<=selectedSpanIdx)
+                                $(element).addClass("none");
+                            else{
+                                var attr=$(element).attr('invalid');
+                                if (typeof attr !== typeof undefined && attr !== false) {
+                                    notValid++;
+                                    if(notValid==1)
+                                        $(element).removeClass("none");
+                                }
+                                else{
+                            $(element).removeClass("none");
+                                }
+                            }
+                            if (notValid>1) 
+                                $(element).addClass("none");
+                        })
+                        // Enable the end-time selection
+                        $('.select-end').removeClass('disabled');
+                    });
 
-                        // Disable the end-time selection
-                        $('.select-end').addClass('disabled');
-                        $('#end-time').val('');
-                        $('.select-end-label').removeClass('top-label');
-                    }
-                });
-
-                $(document).on('click', function (event) {
-                    if (!$(event.target).closest('.select-wrapper').length) {
-                        $('.select-options').hide();
-                        if ($('#start-time').val() === '') {
+                    $('#start-time').on('focus', function () {
+                        $('.select-start-label').addClass('top-label');
+                    }).on('blur', function () {
+                        if ($(this).val() === '') {
                             $('.select-start-label').removeClass('top-label');
 
                             // Disable the end-time selection
@@ -330,68 +379,81 @@
                             $('#end-time').val('');
                             $('.select-end-label').removeClass('top-label');
                         }
-                    }
-                });
-            }
+                    });
 
-            function setupSelectEndTime() {
-                $('.select-end').on('click', function (e) {
-                    if ($('#start-time').val() === '') return;
-                    $(this).find('.select-options').toggle();
-                });
+                    $(document).on('click', function (event) {
+                        if (!$(event.target).closest('.select-wrapper').length) {
+                            $('.select-options').hide();
+                            if ($('#start-time').val() === '') {
+                                $('.select-start-label').removeClass('top-label');
 
-                $('.select-end-options li').on('click', function () {
-                    var selectedOption = $(this).text();
-                    $('#end-time').val(selectedOption);
-                    $('.select-end-options').hide();
-                    $('.select-end-label').addClass('top-label');
-                });
+                                // Disable the end-time selection
+                                $('.select-end').addClass('disabled');
+                                $('#end-time').val('');
+                                $('.select-end-label').removeClass('top-label');
+                            }
+                        }
+                    });
+                }   
 
-                $('#end-time').on('focus', function () {
-                    if ($('#start-time').val() === '') return;
-                    $('.select-end-label').addClass('top-label');
-                }).on('blur', function () {
-                    if ($(this).val() === '') {
-                        $('.select-end-label').removeClass('top-label');
-                    }
-                });
+                function setupSelectEndTime() {
+                    $('.select-end').on('click', function (e) {
+                        if ($('#start-time').val() === '') return;
+                        $(this).find('.select-options').toggle();
+                    });
 
-                $(document).on('click', function (event) {
-                    if (!$(event.target).closest('.select-wrapper').length) {
-                        $('.select-options').hide();
-                        if ($('#end-time').val() === '') {
+                    $('.select-end-options li').on('click', function () {
+                        var selectedOption = $(this).text();
+                        $('#end-time').val(selectedOption);
+                        $('.select-end-options').hide();
+                        $('.select-end-label').addClass('top-label');
+                    });
+
+                    $('#end-time').on('focus', function () {
+                        if ($('#start-time').val() === '') return;
+                        $('.select-end-label').addClass('top-label');
+                    }).on('blur', function () {
+                        if ($(this).val() === '') {
                             $('.select-end-label').removeClass('top-label');
                         }
-                    }
-                });
-            }
-        function setupDropDownService() {
-            var $dropdown = $(".dropdown-menu");
+                    });
 
-            $dropdown.on("click", ".counter-btn", function (e) {
-                e.preventDefault();
-                var $counterContainer = $(this).closest(".counter-container");
-                var $counterValue = $counterContainer.find(".counter-value");
-                var currentValue = parseInt($counterValue.text()) || 0;
-                var increment = $(this).hasClass("increment") ? 1 : -1;
-
-                var newValue = currentValue + increment;
-                if (newValue < 0) {
-                    newValue = 0;
+                    $(document).on('click', function (event) {
+                        if (!$(event.target).closest('.select-wrapper').length) {
+                            $('.select-options').hide();
+                            if ($('#end-time').val() === '') {
+                                $('.select-end-label').removeClass('top-label');
+                            }
+                        }
+                    });
                 }
 
-                $counterValue.text(newValue);
+                function setupDropDownService() {
+                    var $dropdown = $(".dropdown-menu");
 
-                // Update the hidden input field with the selected quantity
-                var $parent = $(this).closest(".edit-list-item");
-                var serviceId = $parent.data("service-id");
-                var $hiddenInput = $parent.find("input[type=hidden]");
-                $hiddenInput.attr("name", "SelectedServices[" + serviceId + "]");
+                    $dropdown.on("click", ".counter-btn", function (e) {
+                        e.preventDefault();
+                        var $counterContainer = $(this).closest(".counter-container");
+                        var $counterValue = $counterContainer.find(".counter-value");
+                        var currentValue = parseInt($counterValue.text()) || 0;
+                        var increment = $(this).hasClass("increment") ? 1 : -1;
 
-                // Prevent dropdown from closing when clicking on the counter buttons
-                e.stopPropagation();
-            });
-        }
-    </script>
+                        var newValue = currentValue + increment;
+                        if (newValue < 0) {
+                            newValue = 0;
+                        }
 
+                        $counterValue.text(newValue);
+
+                        // Update the hidden input field with the selected quantity
+                        var $parent = $(this).closest(".edit-list-item");
+                        var serviceId = $parent.data("service-id");
+                        var $hiddenInput = $parent.find("input[type=hidden]");
+                        $hiddenInput.attr("name", "SelectedServices[" + serviceId + "]");
+
+                        // Prevent dropdown from closing when clicking on the counter buttons
+                        e.stopPropagation();
+                    });
+                }
+        </script>
 }
