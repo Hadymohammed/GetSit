@@ -207,7 +207,7 @@
             <div class="booking-form">
                 <div class="form-container">
                     <input id="hallId" hidden asp-for="SelectedHall.Id" />
-                    <h3>@Model.SelectedHall.Type :  $<span id="hall-cost">@Model.SelectedHall.CostPerHour</span> </h3>
+                    <h3>@Model.SelectedHall.Type :  $<span id="hall-cost">@Model.SelectedHall.CostPerHour</span> /hr  </h3>
                     <input type="date" asp-for="DesiredDate" class="p-date-picker" id="date-input" value="@Model.FilterDate">
                     <a id="date-filter" asp-action="Index" asp-route-date="@DateTime.Now" asp-route-HallID="@Model.SelectedHall.Id">Check Date Availability</a>
                     <!--Select start & end time-->
