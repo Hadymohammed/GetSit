@@ -18,6 +18,7 @@ namespace GetSit.Data.ViewModels
         public Dictionary<int, int> SelectedServicesQuantities { get; set; }
         [Required, DataType(DataType.Date)]
         public DateTime BookingDate { get; set; }
+        public DateTime FilterDate { get; set; }
         [Required, DataType(DataType.Date)]
         public DateTime DesiredDate { get; set; }
         [Required, DataType(DataType.Date)]

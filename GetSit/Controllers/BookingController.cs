@@ -28,7 +28,7 @@ namespace GetSit.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index (int HallID)
+        public async Task<IActionResult> Index (int HallID,DateTime? date)
         {
            
 
@@ -44,18 +44,21 @@ namespace GetSit.Controllers
 
             /* create object from the class to get the available timeslots*/
             AvailableSlots slots = new AvailableSlots(_context);
-
+            var filterDate = DateTime.Today;
+            if (date != null)
+                filterDate = (DateTime)date;
             var viewModel =  new BookingVM
             {
                 SelectedHall = hall,
                 SelectedSpace = space,
-                AvailableSlots = slots.GetAvailableSlotsForDay(HallID, DateTime.Today), 
+                AvailableSlots = slots.GetAvailableSlotsForDay(HallID, filterDate), 
+                FilterDate=filterDate
                 
             };
 
 
           /* get the available slots for a week from today*/
-            viewModel.SlotsForWeek = slots.GetAvailableSlotsForWeek(HallID, DateTime.Today);
+            viewModel.SlotsForWeek = slots.GetAvailableSlotsForWeek(HallID, filterDate);
 
 
             return View(viewModel);
@@ -206,5 +209,5 @@ namespace GetSit.Controllers
 
             return RedirectToAction("Book");
         }
-    }
+        
 }
