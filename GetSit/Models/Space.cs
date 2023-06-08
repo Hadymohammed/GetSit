@@ -34,6 +34,8 @@ namespace GetSit.Models
         [Required]
         public ICollection<SpaceHall> Halls { get; set; }
         public List<SpaceEmployee> Employees { get; set; }
-     
+        
+
+
     }
 }

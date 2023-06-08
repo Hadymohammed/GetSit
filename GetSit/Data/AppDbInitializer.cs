@@ -59,7 +59,7 @@ namespace GetSit.Data
                         }
                     });
                 }
-                context.SaveChanges();
+                //context.SaveChanges();
                 //Space Phone
                 if (!context.SpacePhone.Any())
                 {
