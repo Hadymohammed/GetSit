@@ -38,19 +38,19 @@
                     @{
                         var j = 0;
                     
-                            @foreach (var photo in Model.SelectedHall.HallPhotos)
+                                                                                                                    @foreach (var photo in Model.SelectedHall.HallPhotos)
                              {
-                                @if (j++ == 0)
+                                                                                                                        @if (j++ == 0)
                             {
-                            <div class="carousel-item active">
-                                    <img class="slider-image" src="@photo.Url" alt="@j slide">
-                            </div>
+                                                                                                                    <div class="carousel-item active">
+                                                                                                                            <img class="slider-image" src="@photo.Url" alt="@j slide">
+                                                                                                                    </div>
                             }
                             else
                             {
-                                <div class="carousel-item">
-                                    <img class="slider-image" src="@photo.Url" alt="@j slide">
-                                </div>
+                                                                                                                        <div class="carousel-item">
+                                                                                                                            <img class="slider-image" src="@photo.Url" alt="@j slide">
+                                                                                                                        </div>
                             }
                         }
                     }
@@ -207,7 +207,7 @@
             <div class="booking-form">
                 <div class="form-container">
                     <input id="hallId" hidden asp-for="SelectedHall.Id" />
-                    <h1> $@Model.SelectedHall.CostPerHour /hr</h1>
+                    <h3>@Model.SelectedHall.Type :  $<span id="hall-cost">@Model.SelectedHall.CostPerHour</span> </h3>
                     <input type="date" asp-for="DesiredDate" class="p-date-picker" id="date-input" value="@Model.FilterDate">
                     <a id="date-filter" asp-action="Index" asp-route-date="@DateTime.Now" asp-route-HallID="@Model.SelectedHall.Id">Check Date Availability</a>
                     <!--Select start & end time-->
@@ -217,7 +217,7 @@
                         <div class="select-container select-start">
                             <input type="text" id="start-time" class="select-input" readonly>
                             <span class="material-symbols-outlined">schedule</span>
-                            <ul class="starts select-options select-start-options">
+                            <ul class="select-options select-start-options" id="#starts">
                                     @{
                                         var k = 0;
                                     }
@@ -239,7 +239,7 @@
                         <div class="select-container select-end disabled">
                             <input type="text" id="end-time" class="select-input" readonly>
                             <span class="material-symbols-outlined">schedule</span>
-                                <ul class="select-options select-end-options">
+                                <ul class="select-options select-end-options" id="ends">
                                     
                                     @foreach (var span in  Model.SlotsForWeek[0].Values.First())
                                     {
@@ -271,7 +271,8 @@
                         {
                             <li>
                                 <div class="edit-list-item">
-                                    <span class="con-list-item">@service.Name</span>
+                                    <span class="con-list-item service-name">@service.Name</span>
+                                    <span class="con-list-item ">$<span class="service-cost">@service.Price</span></span>
                                     <div class="counter-container">
                                         <button class="counter-btn decrement material-symbols-outlined hover-effect no-border-btn">
                                             remove
@@ -282,7 +283,7 @@
                                         </button>
                                     </div>
                                     @* Hidden input field to store the service ID and quantity data *@
-                                    <input type="hidden" name="SelectedServices[@service.Id]" value="" />
+                                    <input type="hidden" name="SelectedServices[@service.Id]" class="service-qunt"value="" />
                                 </div>
                             </li>
                         }
@@ -290,10 +291,27 @@
 
                     </ul>
                 </div>
-                <!-- Add services to booking ends -->
-
+                <!--receipt-->
+                <div class="receipt-container none">
+                    <h3>Receipt details</h3>
+                    <table>
+                        <thead>
+                            <th>Detail Name</th>
+                            <th>Unit Cost</th>
+                            <th>Qt</th>
+                            <th>Cost</th>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                    <hr/>
+                    <div class="receipt-total">
+                        <h4>Total : </h4>
+                        <div></div>
+                    </div>
+                </div>
                 <!-- Button trigger modal -->
-                    <button type="button" class="btn Book-Now-btn" data-bs-toggle="modal"
+                    <button type="button" class="purple-btn" style="margin: 10px;" data-bs-toggle="modal"
                         data-bs-target="#exampleModal">
                         Book Now
                     </button>
@@ -321,7 +339,6 @@
             date.setDate(date.getDate() + 1);
             var formattedDate = date.toISOString().split('T')[0];
                     $('#date-input').val(formattedDate);
-            console.log(formattedDate);
 
                     $('#date-input').on('change',()=>{
                         var date= $('#date-input').val();
@@ -342,12 +359,11 @@
                         var selectedOption = $(this).text();
                         var selectedSpanIdx= $(this).attr("index");
                         $('#start-time').val(selectedOption);
-                        $('.select-start-options').hide();
+                        $('#starts').hide();
                         $('.select-start-label').addClass('top-label');
                         /*Update valid end spans*/
                         var notValid=0;
                         $('.select-end-options li').each((index,element)=>{
-                    console.log($(this));
                             if(index<=selectedSpanIdx)
                                 $(element).addClass("none");
                             else{
@@ -405,8 +421,9 @@
                     $('.select-end-options li').on('click', function () {
                         var selectedOption = $(this).text();
                         $('#end-time').val(selectedOption);
-                        $('.select-end-options').hide();
+                        $('#ends').hide();
                         $('.select-end-label').addClass('top-label');
+                        updateReceipt();
                     });
 
                     $('#end-time').on('focus', function () {
@@ -423,6 +440,9 @@
                             $('.select-options').hide();
                             if ($('#end-time').val() === '') {
                                 $('.select-end-label').removeClass('top-label');
+                            }
+                            else{
+                                updateReceipt();
                             }
                         }
                     });
@@ -450,10 +470,77 @@
                         var serviceId = $parent.data("service-id");
                         var $hiddenInput = $parent.find("input[type=hidden]");
                         $hiddenInput.attr("name", "SelectedServices[" + serviceId + "]");
-
+                        updateReceipt();
                         // Prevent dropdown from closing when clicking on the counter buttons
                         e.stopPropagation();
                     });
+                }
+                
+                function updateReceipt(){
+                    var totalCost=0;
+                        var box=$('.receipt-container');
+                        var table=box.find('table tbody');
+                        var startTime=$('#start-time').val();
+                            startTime=parseInt(startTime.split(':')[0])*60+parseInt(startTime.split(':')[1].split(' ')[0])
+                        var endTime=$('#end-time').val();
+                            endTime=parseInt(endTime.split(':')[0])*60+parseInt(endTime.split(':')[1].split(' ')[0])
+            var totalMinutes = endTime - startTime;
+                        var totalHours=totalMinutes/60;
+
+                        var hallName=$('.hall-name').text();
+                        var hallCost=parseFloat($('#hall-cost').text());
+
+                        var tableBody = $('.receipt-container table tbody');
+
+                        // Get the list of service items
+                        var serviceItems = $('.dropdown-menu .edit-list-item');
+
+                        // Clear the table body
+                        tableBody.empty();
+                        //update hall rent
+                        var newRow = $('<tr>').addClass('receipt-item');
+
+                        // Create table cells for each data
+                        var nameCell = $('<td>').addClass('receipt-item-name').text(hallName);
+                        var costCell = $('<td>').addClass('receipt-item-unit').text('$'+hallCost);
+                        var quantityCell = $('<td>').addClass('receipt-item-quantity').text(totalHours.toFixed(2) + " hours");
+            var totalCostCell = $('<td>').addClass('receipt-item-cost').text('$' + (parseFloat(hallCost) * parseFloat(totalHours)).toFixed(2));
+                        totalCost=parseFloat(totalCost)+(parseFloat(hallCost) * parseFloat(totalHours)).toFixed(2);
+                        // Append cells to the row
+                        newRow.append(nameCell, costCell, quantityCell, totalCostCell);
+
+                        // Append the row to the table body
+                        tableBody.append(newRow);
+
+                        // Loop through each service item
+                        serviceItems.each(function () {
+                            // Get the service name, cost, and quantity
+                            var serviceName = $(this).find('.service-name').text();
+                            var serviceCost = $(this).find('.service-cost').text();
+                            var serviceQuantity = $(this).find('.counter-value').text();
+
+                            // Create a new table row
+                            if(serviceQuantity!='0')
+                            {
+                                var newRow = $('<tr>').addClass('receipt-item');
+
+                                // Create table cells for each data
+                                var nameCell = $('<td>').addClass('receipt-item-name').text(serviceName);
+                                var costCell = $('<td>').addClass('receipt-item-unit').text(serviceCost);
+                                var quantityCell = $('<td>').addClass('receipt-item-quantity').text(serviceQuantity);
+                                var totalCostCell = $('<td>').addClass('receipt-item-cost').text('$' + (parseFloat(serviceCost) * parseInt(serviceQuantity)).toFixed(2));
+                    totalCost = parseFloat(totalCost)+ (parseFloat(serviceCost) * parseInt(serviceQuantity));
+
+                                // Append cells to the row
+                                newRow.append(nameCell, costCell, quantityCell, totalCostCell);
+
+                                // Append the row to the table body
+                                tableBody.append(newRow);
+                            }
+                            //Add total cost
+                            $('.receipt-total div').text('$'+parseFloat(totalCost).toFixed(2));
+                            box.removeClass("none");
+                        });
                 }
         </script>
 }
