@@ -3,6 +3,7 @@
 
 <link rel="stylesheet" href="./css/booking.css"/>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+<form asp-action="Index" asp-controller="Booking" method="post" >
 <input hidden asp-for="FilterDate"/>
 <div class="container">
     <div class="header">
@@ -38,19 +39,19 @@
                     @{
                         var j = 0;
                     
-                                                                                                                    @foreach (var photo in Model.SelectedHall.HallPhotos)
+                                                                                                                                            @foreach (var photo in Model.SelectedHall.HallPhotos)
                              {
-                                                                                                                        @if (j++ == 0)
+                                                                                                                                                @if (j++ == 0)
                             {
-                                                                                                                    <div class="carousel-item active">
-                                                                                                                            <img class="slider-image" src="@photo.Url" alt="@j slide">
-                                                                                                                    </div>
+                                                                                                                                            <div class="carousel-item active">
+                                                                                                                                                    <img class="slider-image" src="@photo.Url" alt="@j slide">
+                                                                                                                                            </div>
                             }
                             else
                             {
-                                                                                                                        <div class="carousel-item">
-                                                                                                                            <img class="slider-image" src="@photo.Url" alt="@j slide">
-                                                                                                                        </div>
+                                                                                                                                                <div class="carousel-item">
+                                                                                                                                                    <img class="slider-image" src="@photo.Url" alt="@j slide">
+                                                                                                                                                </div>
                             }
                         }
                     }
@@ -205,39 +206,57 @@
         <!--Booking-->
         <div class="hall-booking-main-right">
             <div class="booking-form">
-                <div class="form-container">
-                    <input id="hallId" hidden asp-for="SelectedHall.Id" />
+                <div class="form-container" >
+
+                    <input id="hallId" hidden asp-for="HallId" readonly/>
+
                     <h3>@Model.SelectedHall.Type :  $<span id="hall-cost">@Model.SelectedHall.CostPerHour</span> /hr  </h3>
-                    <input type="date" asp-for="DesiredDate" class="p-date-picker" id="date-input" value="@Model.FilterDate">
+                    <span asp-validation-for="@Model.DesiredDate" class="text-danger"></span>
+
+                    <input type="date" asp-for="DesiredDate" class="p-date-picker" id="date-input">
                     <a id="date-filter" asp-action="Index" asp-route-date="@DateTime.Now" asp-route-HallID="@Model.SelectedHall.Id">Check Date Availability</a>
                     <!--Select start & end time-->
                     <div class="select-time">
-                    <div class="select-wrapper">
-                        <label class="select-label select-start-label" for="start-time">Start Time</label>
-                        <div class="select-container select-start">
-                            <input type="text" id="start-time" class="select-input" readonly>
-                            <span class="material-symbols-outlined">schedule</span>
-                            <ul class="select-options select-start-options" id="#starts">
-                                    @{
-                                        var k = 0;
-                                    }
-                                @foreach (var span in Model.SlotsForWeek[0].Values.First())
-                                    {
-                                        @if(span.Item2){
-                                            var spanString= new DateTime(span.Item1.Ticks).ToString("hh:mm tt");
-                                            <li index="@k">@spanString</li>
+                        <div class="select-wrapper">
+
+                            @if (Model.StartTime == string.Empty || Model.StartTime is null){
+                                <span>@Model.StartTime</span>
+                                <label class="select-label select-start-label" for="start-time">Start Time</label>
+                            }
+                            else{
+                                <label class="select-label select-start-label top-label" for="start-time">Start Time</label>
+                            }
+                            <div class="select-container select-start">
+                                <input type="text" id="start-time" class="select-input" asp-for="StartTime" readonly>
+                                <span class="material-symbols-outlined">schedule</span>
+                                <ul class="select-options select-start-options" id="#starts">
+                                        @{
+                                            var k = 0;
                                         }
-                                        k++;
+                                    @foreach (var span in Model.SlotsForWeek[0].Values.First())
+                                        {
+                                            @if(span.Item2){
+                                                var spanString= new DateTime(span.Item1.Ticks).ToString("hh:mm tt");
+                                                <li index="@k">@spanString</li>
+                                            }
+                                            k++;
 
-                                    }
+                                        }
 
-                            </ul>
+                                </ul>
+                            </div>
                         </div>
-                    </div>
-                    <div class="select-wrapper">
-                        <label class="select-label select-end-label" for="end-time">End Time</label>
+
+                        <div class="select-wrapper">
+                        @if(Model.EndTime == string.Empty || Model.EndTime is null ){
+                            <span>@Model.EndTime</span>
+                            <label class="select-label select-end-label" for="end-time">End Time</label>
+                        }
+                        else{
+                            <label class="select-label select-end-label top-label" for="end-time">End Time</label>
+                        }
                         <div class="select-container select-end disabled">
-                            <input type="text" id="end-time" class="select-input" readonly>
+                            <input type="text" id="end-time" class="select-input" asp-for="EndTime" readonly>
                             <span class="material-symbols-outlined">schedule</span>
                                 <ul class="select-options select-end-options" id="ends">
                                     
@@ -283,7 +302,7 @@
                                         </button>
                                     </div>
                                     @* Hidden input field to store the service ID and quantity data *@
-                                    <input type="hidden" name="SelectedServices[@service.Id]" class="service-qunt"value="" />
+                                    <input type="hidden" index="@service.Id" id="SelectedServicesQuantities_@service.Id" name="SelectedServicesQuantities[@service.Id]" class="service-quant" value="0"/>
                                 </div>
                             </li>
                         }
@@ -311,16 +330,36 @@
                     </div>
                 </div>
                 <!-- Button trigger modal -->
-                    <button type="button" class="purple-btn" style="margin: 10px;" data-bs-toggle="modal"
-                        data-bs-target="#exampleModal">
-                        Book Now
-                    </button>
-                </div>
+                <button type="button" class="purple-btn" style="margin: 10px;" data-toggle="modal" data-target="#confirmUploadModal">
+                    Book Now
+                </button>
+                
             </div>
         </div>
     </div>
 </div>
-
+        <!--Confirmation Modal-->
+        <div class="modal fade" id="confirmUploadModal" tabindex="-1" role="dialog" aria-labelledby="confirmUploadModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmUploadModalLabel">Confirmation</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to place this booking?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Book</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
 @section Scripts
 {
         <script>
@@ -329,9 +368,6 @@
                 $(document).ready(setupSelectEndTime);
                 $(document).ready(setupDropDownService);
 
-                $(document).on('show.bs.modal', '.modal', function () {
-                    $(this).appendTo('body');
-                })
 
                 function setupSelectDate(){
                     //Date default Value
@@ -464,12 +500,10 @@
                         }
 
                         $counterValue.text(newValue);
-
                         // Update the hidden input field with the selected quantity
                         var $parent = $(this).closest(".edit-list-item");
-                        var serviceId = $parent.data("service-id");
-                        var $hiddenInput = $parent.find("input[type=hidden]");
-                        $hiddenInput.attr("name", "SelectedServices[" + serviceId + "]");
+                        var serviceId = $parent.find(".service-quant").attr("index");
+                        $(`#SelectedServicesQuantities_${serviceId}`).val(newValue);
                         updateReceipt();
                         // Prevent dropdown from closing when clicking on the counter buttons
                         e.stopPropagation();
@@ -480,11 +514,29 @@
                     var totalCost=0;
                         var box=$('.receipt-container');
                         var table=box.find('table tbody');
-                        var startTime=$('#start-time').val();
-                            startTime=parseInt(startTime.split(':')[0])*60+parseInt(startTime.split(':')[1].split(' ')[0])
-                        var endTime=$('#end-time').val();
-                            endTime=parseInt(endTime.split(':')[0])*60+parseInt(endTime.split(':')[1].split(' ')[0])
-            var totalMinutes = endTime - startTime;
+            var startTime = $('#start-time').val();
+            var startHour = parseInt(startTime.split(':')[0]);
+            var startMinute = parseInt(startTime.split(':')[1].split(' ')[0]);
+            var startMeridiem = startTime.split(' ')[1];
+
+            if (startMeridiem === 'PM' && startHour !== 12) {
+                startHour += 12;
+            }
+
+            var startTimeInMinutes = startHour * 60 + startMinute;
+
+            var endTime = $('#end-time').val();
+            var endHour = parseInt(endTime.split(':')[0]);
+            var endMinute = parseInt(endTime.split(':')[1].split(' ')[0]);
+            var endMeridiem = endTime.split(' ')[1];
+
+            if (endMeridiem === 'PM' && endHour !== 12) {
+                endHour += 12;
+            }
+
+            var endTimeInMinutes = endHour * 60 + endMinute;
+
+            var totalMinutes = endTimeInMinutes - startTimeInMinutes;
                         var totalHours=totalMinutes/60;
 
                         var hallName=$('.hall-name').text();
