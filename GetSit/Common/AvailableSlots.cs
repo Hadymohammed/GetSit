@@ -91,5 +91,21 @@ namespace GetSit.Common
             }
             return availableSlotsForWeek;
         }
+
+        public bool IsTimeSlotAvailable(int hallId, DateTime desiredDate, TimeSpan startTime, TimeSpan endTime)
+        {
+            TimeSpan duration = endTime - startTime;
+            var bookings = _context.Booking
+                .Where(b =>
+                    b.BookingHalls.Any(bh => bh.HallId == hallId) &&
+                    b.DesiredDate.Date == desiredDate.Date)
+                .ToList();
+            bool NotAvailable = bookings
+                .Any(b =>
+                    (b.StartTime >= startTime && b.StartTime < endTime) ||
+                    (b.StartTime < startTime && b.StartTime.Add(TimeSpan.FromHours(b.NumberOfHours)) > startTime));
+
+            return !NotAvailable;
+        }
     }
 }

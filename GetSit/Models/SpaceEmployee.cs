@@ -34,5 +34,7 @@ namespace GetSit.Models
         [ForeignKey("SpaceId"), AllowNull]
         public int? SpaceId { get; set; }
         public Space? Space { get; set; }
+
+        public List<GuestBooking>? GuestBookings { get; set; }
     }
 }

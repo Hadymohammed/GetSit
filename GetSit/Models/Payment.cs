@@ -2,6 +2,7 @@
 using GetSit.Data.enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 
 namespace GetSit.Models
 {
@@ -17,8 +18,12 @@ namespace GetSit.Models
         public DateTime LastUpdate { get; set; }
         [Required]
         public List<PaymentDetail> Details { get; set; }
-        [ForeignKey("BookingId")]
+        [AllowNull , ForeignKey("BookingId")]
         public int BookingId { get; set; }
-        public Booking Booking { get; set; }
+        public Booking ? Booking { get; set; }
+
+        [AllowNull , ForeignKey("GuestBookingId")]
+        public int GuestBookingId { get; set; }
+        public GuestBooking? GuestBooking { get; set; }
     }
 }
