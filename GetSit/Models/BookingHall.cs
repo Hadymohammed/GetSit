@@ -1,9 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using GetSit.Data.Base;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GetSit.Models
 {
-    public class BookingHall
+    public class BookingHall:IEntityBase
     {
         [Key]
         public int Id { get; set; }
@@ -12,11 +13,11 @@ namespace GetSit.Models
         [Required]
         public float PricePerUnit { get; set; }
 
-        [Required,ForeignKey("HallId")]
+        [Required, ForeignKey("HallId")]
         public int HallId { get; set; }
         [Required]
         public SpaceHall Hall { get; set; }
-        [Required,ForeignKey("BookingId")]
+        [Required, ForeignKey("BookingId")]
         public int BookingId { get; set; }
         [Required]
         public Booking Booking { get; set; }

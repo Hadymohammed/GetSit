@@ -1,4 +1,5 @@
-﻿using GetSit.Models;
+﻿using GetSit.Common;
+using GetSit.Models;
 
 namespace GetSit.Data
 {
@@ -41,6 +42,24 @@ namespace GetSit.Data
                     });
                     context.SaveChanges();
                 }
+                //Space Employee
+                if(!context.SpaceEmployee.Any())
+                {
+                    context.SpaceEmployee.AddRange(new List<SpaceEmployee>()
+                    {
+                        new SpaceEmployee
+                        {
+                            FirstName="Ahmed",
+                            LastName="Mahmoud",
+                            Email="Provider@meto.com",
+                            Password= PasswordHashing.Encode("Provider1234"),
+                            Birthdate= new DateTime(1980,7,7),
+                            PhoneNumber= "01013205017",
+                            SpaceId=2
+                        }
+                    });
+                }
+                context.SaveChanges();
                 //Space Phone
                 if (!context.SpacePhone.Any())
                 {
@@ -73,87 +92,87 @@ namespace GetSit.Data
                         new SpaceWorkingDay
                         {
                             SpaceId=1,
-                            Day=enums.WeekDay.Saturday,
-                            OpeningTime=new DateTime(2023,1,1,10,30,0,0),
-                            ClosingTime=new DateTime(2023,1,1,22,0,0),
+                            Day=DayOfWeek.Saturday,
+                            OpeningTime=new TimeSpan(8,0,0),
+                            ClosingTime=new TimeSpan(22,0,0),
                         },
                         new SpaceWorkingDay
                         {
                             SpaceId=1,
-                            Day=enums.WeekDay.Sunday,
-                            OpeningTime=new DateTime(2023,1,1,10,30,0,0),
-                            ClosingTime=new DateTime(2023,1,1,20,0,0),
+                            Day=DayOfWeek.Sunday,
+                             OpeningTime=new TimeSpan(10,0,0),
+                            ClosingTime=new TimeSpan(22,0,0),
                         },
                         new SpaceWorkingDay
                         {
                             SpaceId=1,
-                            Day=enums.WeekDay.Tuesday,
-                            OpeningTime=new DateTime(2023,1,1,10,30,0,0),
-                            ClosingTime=new DateTime(2023,1,1,20,0,0),
+                            Day=DayOfWeek.Tuesday,
+                             OpeningTime=new TimeSpan(12,0,0),
+                            ClosingTime=new TimeSpan(20,0,0),
                         },
                         new SpaceWorkingDay
                         {
                             SpaceId=1,
-                            Day=enums.WeekDay.Monday,
-                            OpeningTime=new DateTime(2023,1,1,10,30,0,0),
-                            ClosingTime=new DateTime(2023,1,1,22,0,0),
+                            Day=DayOfWeek.Monday,
+                             OpeningTime=new TimeSpan(8,0,0),
+                            ClosingTime=new TimeSpan(20,0,0),
                         },
                         new SpaceWorkingDay
                         {
                             SpaceId=1,
-                            Day=enums.WeekDay.Thursday,
-                            OpeningTime=new DateTime(2023,1,1,10,30,0,0),
-                            ClosingTime=new DateTime(2023,1,1,22,0,0),
+                            Day=DayOfWeek.Thursday,
+                             OpeningTime=new TimeSpan(8,0,0),
+                            ClosingTime=new TimeSpan(22,0,0),
                         },
                         new SpaceWorkingDay
                         {
                             SpaceId=1,
-                            Day=enums.WeekDay.Wednesday,
-                            OpeningTime=new DateTime(2023,1,1,10,30,0,0),
-                            ClosingTime=new DateTime(2023,1,1,22,0,0),
+                            Day=DayOfWeek.Wednesday,
+                             OpeningTime=new TimeSpan(8,0,0),
+                            ClosingTime=new TimeSpan(22,0,0),
                         },
                         //space 2
                         new SpaceWorkingDay
                         {
                             SpaceId=2,
-                            Day=enums.WeekDay.Saturday,
-                            OpeningTime=new DateTime(2023,1,1,12,00,0,0),
-                            ClosingTime=new DateTime(2023,1,1,22,0,0),
+                            Day=DayOfWeek.Saturday,
+                            OpeningTime=new TimeSpan(8,0,0),
+                            ClosingTime=new TimeSpan(22,0,0),
                         },
                         new SpaceWorkingDay
                         {
                             SpaceId=2,
-                            Day=enums.WeekDay.Sunday,
-                            OpeningTime=new DateTime(2023,1,1,10,30,0,0),
-                            ClosingTime=new DateTime(2023,1,1,22,0,0),
+                            Day=DayOfWeek.Sunday,
+                             OpeningTime=new TimeSpan(8,0,0),
+                            ClosingTime=new TimeSpan(20,0,0),
                         },
                         new SpaceWorkingDay
                         {
                             SpaceId=2,
-                            Day=enums.WeekDay.Tuesday,
-                            OpeningTime=new DateTime(2023,1,1,14,00,0,0),
-                            ClosingTime=new DateTime(2023,1,1,20,0,0),
+                            Day=DayOfWeek.Tuesday,
+                             OpeningTime=new TimeSpan(8,0,0),
+                            ClosingTime=new TimeSpan(20,0,0),
                         },
                         new SpaceWorkingDay
                         {
                             SpaceId=2,
-                            Day=enums.WeekDay.Monday,
-                            OpeningTime=new DateTime(2023,1,1,10,30,0,0),
-                            ClosingTime=new DateTime(2023,1,1,22,0,0),
+                            Day=DayOfWeek.Monday,
+                            OpeningTime=new TimeSpan(8,0,0),
+                            ClosingTime=new TimeSpan(20,0,0),
                         },
                         new SpaceWorkingDay
                         {
                             SpaceId=2,
-                            Day=enums.WeekDay.Thursday,
-                            OpeningTime=new DateTime(2023,1,1,10,30,0,0),
-                            ClosingTime=new DateTime(2023,1,1,22,0,0),
+                            Day=DayOfWeek.Thursday,
+                             OpeningTime=new TimeSpan(8,0,0),
+                            ClosingTime=new TimeSpan(22,0,0),
                         },
                         new SpaceWorkingDay
                         {
                             SpaceId=2,
-                            Day=enums.WeekDay.Wednesday,
-                            OpeningTime=new DateTime(2023,1,1,10,30,0,0),
-                            ClosingTime=new DateTime(2023,1,1,22,0,0),
+                            Day=DayOfWeek.Wednesday,
+                             OpeningTime=new TimeSpan(8,0,0),
+                            ClosingTime=new TimeSpan(22,0,0),
                         },
                     });
                     context.SaveChanges();

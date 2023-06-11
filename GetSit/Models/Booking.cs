@@ -1,21 +1,22 @@
-﻿using GetSit.Data.enums;
+﻿using GetSit.Data.Base;
+using GetSit.Data.enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 
 namespace GetSit.Models
 {
-    public class Booking
+    public class Booking:IEntityBase
     {
         [Key]
         public int Id { get; set; }
-        [Required,DataType(DataType.DateTime)]
+        [Required, DataType(DataType.DateTime)]
         //? Error : DateTime & DateTime
         public DateTime BookingDate { get; set; }
         [Required, DataType(DataType.Date)]
         public DateTime DesiredDate { get; set; }
         [Required, DataType(DataType.Time)]
-        public DateTime StartTime { get; set; }
+        public TimeSpan StartTime { get; set; }
         [Required]
         public float NumberOfHours { get; set; }
         public float TotalCost { get; set; }
@@ -25,7 +26,7 @@ namespace GetSit.Models
         [Required]
         public BookingType BookingType { get; set; }
         public Payment Payment { get; set; }
-        [AllowNull,ForeignKey("CustomerId")]
+        [AllowNull, ForeignKey("CustomerId")]
         public int CustomerId { get; set; }
         [Required]
         public Customer Customer { get; set; }

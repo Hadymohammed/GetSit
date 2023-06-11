@@ -1,10 +1,11 @@
-﻿using GetSit.Data.enums;
+﻿using GetSit.Data.Base;
+using GetSit.Data.enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GetSit.Models
 {
-    public class Payment
+    public class Payment : IEntityBase
     {
         [Key]
         public int Id { get; set; }

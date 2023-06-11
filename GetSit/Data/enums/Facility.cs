@@ -4,8 +4,8 @@ namespace GetSit.Data.enums
 {
     public enum Facility
     {
-        [Display(Name="Free Wifi")]
-        FreeWifi=1,
+        [Display(Name = "Free Wifi")]
+        FreeWifi = 1,
         [Display(Name = "Unlimited Coffee")]
         UnlimitedCoffee,
         [Display(Name = "OpenAir View")]

@@ -1,9 +1,12 @@
-﻿using GetSit.Data.enums;
+﻿using GetSit.Data.Base;
+using GetSit.Data.enums;
+using GetSit.Data.Security;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace GetSit.Models
 {
-    public class SystemAdmin
+    public class SystemAdmin:IAbstractUser,IEntityBase
     {
         [Key]
         public int Id { get; set; }
@@ -21,12 +24,12 @@ namespace GetSit.Models
         [DataType(DataType.Date)]
         public DateTime Birthdate { get; set; }
         [Required]
-        public string ProfilePictureUrl { get; set; }
+        public string ProfilePictureUrl { get; set; } = "resource/site/user-profile-icon.jpg";
+        [AllowNull]
+        public string? Country { get; set; }
+        [AllowNull]
+        public string? City { get; set; }
         [Required]
-        public string Country { get; set; }
-        [Required]
-        public string City { get; set; }
-        [Required]
-        public SystemAdminRole AdminRole { get; set; }
+        public SystemAdminRole AdminRole { get; set; } = SystemAdminRole.Super;
     }
 }

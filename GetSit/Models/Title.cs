@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using GetSit.Data.Base;
+using System.ComponentModel.DataAnnotations;
 
 namespace GetSit.Models
 {
-    public class Title
+    public class Title : IEntityBase
     {
         [Key]
         public int Id { get; set; }

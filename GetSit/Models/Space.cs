@@ -1,9 +1,10 @@
-﻿using System.ComponentModel;
+﻿using GetSit.Data.Base;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace GetSit.Models
 {
-    public class Space
+    public class Space : IEntityBase
     {
         [Key]
         public int Id { get; set; }
@@ -23,8 +24,7 @@ namespace GetSit.Models
         public bool IsFast { get; set; }
         [Required]
         public string BankAccount { get; set; }
-        [Required]
-        public  List<SpacePhoto> Photos { get; set; }
+        public IEnumerable<SpacePhoto> Photos  { get; set; }
         [Required]
         public List<SpacePhone> Phones { get; set; }
         [Required]
@@ -32,7 +32,8 @@ namespace GetSit.Models
         [Required]
         public List<SpaceService> Services { get; set; }
         [Required]
-        public List<SpaceHall> Halls { get; set; }
+        public ICollection<SpaceHall> Halls { get; set; }
         public List<SpaceEmployee> Employees { get; set; }
+     
     }
 }

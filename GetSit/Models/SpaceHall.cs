@@ -1,16 +1,20 @@
-﻿using GetSit.Data.enums;
+﻿using GetSit.Data.Base;
+using GetSit.Data.enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GetSit.Models
 {
-    public class SpaceHall
+    public class SpaceHall : IEntityBase
     {
         [Key]
         public int Id { get; set; }
-        [ForeignKey("SpaceId")]
+
+  [ForeignKey("SpaceId")]
         public int SpaceId { get; set; }
-        public Space? Space { get; set; }
+        public Space Space { get; set; }
+
+        
         [Required]
         public int Capacity { get; set; }
         [Required]
