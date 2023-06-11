@@ -27,6 +27,8 @@ namespace GetSit.Controllers
         readonly ISpaceService_Service _spaceService_service;
         readonly IServicePhotoService _servicePhotoService;
         readonly IBookingService _bookingService;
+        readonly ISpacePhotoService _spacePhotoService;
+
         public SpaceManagementController(IUserManager userManager,
             AppDBcontext context,
             ISpaceEmployeeService spaceEmployeeService,
@@ -36,7 +38,8 @@ namespace GetSit.Controllers
             IHallPhotoService hallPhotoService,
             ISpaceService_Service spaceService_service,
             IServicePhotoService servicePhotoService,
-            IBookingService bookingService)
+            IBookingService bookingService,
+            ISpacePhotoService spacePhotoService)
         {
             _userManager = userManager;
             _context = context;
@@ -48,6 +51,7 @@ namespace GetSit.Controllers
             _spaceService_service = spaceService_service;
             _servicePhotoService = servicePhotoService;
             _bookingService = bookingService;
+            _spacePhotoService = spacePhotoService;
         }
         #endregion
         public async Task<IActionResult> IndexAsync()
@@ -249,5 +253,45 @@ namespace GetSit.Controllers
             return RedirectToAction("Index");
         }
         #endregion
+
+        #region Edit Hall
+        [HttpGet]
+        public async Task<IActionResult> EditHall(int HallId)
+        {
+            if (HallId == 0)
+                return RedirectToAction("Index");
+            var hall = await _hallService.GetByIdAsync(HallId, h => h.HallPhotos, h => h.HallFacilities, h => h.Space);
+            if (hall == null)
+                return RedirectToAction("Index");
+
+            var userId = _userManager.GetCurrentUserId(HttpContext);
+            var user = await _providerService.GetByIdAsync(userId);
+            if (user.SpaceId != hall.SpaceId)
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+            var space = await _spaceSerivce.GetByIdAsync((int)user.SpaceId);
+            space.Photos = _spacePhotoService.GetBySpaceId(space.Id);
+
+            return View(new EditHallVM()
+            {
+                SpaceId = space.Id,
+                SpaceName = space.Name,
+                SpaceBio = space.Bio,
+                SpacePhotoUrl = space.Photos.First().Url,
+                Hall = hall
+            }) ;
+        }
+        [HttpPost]
+        public async Task<IActionResult> EditHall(EditHallVM vm)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(vm);
+            }
+            return RedirectToAction("Index");
+        }
+
+        #endregion 
     }
 }
