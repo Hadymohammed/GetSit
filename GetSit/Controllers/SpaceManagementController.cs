@@ -43,7 +43,6 @@ namespace GetSit.Controllers
             IServicePhotoService servicePhotoService,
             IBookingService bookingService,
             ISpacePhotoService spacePhotoService,
-            IBookingService bookingService,
             IWebHostEnvironment env)
         {
             _env = env;
@@ -278,12 +277,14 @@ namespace GetSit.Controllers
             {
                 return RedirectToAction("AccessDenied", "Account");
             }
+            var space = await _spaceSerivce.GetByIdAsync((int)user.SpaceId,s=>s.Photos);
             var vm = new EditHallVM()
             {
-                Id = hall.Id,
-                Description = hall.Description,
-                CostPerHour = hall.CostPerHour,
-                Type = hall.Type,
+                SpaceBio = space.Bio,
+                SpaceName = space.Name,
+                SpacePhotoUrl = space.Photos.First().Url,
+                SpaceId=space.Id,
+                Hall=hall
             };
             return View(vm);
         }
@@ -293,13 +294,13 @@ namespace GetSit.Controllers
         {
             if (!ModelState.IsValid)
             {
-                vm.SpaceHall = await _hallService.GetByIdAsync(vm.SpaceHall.Id, h => h.HallPhotos);
+                vm.Hall = await _hallService.GetByIdAsync(vm.Hall.Id, h => h.HallPhotos);
                 return View(vm);
             }
 
-            var hall = await _hallService.GetByIdAsync(vm.Id);
-            hall.Description = vm.Description;
-            hall.CostPerHour = vm.CostPerHour;
+            var hall = await _hallService.GetByIdAsync(vm.Hall.Id);
+            hall.Description = vm.Hall.Description;
+            hall.CostPerHour = vm.Hall.CostPerHour;
             //Add new Photos
             foreach (var file in vm.Files)
             {
@@ -348,7 +349,7 @@ namespace GetSit.Controllers
         {
             if (ServiceId == 0)
                 return RedirectToAction("Index");
-            var service = await _spaceService_service.GetByIdAsync(ServiceId);
+            var service = await _spaceService_service.GetByIdAsync(ServiceId,s=>s.ServicePhotos);
             var userId = _userManager.GetCurrentUserId(HttpContext);
             var user = await _providerService.GetByIdAsync(userId);
             if (user.SpaceId != service.SpaceId)
