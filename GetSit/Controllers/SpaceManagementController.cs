@@ -8,8 +8,10 @@ using GetSit.Data.ViewModels;
 using GetSit.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace GetSit.Controllers
 {
@@ -78,6 +80,219 @@ namespace GetSit.Controllers
         };
             return View(viewModel);
         }
+
+        [HttpGet]
+       public async Task<IActionResult> GetBookingDetails (object booking)
+        {
+            if (booking is GuestBooking)
+            {
+                // get the booking details to be shown
+                var obj = (GuestBooking)booking;
+                var hall = _context.BookingHall.Where(i => i.BookingId == obj.Id).FirstOrDefault();
+                var services = _context.BookingHallService.Where(i => i.BookingHallId == hall.Id).ToList();
+                Dictionary<int, int> SelectedServices = new Dictionary<int, int> ();
+                List<PaymentDetail> paymentDetails = new List<PaymentDetail>();
+                var halldetail = _context.PaymentDetail.Where(i => i.BookingHallId == hall.Id).FirstOrDefault();
+                paymentDetails.Add(halldetail);
+                foreach (var service in services )
+                {
+                    SelectedServices.Add(service.Id, service.NumberOfUnits);
+                    var detail = _context.PaymentDetail.Where(i => i.BookingHallServiceId == service.Id).FirstOrDefault();
+                    paymentDetails.Add(detail);
+                }
+                var guestbooking = new GuestBookingVM
+                {
+                    FirstName = obj.FirstName,
+                    LastName = obj.LastName,
+                    PhoneNumber = obj.PhoneNumber,
+                    BookingDate = obj.BookingDate,
+                    DesiredDate = obj.DesiredDate,
+                    StartTime = obj.StartTime,
+                    EndTime = obj.EndTime,
+                    Paid = obj.Paid,
+                    TotalCost = obj.TotalCost,
+                    SelectedServicesQuantities = SelectedServices,
+                    paymentDetails = paymentDetails,
+                };
+                return View("guestbooking");
+            }
+
+            else
+            {
+                // get the booking details to be shown
+                var obj = (Booking)booking;
+                var hall = _context.BookingHall.Where(i => i.BookingId == obj.Id).FirstOrDefault();
+                var services = _context.BookingHallService.Where(i => i.BookingHallId == hall.Id).ToList();
+
+                Dictionary<int, int> SelectedServices = new Dictionary<int, int>();
+                List<PaymentDetail> paymentDetails = new List<PaymentDetail>();
+                Dictionary<int, PaymentStatus> ServicesStatus = new Dictionary<int, PaymentStatus>();
+                // get the payment details
+                var halldetail = _context.PaymentDetail.Where(i => i.BookingHallId == hall.Id).FirstOrDefault();
+                paymentDetails.Add(halldetail);
+                foreach (var service in services)
+                {
+                    SelectedServices.Add(service.Id, service.NumberOfUnits);
+                    var detail = _context.PaymentDetail.Where(i => i.BookingHallServiceId == service.Id).FirstOrDefault();
+                    ServicesStatus.Add(service.Id, detail.Status);
+                    paymentDetails.Add(detail);
+                }
+
+                var customer = _context.Customer.Where(i => i.Id == obj.CustomerId).FirstOrDefault();
+                TimeSpan endTime = obj.StartTime.Add(TimeSpan.FromHours(obj.NumberOfHours));
+                var userbooking = new BookingVM
+                {
+                    Customer = customer,
+                    BookingDate = obj.BookingDate,
+                    DesiredDate = obj.DesiredDate,
+                    StartTime = obj.StartTime,
+                    EndTime = endTime,
+                    Paid = obj.Paid,
+                    TotalCost = obj.TotalCost,
+                    SelectedServicesQuantities = SelectedServices,
+                    paymentDetails = paymentDetails,
+                };
+
+                return View("userbooking");
+            }
+
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditBooking(object booking , object BookingviewModel)
+        {
+            if (booking is GuestBooking)
+            {
+                var bookingobj = (GuestBooking)booking;
+                var viewModel = (GuestBookingVM)BookingviewModel;
+
+                var obj = _context.GuestBooking.Include(b => b.BookingHalls)
+                        .ThenInclude(bh => bh.BookedServices)
+                            .ThenInclude(bhs => bhs.PaymentDetail)
+                                .FirstOrDefault(b => b.Id == bookingobj.Id);
+
+                /* create object from the class to get the available timeslots*/
+                AvailableSlots slots = new AvailableSlots(_context);
+
+                if (!ModelState.IsValid)
+                {
+                    return View(BookingviewModel);
+                }
+
+                float NumberOfHours = (float)(viewModel.EndTime - viewModel.StartTime).TotalHours;
+
+                if (NumberOfHours <= 0)
+                {
+                    return View(BookingviewModel);
+                }
+
+                /*Send unavailable error to the employee*/
+                if (!slots.IsTimeSlotAvailable(viewModel.SelectedHall.Id, viewModel.DesiredDate, viewModel.StartTime, viewModel.EndTime))
+                {
+                    return View(BookingviewModel);
+                }
+
+                // save the new timing in database
+                bookingobj.StartTime = viewModel.StartTime;
+                bookingobj.EndTime = viewModel.EndTime;
+                _context.SaveChanges();
+
+                bookingobj.TotalCost = viewModel.SelectedHall.CostPerHour * NumberOfHours;
+
+                
+                foreach (KeyValuePair<int, int> ServiceQuantity in viewModel.SelectedServicesQuantities)
+                {
+                    SpaceService service = _context.SpaceService.Where(s => s.Id == ServiceQuantity.Key).FirstOrDefault();
+                    var booked = _context.BookingHallService.Where(i=>i.ServiceId==service.Id && 
+                    i.BookingHallId == viewModel.SelectedHall.Id).FirstOrDefault();
+                    if (booked != null)
+                    {
+                        if (ServiceQuantity.Value > 0)
+                        {
+                            booked.NumberOfUnits = ServiceQuantity.Value;
+                            var detail = _context.PaymentDetail.Where(i => i.BookingHallServiceId == booked.Id
+                            ).FirstOrDefault();
+
+                            bookingobj.TotalCost += service.Price * ServiceQuantity.Value;
+
+                            // update status and cost 
+
+                            detail.Status = viewModel.ServicesStatus[service.Id];
+                            detail.TotalCost = service.Price * ServiceQuantity.Value;  
+
+                        }
+                        else
+                        {
+                            //remove this service from booking and its related payment detail
+                            var detail = _context.PaymentDetail.Where(i => i.BookingHallServiceId == booked.Id
+                            ).FirstOrDefault();
+                            _context.BookingHallService.Remove(booked);
+                            _context.PaymentDetail.Remove(detail);
+                        }
+
+                    }
+                    else if (ServiceQuantity.Value > 0)
+                    {
+                        viewModel.ServicesStatus.Add(ServiceQuantity.Key, PaymentStatus.Pending);
+
+                        // Add a new service to the booking and related payment detail
+                        var BookingHallService = new BookingHallService
+                        {
+                            ServiceId = ServiceQuantity.Key,
+                            NumberOfUnits = ServiceQuantity.Value,
+                            PricePerUnit = service.Price,
+                            BookingHallId = viewModel.SelectedHall.Id,
+                           // BookingHall = (object) viewModel.SelectedHall,
+                            Service = service,
+                        };
+
+                        var paymentServiceDetail = new PaymentDetail
+                        {
+                            TotalCost = service.Price * ServiceQuantity.Value,
+                            Status = PaymentStatus.Pending,
+                            Type = PaymentType.Cash,
+                            BookingHallServiceId = BookingHallService.Id
+                        };
+
+                        bookingobj.TotalCost += service.Price * ServiceQuantity.Value;
+
+                       
+                    }
+                        _context.SaveChanges();
+                }
+
+            }
+
+            // booking by customer
+            else
+            {
+                var bookingobj = (Booking)booking;
+                var viewModel = (BookingVM)BookingviewModel;
+                foreach (KeyValuePair<int, int> ServiceQuantity in viewModel.SelectedServicesQuantities)
+                {
+                    SpaceService service = _context.SpaceService.Where(s => s.Id == ServiceQuantity.Key).FirstOrDefault();
+                    var booked = _context.BookingHallService.Where(i => i.ServiceId == service.Id &&
+                    i.BookingHallId == viewModel.SelectedHall.Id).FirstOrDefault();
+                    if (booked != null)
+                    {
+                        var detail = _context.PaymentDetail.Where(i => i.BookingHallServiceId == booked.Id
+                            ).FirstOrDefault();
+
+                        // update status and cost 
+
+                        detail.Status = viewModel.ServicesStatus[service.Id];
+                       
+                    }
+                    
+                }
+                _context.SaveChanges();
+
+            }
+
+            return RedirectToAction("GetBookingDetails", "SpaceManagement");
+        }
+
+
         #region Create New Hall
         [HttpGet]
         public async Task<IActionResult> AddHallAsync()

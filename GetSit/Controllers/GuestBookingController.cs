@@ -164,6 +164,11 @@ namespace GetSit.Controllers
                 // Add Selected Services each with its payment detail
                 foreach (KeyValuePair<int, int> ServiceQuantity in viewModel.SelectedServicesQuantities)
                 {
+                    if (ServiceQuantity.Value == 0) 
+                    {
+                        continue;
+                    }
+                        
                     var service = await _context.SpaceService.FirstOrDefaultAsync(s => s.Id == ServiceQuantity.Key);
                     var BookingHallService = new BookingHallService
                     {
@@ -201,5 +206,10 @@ namespace GetSit.Controllers
 
             return RedirectToAction("GuestBook");
         }
+
+
+
+
+
     }
 }

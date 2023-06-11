@@ -1,4 +1,5 @@
-﻿using GetSit.Models;
+﻿using GetSit.Data.enums;
+using GetSit.Models;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
@@ -33,5 +34,9 @@ namespace GetSit.Data.ViewModels
         [Required]
         public float TotalCost { get; set; }
         public List<Dictionary<DateTime, List<Tuple<TimeSpan, bool>>>>? SlotsForWeek { get; set; }
+        public List <PaymentDetail> ? paymentDetails { get; set; }
+        public float ?Paid { get; set; }
+
+        public Dictionary<int, PaymentStatus>? ServicesStatus { get; set; }
     }
 }
