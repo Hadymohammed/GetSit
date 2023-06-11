@@ -283,7 +283,7 @@ namespace GetSit.Controllers
             }) ;
         }
         [HttpPost]
-        public async Task<IActionResult> EditHall(EditHallVM vm)
+        public async Task<IActionResult> EditHall(EditHallVM vm, Facility[] Facilities)
         {
             if (!ModelState.IsValid)
             {
