@@ -26,10 +26,5 @@ namespace GetSit.Data.Services
             var result = await _context.SpaceHall.Include(x => x.Space).Include(y => y.HallPhotos).Where(p => p.Space.Name.Contains(Key)).ToListAsync();
             return result;
         }
-
-        public Task UpdateAsync(SpaceHall hall)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
