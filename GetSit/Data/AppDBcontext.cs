@@ -45,6 +45,7 @@ namespace GetSit.Data
             //Space has Photos and phones
             modelBuilder.Entity<SpacePhone>().HasOne(m => m.Space).WithMany(am => am.Phones).HasForeignKey(m => m.SpaceId);
             modelBuilder.Entity<SpacePhoto>().HasOne(m => m.Space).WithMany(am => am.Photos).HasForeignKey(m => m.SpaceId);
+            modelBuilder.Entity<SpaceContact>().HasOne(m => m.Space).WithMany(am => am.SpaceContacts).HasForeignKey(m => m.SpaceId);
 
             //Hall Has Facilities and Photos
             modelBuilder.Entity<HallFacility>().HasOne(m => m.Hall).WithMany(am => am.HallFacilities).HasForeignKey(m => m.HallId);
@@ -94,6 +95,7 @@ namespace GetSit.Data
         public DbSet<SpaceHall> SpaceHall { get; set; }
         public DbSet<SpacePhone> SpacePhone { get; set; }
         public DbSet<SpacePhoto> SpacePhoto { get; set; }
+        public DbSet<SpaceContact> spaceContact { get; set; }
         public DbSet<SpaceService> SpaceService { get; set; }
         public DbSet<SpaceWorkingDay> SpaceWorkingDay { get; set; }
         public DbSet<SystemAdmin> SystemAdmin { get; set; }
