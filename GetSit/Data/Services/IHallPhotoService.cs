@@ -3,7 +3,7 @@ using GetSit.Models;
 
 namespace GetSit.Data.Services
 {
-    public interface IHallPhotoService:IEntityBaseRepository<HallPhoto>
+    public interface IHallPhotoService : IEntityBaseRepository<HallPhoto>
     {
     }
 }
