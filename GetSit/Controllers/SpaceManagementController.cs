@@ -1,292 +1,263 @@
-﻿    using GetSit.Common;
-    using GetSit.Data;
-    using GetSit.Data.enums;
-    using GetSit.Data.Security;
-    using GetSit.Data.Services;
-    using GetSit.Data.ViewModels;
-
-    using GetSit.Models;
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Hosting;
+﻿using GetSit.Common;
+using GetSit.Data;
+using GetSit.Data.enums;
+using GetSit.Data.Security;
+using GetSit.Data.Services;
+using GetSit.Data.ViewModels;
+using GetSit.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
-    using Microsoft.EntityFrameworkCore;
-    using System;
-    using System.Linq;
-    namespace GetSit.Controllers
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
+namespace GetSit.Controllers
+{
+    [Authorize(Roles = "Provider")]//Error:Convert UserRole to class
+    public class SpaceManagementController : Controller
     {
-        [Authorize(Roles = "Provider")]//Error:Convert UserRole to class
-        public class SpaceManagementController : Controller
+        private readonly IWebHostEnvironment _env;
+
+        #region Dependacies
+        readonly IUserManager _userManager;
+        readonly AppDBcontext _context;
+        readonly ISpaceEmployeeService _providerService;
+        readonly ISpaceService _spaceSerivce;
+        readonly ISpaceHallService _hallService;
+        readonly IHallFacilityService _hallFacilityService;
+        readonly IHallPhotoService _hallPhotoService;
+        readonly ISpaceService_Service _spaceService_service;
+        readonly IServicePhotoService _servicePhotoService;
+        readonly IBookingService _bookingService;
+        public SpaceManagementController(IUserManager userManager,
+            AppDBcontext context,
+            ISpaceEmployeeService spaceEmployeeService,
+            ISpaceService spaceService,
+            ISpaceHallService hallService,
+            IHallFacilityService hallFacilityService,
+            IHallPhotoService hallPhotoService,
+            ISpaceService_Service SpaceService_service,
+            IServicePhotoService servicePhotoService,
+            IBookingService bookingService, IWebHostEnvironment env)
         {
-            private readonly IWebHostEnvironment _env;
+            _env = env;
+            _userManager = userManager;
+            _context = context;
+            _providerService = spaceEmployeeService;
+            _spaceSerivce = spaceService;
+            _hallService = hallService;
+            _hallFacilityService = hallFacilityService;
+            _hallPhotoService = hallPhotoService;
+            _spaceService_service = SpaceService_service;
+            _servicePhotoService = servicePhotoService;
+            _bookingService = bookingService;
+        }
+        #endregion
 
-            #region Dependacies
-            readonly IUserManager _userManager;
-            readonly AppDBcontext _context;
-            readonly ISpaceEmployeeService _providerService;
-            readonly ISpaceService _spaceSerivce;
-            readonly ISpaceHallService _hallService;
-            readonly IHallFacilityService _hallFacilityService;
-            readonly IHallPhotoService _hallPhotoService;
-            readonly ISpaceService_Service _SpaceService_service;
-            readonly IServicePhotoService _servicePhotoService;
-            readonly IBookingService _bookingService;
-            public SpaceManagementController(IUserManager userManager,
-                AppDBcontext context,
-                ISpaceEmployeeService spaceEmployeeService,
-                ISpaceService spaceService,
-                ISpaceHallService hallService,
-                IHallFacilityService hallFacilityService,
-                IHallPhotoService hallPhotoService,
-                ISpaceService_Service SpaceService_service,
-                IServicePhotoService servicePhotoService,
-                IBookingService bookingService, IWebHostEnvironment env)
+        public async Task<IActionResult> IndexAsync()
+        {
+            var SpaceIdStirng = "";
+            var spaceIdInt = 0;
+            if (HttpContext.Request.Cookies.Where(c => c.Key == "SpaceId").FirstOrDefault().Value is null)
             {
-                _env = env;
-                _userManager = userManager;
-                _context = context;
-                _providerService = spaceEmployeeService;
-                _spaceSerivce = spaceService;
-                _hallService = hallService;
-                _hallFacilityService = hallFacilityService;
-                _hallPhotoService = hallPhotoService;
-                _SpaceService_service = SpaceService_service;
-                _servicePhotoService = servicePhotoService;
-                _bookingService = bookingService;
+                /*replace spaceId cookie (Security)*/
+                var providerId = _userManager.GetCurrentUserId(HttpContext);
+                var provider = await _providerService.GetByIdAsync(providerId);
+                spaceIdInt = (int)provider.SpaceId;
+                SpaceIdStirng = provider.SpaceId.ToString();
+                if (SpaceIdStirng != String.Empty)
+                    HttpContext.Response.Cookies.Append("SpaceId", SpaceIdStirng);
             }
-            #endregion
-
-            public async Task<IActionResult> IndexAsync()
+            else
             {
-                var SpaceIdStirng = "";
-                var spaceIdInt = 0;
-                if (HttpContext.Request.Cookies.Where(c => c.Key == "SpaceId").FirstOrDefault().Value is null)
-                {
-                    var providerId = _userManager.GetCurrentUserId(HttpContext);
-                    var provider = await _providerService.GetByIdAsync(providerId);
-    #pragma warning disable CS8629 // Nullable value type may be null.
-                    spaceIdInt = (int)provider.SpaceId;
-    #pragma warning restore CS8629 // Nullable value type may be null.
-                    SpaceIdStirng = provider.SpaceId.ToString();
-                    if (SpaceIdStirng != String.Empty)
-                        HttpContext.Response.Cookies.Append("SpaceId", SpaceIdStirng);
-                }
-                else
-                {
-                    SpaceIdStirng = HttpContext.Request.Cookies.Where(c => c.Key == "SpaceId").FirstOrDefault().Value;
-                    int.TryParse(SpaceIdStirng, out spaceIdInt);
-                }
-                Space space = await _spaceSerivce.GetByIdAsync(spaceIdInt, s => s.Photos);
-                SpaceManagementVM viewModel = new()
-                {
-                    Space = space,
-                    Halls = _hallService.GetBySpaceId(spaceIdInt, h => h.HallPhotos, h => h.HallFacilities),
-                    Services = _SpaceService_service.GetBySpaceId(spaceIdInt, s => s.ServicePhotos),
-                    Employees = _providerService.GetBySpaceId(spaceIdInt),
-                    Bookings = _bookingService.GetBySpaceId(spaceIdInt)
-                };
-                return View(viewModel);
+                SpaceIdStirng = HttpContext.Request.Cookies.Where(c => c.Key == "SpaceId").FirstOrDefault().Value;
+                int.TryParse(SpaceIdStirng, out spaceIdInt);
             }
-            #region Create New Hall
-            [HttpGet]
-            public async Task<IActionResult> AddHallAsync()
+            Space space = await _spaceSerivce.GetByIdAsync(spaceIdInt, s => s.Photos);
+            SpaceManagementVM viewModel = new()
             {
-                var SpaceIdStirng = "";
-                var spaceIdInt = 0;
-                if (HttpContext.Request.Cookies.Where(c => c.Key == "SpaceId").FirstOrDefault().Value is null)
-                {
-                    var providerId = _userManager.GetCurrentUserId(HttpContext);
-                    var provider = await _providerService.GetByIdAsync(providerId);
-                    spaceIdInt = (int)provider.SpaceId;
-                    SpaceIdStirng = provider.SpaceId.ToString();
-                    if (SpaceIdStirng != String.Empty)
-                        HttpContext.Response.Cookies.Append("SpaceId", SpaceIdStirng);
-                }
-                else
-                {
-                    SpaceIdStirng = HttpContext.Request.Cookies.Where(c => c.Key == "SpaceId").FirstOrDefault().Value;
-                    int.TryParse(SpaceIdStirng, out spaceIdInt);
-                }
-                //Space space = _context.Space.Include(s => s.Photos).Where(s => s.Id.ToString() == SpaceId).FirstOrDefault();
-                Space space = await _spaceSerivce.GetByIdAsync(spaceIdInt, s => s.Photos);
-                AddHallVM vm = new()
-                {
-                    SpaceId = space.Id,
-                    SpaceName = space.Name,
-                    SpaceBio = space.Bio,
-                    SpacePhotoUrl = space.Photos.First().Url
-                };
+                Space = space,
+                Halls = _hallService.GetBySpaceId(spaceIdInt, h => h.HallPhotos, h => h.HallFacilities),
+                Services = _spaceService_service.GetBySpaceId(spaceIdInt, s => s.ServicePhotos),
+                Employees = _providerService.GetBySpaceId(spaceIdInt),
+                Bookings = _bookingService.GetBySpaceId(spaceIdInt)
+            };
+            return View(viewModel);
+        }
+        #region Create New Hall
+        [HttpGet]
+        public async Task<IActionResult> AddHallAsync()
+        {
+            var SpaceIdStirng = "";
+            var spaceIdInt = 0;
+            if (HttpContext.Request.Cookies.Where(c => c.Key == "SpaceId").FirstOrDefault().Value is null)
+            {
+                var providerId = _userManager.GetCurrentUserId(HttpContext);
+                var provider = await _providerService.GetByIdAsync(providerId);
+                spaceIdInt = (int)provider.SpaceId;
+                SpaceIdStirng = provider.SpaceId.ToString();
+                if (SpaceIdStirng != String.Empty)
+                    HttpContext.Response.Cookies.Append("SpaceId", SpaceIdStirng);
+            }
+            else
+            {
+                SpaceIdStirng = HttpContext.Request.Cookies.Where(c => c.Key == "SpaceId").FirstOrDefault().Value;
+                int.TryParse(SpaceIdStirng, out spaceIdInt);
+            }
+            //Space space = _context.Space.Include(s => s.Photos).Where(s => s.Id.ToString() == SpaceId).FirstOrDefault();
+            Space space = await _spaceSerivce.GetByIdAsync(spaceIdInt, s => s.Photos);
+            AddHallVM vm = new()
+            {
+                SpaceId = space.Id,
+                SpaceName = space.Name,
+                SpaceBio = space.Bio,
+                SpacePhotoUrl = space.Photos.First().Url
+            };
+            return View(vm);
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddHall(AddHallVM vm, Facility[] Facilities)
+        {
+            if (!ModelState.IsValid)
+            {
                 return View(vm);
             }
-            [HttpPost]
-            public async Task<IActionResult> AddHall(AddHallVM vm, Facility[] Facilities)
+            /*Add new hall to the database*/
+            var hall = new SpaceHall()
             {
-                if (!ModelState.IsValid)
+                SpaceId = vm.SpaceId,
+                Description = vm.Description,
+                CostPerHour = vm.CostPerHour,
+                Capacity = vm.Capacity,
+                Type = vm.Type,
+                Status = HallStatus.Accepted
+            };
+            await _hallService.AddAsync(hall);
+            /*Add Facilities*/
+            foreach (Facility facility in Facilities)
+            {
+                await _hallFacilityService.AddAsync(new HallFacility()
                 {
-                    return View(vm);
-                }
-                /*Add new hall to the database*/
-                var hall = new SpaceHall()
+                    Facility = facility,
+                    HallId = hall.Id
+                });
+            }
+            /*Add thumbnail*/
+            int cnt = 0;
+            var thumbnailPath = SaveFile.HallPhoto(vm.Thumbnail, vm.SpaceName, hall.Id, cnt);
+            if (thumbnailPath != null)
+            {
+                await _hallPhotoService.AddAsync(new HallPhoto()
                 {
-                    SpaceId = vm.SpaceId,
-                    Description = vm.Description,
-                    CostPerHour = vm.CostPerHour,
-                    Capacity = vm.Capacity,
-                    Type = vm.Type,
-                    Status = HallStatus.Accepted
-                };
-                await _hallService.AddAsync(hall);
-                /*Add Facilities*/
-                foreach (Facility facility in Facilities)
+                    HallId = hall.Id,
+                    Url = thumbnailPath.Result,
+                });
+                await _context.SaveChangesAsync();
+            }
+            else return View(vm);
+            /*Add hall Photos*/
+            foreach (var file in vm.Files)
+            {
+                cnt++;
+                var filePath = SaveFile.HallPhoto(file, vm.SpaceName, hall.Id, cnt);
+                if (filePath != null)
                 {
-                    await _hallFacilityService.AddAsync(new HallFacility()
-                    {
-                        Facility = facility,
-                        HallId = hall.Id
-                    });
-                }
-                /*Add thumbnail*/
-                int cnt = 0;
-                var thumbnailPath = SaveFile.HallPhoto(vm.Thumbnail, vm.SpaceName, hall.Id, cnt);
-                if (thumbnailPath != null)
-                {
+                    /*Add hall photo*/
                     await _hallPhotoService.AddAsync(new HallPhoto()
                     {
                         HallId = hall.Id,
-                        Url = thumbnailPath.Result,
+                        Url = filePath.Result,
                     });
-                    await _context.SaveChangesAsync();
                 }
-                else return View(vm);
-                /*Add hall Photos*/
-                foreach (var file in vm.Files)
-                {
-                    cnt++;
-                    var filePath = SaveFile.HallPhoto(file, vm.SpaceName, hall.Id, cnt);
-                    if (filePath != null)
-                    {
-                        /*Add hall photo*/
-                        await _hallPhotoService.AddAsync(new HallPhoto()
-                        {
-                            HallId = hall.Id,
-                            Url = filePath.Result,
-                        });
-                    }
-                }
-                return RedirectToAction("Index");
             }
-            #endregion
+            return RedirectToAction("Index");
+        }
+        #endregion
 
-            #region Create New Service
-            [HttpGet]
-            public async Task<IActionResult> AddServiceAsync()
+        #region Create New Service
+        [HttpGet]
+        public async Task<IActionResult> AddServiceAsync()
+        {
+            var SpaceIdStirng = "";
+            var spaceIdInt = 0;
+            if (HttpContext.Request.Cookies.Where(c => c.Key == "SpaceId").FirstOrDefault().Value is null)
             {
-                var SpaceIdStirng = "";
-                var spaceIdInt = 0;
-                if (HttpContext.Request.Cookies.Where(c => c.Key == "SpaceId").FirstOrDefault().Value is null)
-                {
-                    var providerId = _userManager.GetCurrentUserId(HttpContext);
-                    var provider = _context.SpaceEmployee.Where(e => e.Id == providerId).FirstOrDefault();
-                    SpaceIdStirng = provider.SpaceId.ToString();
-                    if (SpaceIdStirng != String.Empty)
-                        HttpContext.Response.Cookies.Append("SpaceId", SpaceIdStirng);
-                }
-                else
-                {
-                    SpaceIdStirng = HttpContext.Request.Cookies.Where(c => c.Key == "SpaceId").FirstOrDefault().Value;
-                    int.TryParse(SpaceIdStirng, out spaceIdInt);
-                }
-                //Space space = _context.Space.Include(s => s.Photos).Where(s => s.Id.ToString() == SpaceId).FirstOrDefault();
-                Space space = await _spaceSerivce.GetByIdAsync(spaceIdInt, s => s.Photos);
-                AddServiceVM vm = new()
-                {
-                    SpaceId = space.Id,
-                    SpaceName = space.Name,
-                    SpaceBio = space.Bio,
-                    SpacePhotoUrl = space.Photos.First().Url
-                };
+                var providerId = _userManager.GetCurrentUserId(HttpContext);
+                var provider = _context.SpaceEmployee.Where(e => e.Id == providerId).FirstOrDefault();
+                SpaceIdStirng = provider.SpaceId.ToString();
+                if (SpaceIdStirng != String.Empty)
+                    HttpContext.Response.Cookies.Append("SpaceId", SpaceIdStirng);
+            }
+            else
+            {
+                SpaceIdStirng = HttpContext.Request.Cookies.Where(c => c.Key == "SpaceId").FirstOrDefault().Value;
+                int.TryParse(SpaceIdStirng, out spaceIdInt);
+            }
+            //Space space = _context.Space.Include(s => s.Photos).Where(s => s.Id.ToString() == SpaceId).FirstOrDefault();
+            Space space = await _spaceSerivce.GetByIdAsync(spaceIdInt, s => s.Photos);
+            AddServiceVM vm = new()
+            {
+                SpaceId = space.Id,
+                SpaceName = space.Name,
+                SpaceBio = space.Bio,
+                SpacePhotoUrl = space.Photos.First().Url
+            };
+            return View(vm);
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddService(AddServiceVM vm)
+        {
+            if (!ModelState.IsValid)
+            {
                 return View(vm);
             }
-            [HttpPost]
-            public async Task<IActionResult> AddService(AddServiceVM vm)
+            /*Add new Service to the database*/
+            var service = new SpaceService()
             {
-                if (!ModelState.IsValid)
-                {
-                    return View(vm);
-                }
-                /*Add new Service to the database*/
-                var service = new SpaceService()
-                {
-                    SpaceId = vm.SpaceId,
-                    Name = vm.SpaceName,
-                    Description = vm.Description,
-                    Price = vm.CostPerUnit
-                };
-                await _SpaceService_service.AddAsync(service);
+                SpaceId = vm.SpaceId,
+                Name = vm.SpaceName,
+                Description = vm.Description,
+                Price = vm.CostPerUnit
+            };
+            await _spaceService_service.AddAsync(service);
 
-                /*Add thumbnail*/
-                int cnt = 0;
-                var thumbnailPath = SaveFile.HallPhoto(vm.Thumbnail, vm.SpaceName, service.Id, cnt);
-                if (thumbnailPath != null)
+            /*Add thumbnail*/
+            int cnt = 0;
+            var thumbnailPath = SaveFile.HallPhoto(vm.Thumbnail, vm.SpaceName, service.Id, cnt);
+            if (thumbnailPath != null)
+            {
+                await _servicePhotoService.AddAsync(new ServicePhoto()
                 {
+                    ServiceId = service.Id,
+                    Url = thumbnailPath.Result,
+                });
+            }
+            else return View(vm);
+            /*Add Service Photos*/
+            foreach (var file in vm.Files)
+            {
+                cnt++;
+                var filePath = SaveFile.ServicePhoto(file, vm.SpaceName, service.Id, cnt);
+                if (filePath != null)
+                {
+                    /*Add hall photo*/
+
                     await _servicePhotoService.AddAsync(new ServicePhoto()
                     {
                         ServiceId = service.Id,
-                        Url = thumbnailPath.Result,
+                        Url = filePath.Result,
                     });
                 }
-                else return View(vm);
-                /*Add Service Photos*/
-                foreach (var file in vm.Files)
-                {
-                    cnt++;
-                    var filePath = SaveFile.ServicePhoto(file, vm.SpaceName, service.Id, cnt);
-                    if (filePath != null)
-                    {
-                        /*Add hall photo*/
-
-                        await _servicePhotoService.AddAsync(new ServicePhoto()
-                        {
-                            ServiceId = service.Id,
-                            Url = filePath.Result,
-                        });
-                    }
-                }
-                await _context.SaveChangesAsync();
-                return RedirectToAction("Index");
             }
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index");
+        }
         #endregion
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteHallPhoto(int PhotoId , int HallId)
-        {
-            string fileName = _hallPhotoService.GetPhotoFileName(PhotoId);
-            string rootPath = _env.WebRootPath;
-            string filePath = Path.Combine(rootPath, "photos", fileName);
-            bool isDeleted = SaveFile.DeleteFile(filePath);
-            if (isDeleted)
-            {
-                RedirectToAction("EditHall", HallId);
-            }
-            return NotFound();
-        }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteServicePhoto(int PhotoId, int ServiceId)
-        {
-            string fileName = _servicePhotoService.GetPhotoFileName(PhotoId);
-            string rootPath = _env.WebRootPath;
-            string filePath = Path.Combine(rootPath, "photos", fileName);
-            bool isDeleted = SaveFile.DeleteFile(filePath);
-            if (isDeleted)
-            {
-                RedirectToAction("EditHall", ServiceId);
-            }
-            return NotFound();
-        }
+
         #region edit hall
         [HttpGet]
-    public async Task<IActionResult> EditHallAsync(int HallId)
+        public async Task<IActionResult> EditHallAsync(int HallId)
         {
             if (HallId == 0)
                 return RedirectToAction("Index");
@@ -303,22 +274,23 @@ using Microsoft.Data.SqlClient;
                 Description = hall.Description,
                 CostPerHour = hall.CostPerHour,
                 Type = hall.Type,
-                ThumbnailUrl = await _hallPhotoService.GetThumbnailUrlAsync(hall.Id),
             };
-            return View(vm);
-    }
-    [HttpPost]
-    public async Task<IActionResult> EditHallAsync(EditHallVM vm)
-    {
-        if (!ModelState.IsValid)
-        {
             return View(vm);
         }
 
-        var hall = await _hallService.GetByIdAsync(vm.Id);
-        hall.Description = vm.Description;
-        hall.CostPerHour = vm.CostPerHour;
-            int cnt = 1;
+        [HttpPost]
+        public async Task<IActionResult> EditHallAsync(EditHallVM vm, Facility[] facilities)
+        {
+            if (!ModelState.IsValid)
+            {
+                vm.SpaceHall = await _hallService.GetByIdAsync(vm.SpaceHall.Id, h => h.HallPhotos);
+                return View(vm);
+            }
+
+            var hall = await _hallService.GetByIdAsync(vm.Id);
+            hall.Description = vm.Description;
+            hall.CostPerHour = vm.CostPerHour;
+            //Add new Photos
             foreach (var file in vm.Files)
             {
                 var photo = new HallPhoto()
@@ -326,41 +298,61 @@ using Microsoft.Data.SqlClient;
                     HallId = hall.Id,
                     Url = "Temp",
                 };
-                    await _hallPhotoService.AddAsync(photo);
-                    var filePath = SaveFile.HallPhoto(file, vm.SpaceName, hall.Id, photo.Id);
+                await _hallPhotoService.AddAsync(photo);
+                var filePath = await SaveFile.HallPhoto(file, vm.SpaceName, hall.Id, photo.Id);
                 if (filePath == null)
                 {
+                    //undo adding photo
                     await _hallPhotoService.DeleteAsync(photo.Id);
                 }
-                photo.Url = filePath.Result;
-                await _hallPhotoService.UpdateAsync(photo.Id, photo);
+                else
+                {
+                    photo.Url = filePath;
+                    await _hallPhotoService.UpdateAsync(photo.Id, photo);
+                }
             }
-            await _hallService.UpdateAsync(hall.Id , hall);
-        return RedirectToAction("Index");
+            await _hallService.UpdateAsync(hall.Id, hall);
+            return RedirectToAction("Index");
         }
-        public ISpaceService_Service Get_SpaceService_service()
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> DeleteHallPhoto(int PhotoId, int HallId)
         {
-            return _SpaceService_service;
+            var photo = await _hallPhotoService.GetByIdAsync(PhotoId);
+            string fileName = photo.Url;
+            string rootPath = _env.WebRootPath;
+            string filePath = Path.Combine(rootPath, "photos", fileName);
+            bool isDeleted = SaveFile.DeleteFile(filePath);
+            if (isDeleted)
+            {
+                await _hallPhotoService.DeleteAsync(photo.Id);
+                RedirectToAction("EditHall", HallId);
+            }
+            return NotFound();
         }
         #endregion
+
         #region edit service 
         [HttpGet]
         public async Task<IActionResult> EditServiceAsync(int ServiceId)
         {
             if (ServiceId == 0)
                 return RedirectToAction("Index");
-            var service = await _hallService.GetByIdAsync(ServiceId);
+            var service = await _spaceService_service.GetByIdAsync(ServiceId);
             var userId = _userManager.GetCurrentUserId(HttpContext);
             var user = await _providerService.GetByIdAsync(userId);
             if (user.SpaceId != service.SpaceId)
             {
                 return RedirectToAction("AccessDenied", "Account");
             }
-            var vm = new AddServiceVM()
+            var space = await _spaceSerivce.GetByIdAsync(service.SpaceId,s=>s.Photos);
+            var vm = new EditServiceVM()
             {
-                SpaceId = service.SpaceId,
-                Description = service.Description,
-                CostPerUnit = service.CostPerHour,
+                SpaceId = space.Id,
+                SpaceBio = space.Bio,
+                SpaceName = space.Name,
+                SpacePhotoUrl = space.Photos.First().Url,
+                Service=service
             };
             return View(vm);
         }
@@ -369,17 +361,19 @@ using Microsoft.Data.SqlClient;
         {
             if (!ModelState.IsValid)
             {
+                vm.Service = await _spaceService_service.GetByIdAsync(vm.Service.Id,s=>s.ServicePhotos);
                 return View(vm);
             }
-            var service = await _SpaceService_service.GetByIdAsync(vm.id);
+            var service = await _spaceService_service.GetByIdAsync(vm.Service.Id);
             if (service == null)
             {
                 return NotFound();
             }
-            service.Name = vm.ServiceName;
-            service.Description = vm.Description;
-            service.Price = vm.CostPerUnit;
-            int cnt = 1;
+
+            service.Name = vm.Service.Name;
+            service.Description = vm.Service.Description;
+            service.Price = vm.Service.Price;
+
             foreach (var file in vm.Files)
             {
                 var photo = new ServicePhoto()
@@ -388,16 +382,37 @@ using Microsoft.Data.SqlClient;
                     Url = "Temp",
                 };
                 await _servicePhotoService.AddAsync(photo);
-                var filePath = SaveFile.HallPhoto(file, vm.SpaceName, service.Id, photo.Id);
+                var filePath = SaveFile.ServicePhoto(file, vm.SpaceName, service.Id, photo.Id);
                 if (filePath == null)
                 {
                     await _hallPhotoService.DeleteAsync(photo.Id);
                 }
-                photo.Url = filePath.Result;
-                await _servicePhotoService.UpdateAsync(photo.Id, photo);
+                else
+                {
+                    //Undo changes
+                    photo.Url = filePath.Result;
+                    await _servicePhotoService.UpdateAsync(photo.Id, photo);
+                }
             }
-            await _SpaceService_service.UpdateAsync(service.Id,service);
+            await _spaceService_service.UpdateAsync(service.Id, service);
             return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> DeleteServicePhoto(int PhotoId, int ServiceId)
+        {
+            var photo = await _servicePhotoService.GetByIdAsync(PhotoId);
+            string fileName = photo.Url;
+            string rootPath = _env.WebRootPath;
+            string filePath = Path.Combine(rootPath, "photos", fileName);
+            bool isDeleted = SaveFile.DeleteFile(filePath);
+            if (isDeleted)
+            {
+                await _servicePhotoService.DeleteAsync(photo.Id);
+                RedirectToAction("EditService", ServiceId);
+            }
+            return NotFound();
         }
         #endregion
     }
