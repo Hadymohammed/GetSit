@@ -57,6 +57,7 @@ builder.Services.AddScoped<IPaymentCardService, PaymentCardService>();
 builder.Services.AddScoped<IPaymentDetailService, PaymentDetailService>();
 builder.Services.AddScoped<IServicePhotoService, ServicePhotoService>();
 builder.Services.AddScoped<ISpaceService, Space_Service>();
+builder.Services.AddScoped<ISpaceContactService, SpaceContactService>();
 builder.Services.AddScoped<ISpaceEmployeeService, SpaceEmployeeService>();
 builder.Services.AddScoped<ISpaceHallService, SpaceHallService>();
 builder.Services.AddScoped<ISpacePhoneService, SpacePhoneService>();

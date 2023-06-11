@@ -9,6 +9,8 @@ using GetSit.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Win32;
+using Newtonsoft.Json;
 using System.Linq;
 
 namespace GetSit.Controllers
@@ -16,6 +18,11 @@ namespace GetSit.Controllers
     [Authorize(Roles = "Provider")]//Error:Convert UserRole to class
     public class SpaceManagementController : Controller
     {
+        private readonly ICustomerService _customerService;
+        private readonly ISpaceEmployeeService _spaceEmployeeService;
+        private readonly ISystemAdminService _adminSerivce;
+        private readonly ISpacePhoneService _spacePhoneService;
+        private readonly ISpaceContactService _spaceContactService;
         #region Dependacies
         readonly IUserManager _userManager;
         readonly AppDBcontext _context;
@@ -36,7 +43,9 @@ namespace GetSit.Controllers
             IHallPhotoService hallPhotoService,
             ISpaceService_Service spaceService_service,
             IServicePhotoService servicePhotoService,
-            IBookingService bookingService)
+            IBookingService bookingService,
+            ISpaceContactService spaceContactService,
+            ISpacePhoneService spacePhoneService)
         {
             _userManager = userManager;
             _context = context;
@@ -48,18 +57,21 @@ namespace GetSit.Controllers
             _spaceService_service = spaceService_service;
             _servicePhotoService = servicePhotoService;
             _bookingService = bookingService;
+            _spaceContactService = spaceContactService;
+            _spacePhoneService = spacePhoneService;
         }
         #endregion
         public async Task<IActionResult> IndexAsync()
         {
             var SpaceIdStirng = "";
             var spaceIdInt = 0;
-            if (HttpContext.Request.Cookies.Where(c=>c.Key=="SpaceId").FirstOrDefault().Value is null)
+            if (HttpContext.Request.Cookies.Where(c => c.Key == "SpaceId").FirstOrDefault().Value is null)
             {
                 var providerId = _userManager.GetCurrentUserId(HttpContext);
                 var provider = await _providerService.GetByIdAsync(providerId);
+                spaceIdInt = (int)provider.SpaceId;
                 SpaceIdStirng = provider.SpaceId.ToString();
-                if(SpaceIdStirng != String.Empty)
+                if (SpaceIdStirng != String.Empty)
                     HttpContext.Response.Cookies.Append("SpaceId", SpaceIdStirng);
             }
             else
@@ -67,23 +79,127 @@ namespace GetSit.Controllers
                 SpaceIdStirng = HttpContext.Request.Cookies.Where(c => c.Key == "SpaceId").FirstOrDefault().Value;
                 int.TryParse(SpaceIdStirng, out spaceIdInt);
             }
-            Space space =await _spaceSerivce.GetByIdAsync(spaceIdInt, s => s.Photos);
+            Space space = await _spaceSerivce.GetByIdAsync(spaceIdInt, s => s.Photos);
             SpaceManagementVM viewModel = new()
             {
                 Space = space,
-                Halls = _hallService.GetBySpaceId(spaceIdInt,h=>h.HallPhotos,h=>h.HallFacilities),
+                Halls = _hallService.GetBySpaceId(spaceIdInt, h => h.HallPhotos, h => h.HallFacilities),
                 Services = _spaceService_service.GetBySpaceId(spaceIdInt, s => s.ServicePhotos),
                 Employees = _providerService.GetBySpaceId(spaceIdInt),
                 Bookings = _bookingService.GetBySpaceId(spaceIdInt)
-        };
+            };
             return View(viewModel);
         }
+        bool PresirvedPhoneNumber(string PhoneNumber)
+        {
+            return (_spacePhoneService.GetByPhoneNumber(PhoneNumber) != null);
+        }
+        [HttpGet]
+        public IActionResult AddPhoneNumber()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddPhoneNumber(SpacePhone AddNewSpacePhone)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(AddNewSpacePhone);
+            }
+            if (!PresirvedPhoneNumber(AddNewSpacePhone.PhoneNumber))
+            {
+                ModelState.AddModelError("PhoneNumber", "Invalid email");
+                return View(AddPhoneNumber());
+            }
+            HttpContext.Session.SetString("NewNumberModel", JsonConvert.SerializeObject(AddNewSpacePhone));
+            var otpVm = new OTPVM();
+            otpVm.Phone = AddNewSpacePhone.PhoneNumber;
+            return RedirectToAction("PhoneOTP", otpVm);
+        }
+        [HttpGet]
+        public IActionResult PhoneOTP(OTPVM? otpVm)
+        {
+            if (otpVm is null)
+                RedirectToAction("AddPhoneNumber");
+            OTPServices.SendPhoneOTP(HttpContext, otpVm.Phone);
+            return View(otpVm);
+        }
+        [HttpPost]
+        public async Task<IActionResult> PhoneOTPAsync(OTPVM otp)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(otp);
+            }
+            if (OTPServices.VerifyOTP(HttpContext, otp) == false)
+            {
+                ModelState.AddModelError("OTP", "InValid Code");
+                return View(otp);
+            }
+            var stringUser = HttpContext.Session.GetString("NewNumberModel");
+            var AddPhoneNumber = JsonConvert.DeserializeObject<RegisterVM>(stringUser) as RegisterVM;
+            if (AddPhoneNumber is null)
+                RedirectToAction("AddPhoneNumber");
+            // Using SpaceId as default value here
+            var SpaceId = 1;
+            var NewPhone = new SpacePhone()
+            {
+                PhoneNumber = AddPhoneNumber.PhoneNumber,
+                SpaceId = SpaceId,
+            };
+
+            try
+            {
+                await _spacePhoneService.AddAsync(NewPhone);
+                return RedirectToAction("SpaceManagement");
+            }
+            catch (Exception error)
+            {
+                return View(AddPhoneNumber);
+            }
+            return RedirectToAction("AddPhoneNumber");
+        }
+        [HttpGet]
+        public IActionResult AddContact()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddContact(SpaceContact NewspaceContact)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(NewspaceContact);
+            }
+            if (NewspaceContact.Contact is null)
+                RedirectToAction("AddContact");
+            // Using SpaceId as default value here
+            var SpaceId = 1;
+            var AddNewContact = new SpaceContact()
+            {
+                Contact = NewspaceContact.Contact,
+                SpaceId = SpaceId,
+                ContactType = NewspaceContact.ContactType
+            };
+
+            try
+            {
+                await _spaceContactService.AddAsync(AddNewContact);
+                return RedirectToAction("SpaceManagement");
+            }
+            catch (Exception error)
+            {
+                return View(NewspaceContact);
+            }
+            return RedirectToAction("AddPhoneNumber");
+        }
+
         #region Create New Hall
         [HttpGet]
         public async Task<IActionResult> AddHallAsync()
         {
             var SpaceIdStirng = "";
-            var spaceIdInt=0;
+            var spaceIdInt = 0;
             if (HttpContext.Request.Cookies.Where(c => c.Key == "SpaceId").FirstOrDefault().Value is null)
             {
                 var providerId = _userManager.GetCurrentUserId(HttpContext);
@@ -99,7 +215,7 @@ namespace GetSit.Controllers
                 int.TryParse(SpaceIdStirng, out spaceIdInt);
             }
             //Space space = _context.Space.Include(s => s.Photos).Where(s => s.Id.ToString() == SpaceId).FirstOrDefault();
-            Space space =await _spaceSerivce.GetByIdAsync(spaceIdInt, s=>s.Photos);
+            Space space = await _spaceSerivce.GetByIdAsync(spaceIdInt, s => s.Photos);
             AddHallVM vm = new()
             {
                 SpaceId = space.Id,
@@ -188,7 +304,7 @@ namespace GetSit.Controllers
                 int.TryParse(SpaceIdStirng, out spaceIdInt);
             }
             //Space space = _context.Space.Include(s => s.Photos).Where(s => s.Id.ToString() == SpaceId).FirstOrDefault();
-            Space space =await _spaceSerivce.GetByIdAsync(spaceIdInt, s=>s.Photos);
+            Space space = await _spaceSerivce.GetByIdAsync(spaceIdInt, s => s.Photos);
             AddServiceVM vm = new()
             {
                 SpaceId = space.Id,
@@ -209,12 +325,12 @@ namespace GetSit.Controllers
             var service = new SpaceService()
             {
                 SpaceId = vm.SpaceId,
-                Name=vm.SpaceName,
+                Name = vm.SpaceName,
                 Description = vm.Description,
                 Price = vm.CostPerUnit
             };
             await _spaceService_service.AddAsync(service);
-            
+
             /*Add thumbnail*/
             int cnt = 0;
             var thumbnailPath = SaveFile.HallPhoto(vm.Thumbnail, vm.SpaceName, service.Id, cnt);
@@ -235,7 +351,7 @@ namespace GetSit.Controllers
                 if (filePath != null)
                 {
                     /*Add hall photo*/
-                    
+
                     await _servicePhotoService.AddAsync(new ServicePhoto()
                     {
                         ServiceId = service.Id,

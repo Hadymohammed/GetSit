@@ -1,0 +1,16 @@
+﻿@using GetSit.Models
+@using GetSit.Data.enums
+
+@model SpaceContact
+
+<form asp-action="AddContact">
+    <label for="platform">Select a social media platform:</label><br>
+    <select id="platform" asp-for="ContactType">
+        <option value="@SpaceContacts.Facebook">Facebook</option>
+        <option value="@SpaceContacts.Instagram">Instagram</option>
+        <option value="@SpaceContacts.Twitter">Twitter</option>
+    </select><br><br>
+    <label asp-for="Contact">Enter the link:</label><br>
+    <input type="text" id="link" asp-for="Contact" placeholder="https://example.com"><br><br>
+    <input type="submit" value="Submit">
+</form>

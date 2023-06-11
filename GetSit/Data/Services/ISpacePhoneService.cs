@@ -3,7 +3,8 @@ using GetSit.Models;
 
 namespace GetSit.Data.Services
 {
-    public interface ISpacePhoneService:IEntityBaseRepository<SpacePhone>
+    public interface ISpacePhoneService : IEntityBaseRepository<SpacePhone>
     {
+        public SystemAdmin GetByPhoneNumber(string PhoneNumber);
     }
 }

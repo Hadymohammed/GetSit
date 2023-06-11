@@ -20,11 +20,11 @@ namespace GetSit.Models
         public string Street { get; set; }
         [Required]
         public string GPSLocation { get; set; }
-        [Required,DefaultValue(true)]
+        [Required, DefaultValue(true)]
         public bool IsFast { get; set; }
         [Required]
         public string BankAccount { get; set; }
-        public IEnumerable<SpacePhoto> Photos  { get; set; }
+        public IEnumerable<SpacePhoto> Photos { get; set; }
         [Required]
         public List<SpacePhone> Phones { get; set; }
         [Required]
@@ -34,6 +34,7 @@ namespace GetSit.Models
         [Required]
         public ICollection<SpaceHall> Halls { get; set; }
         public List<SpaceEmployee> Employees { get; set; }
-     
+        public List<SpaceContact> SpaceContacts { get; set; }
+
     }
 }
