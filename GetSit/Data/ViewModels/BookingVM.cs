@@ -33,5 +33,7 @@ namespace GetSit.Data.ViewModels
         public Customer? Customer { get; set; }
         public float ?Paid { get; set; }
         public Dictionary<int, PaymentStatus>? ServicesStatus { get; set; }
+
+        public DateTime? FilterDate { get; set; } 
     }
 }
