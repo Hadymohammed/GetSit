@@ -3,6 +3,7 @@
 @model EditHallVM
 <link rel="stylesheet" href="~/css/SpaceManagement.css" />
 <div class="container">
+    <form asp-action="EditHall" enctype="multipart/form-data">
     <div>
         <!--Space Data-->
         <div class="profile-card" style="top: 0px;">
@@ -22,7 +23,7 @@
         <div class="slider-card">
             <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
                 <ol class="carousel-indicators">
-                    @for (int i = 0; i < Model.Hall.HallPhotos.Count(); i++)
+                    @for (int i = 0; i < Model.HallPhotos.Count(); i++)
                     {
                         @if (i == 0)
                         {
@@ -38,17 +39,23 @@
                     @{
                         var j = 0;
 
-                        @foreach (var photo in Model.Hall.HallPhotos)
+                        @foreach (var photo in Model.HallPhotos)
                         {
                             @if (j++ == 0)
                             {
                                 <div class="carousel-item active">
+                                        <a asp-action="DeleteHallPhoto" asp-controller="SpaceManagement" asp-route-PhotoId="@photo.Id" onclick="return confirmDelete();">
+                                        <i class="fa-regular fa-trash-can"></i>
+                                    </a>
                                     <img class="slider-image" src="../@photo.Url" alt="@j slide">
                                 </div>
                             }
                             else
                             {
                                 <div class="carousel-item">
+                                        <a asp-action="DeleteHallPhoto" asp-controller="SpaceManagement" asp-route-PhotoId="@photo.Id" onclick="return confirmDelete();">
+                                        <i class="fa-regular fa-trash-can"></i>
+                                    </a>
                                     <img class="slider-image" src="../@photo.Url" alt="@j slide">
                                 </div>
                             }
@@ -66,11 +73,11 @@
             </div>
         </div>
     </div>
-    <form asp-action="EditHall" enctype="multipart/form-data">
         <input asp-for="@Model.SpaceName" hidden />
         <input asp-for="@Model.SpaceId" hidden />
         <input asp-for="@Model.SpaceBio" hidden />
         <input asp-for="@Model.SpacePhotoUrl" hidden />
+        <input asp-for="@Model.HallId" hidden />
         <div class="addHall-container">
             <div class="addHall-left-column">
                 <!--Name & Bio-->
@@ -78,10 +85,10 @@
                     <div class="addHall-sub-card">
                         <h4>Main</h4>
                         <div class="form-group">
-                            <label asp-for="Hall.Description"></label>
-                            <textarea asp-for="Hall.Description" class="form-control" maxlength="200" style="height: 30vh;max-height: 100px;">
+                            <label asp-for="Description"></label>
+                            <textarea asp-for="Description" class="form-control" maxlength="200" style="height: 30vh;max-height: 100px;">
                     </textarea>
-                                <span asp-validation-for="@Model.Hall.Description" class="text-danger"></span>
+                                <span asp-validation-for="Description" class="text-danger"></span>
                         </div>
                         <!--Facilities-->
                         <div class="form-group">
@@ -89,7 +96,7 @@
                             @foreach (Facility facility in Enum.GetValues(typeof(Facility)))
                             {
                                 <div class="form-check">
-                                    <input type="checkbox" name="Facilities" class="form-check-input" value="@facility" @(Model.Hall.HallFacilities.Any(f => f.Facility == facility) ? "checked" : "")>
+                                    <input type="checkbox" name="Facilities" class="form-check-input" value="@facility" @(Model.HallFacilities.Any(f => f.Facility == facility) ? "checked" : "")>
                                     <label for="Facilities" class="form-check-label">@facility</label>
                                 </div>
                             }
@@ -117,20 +124,20 @@
             <div class="addHall-right-column">
                 <div class="addHall-sub-card">
                     <div class="form-group">
-                        <label asp-for="Hall.CostPerHour">Cost per Hour:</label>
-                        <input type="text" asp-for="Hall.CostPerHour" class="form-control">
-                        <span asp-validation-for="@Model.Hall.CostPerHour" class="text-danger"></span>
+                        <label asp-for="CostPerHour">Cost per Hour:</label>
+                        <input type="text" asp-for="CostPerHour" class="form-control">
+                        <span asp-validation-for="CostPerHour" class="text-danger"></span>
                     </div>
                 </div>
                 <div class="addHall-sub-card">
                     <div class="form-group">
-                        <label asp-for="Hall.Capacity"></label>
-                        <input type="text" asp-for="Hall.Capacity" class="form-control">
-                        <span asp-validation-for="@Model.Hall.Capacity" class="text-danger"></span>
+                        <label asp-for="Capacity"></label>
+                        <input type="text" asp-for="Capacity" class="form-control">
+                        <span asp-validation-for="Capacity" class="text-danger"></span>
                     </div>
 
                     <div class="form-group">
-                        <div >Category: @Model.Hall.Type</div>
+                        <div >Category: @Model.Type</div>
                     </div>
                 </div>
             </div>
@@ -174,6 +181,10 @@
         function removeFileInput(button) {
             var fileInputContainer = button.parentNode;
             fileInputContainer.parentNode.removeChild(fileInputContainer);
+        }
+
+        function confirmDelete() {
+            return confirm('Are you sure you want to delete this hall photo?');
         }
     </script>
 }

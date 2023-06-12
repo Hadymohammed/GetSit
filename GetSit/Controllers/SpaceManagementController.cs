@@ -280,27 +280,32 @@ namespace GetSit.Controllers
             var space = await _spaceSerivce.GetByIdAsync((int)user.SpaceId,s=>s.Photos);
             var vm = new EditHallVM()
             {
+                SpaceId = space.Id,
                 SpaceBio = space.Bio,
                 SpaceName = space.Name,
                 SpacePhotoUrl = space.Photos.First().Url,
-                SpaceId=space.Id,
-                Hall=hall
+                Description = hall.Description,
+                CostPerHour = hall.CostPerHour,
+                Type = hall.Type,
+                Capacity = hall.Capacity,
+                HallPhotos = hall.HallPhotos,
+                HallFacilities=hall.HallFacilities
             };
             return View(vm);
         }
-
         [HttpPost]
         public async Task<IActionResult> EditHallAsync(EditHallVM vm, Facility[] facilities)
         {
             if (!ModelState.IsValid)
             {
-                vm.Hall = await _hallService.GetByIdAsync(vm.Hall.Id, h => h.HallPhotos);
+                vm.HallPhotos = _hallPhotoService.GetByHallId(vm.HallId);
+                vm.HallFacilities= _hallFacilityService.GetByHallId(vm.HallId);
                 return View(vm);
             }
 
-            var hall = await _hallService.GetByIdAsync(vm.Hall.Id);
-            hall.Description = vm.Hall.Description;
-            hall.CostPerHour = vm.Hall.CostPerHour;
+            var hall = await _hallService.GetByIdAsync(vm.HallId);
+            hall.Description = vm.Description;
+            hall.CostPerHour = vm.CostPerHour;
             //Add new Photos
             foreach (var file in vm.Files)
             {
@@ -322,22 +327,35 @@ namespace GetSit.Controllers
                     await _hallPhotoService.UpdateAsync(photo.Id, photo);
                 }
             }
+           
+            /*!!!!! Toggele Facilities change*/
+            
             await _hallService.UpdateAsync(hall.Id, hall);
-            return RedirectToAction("Index");
+            return RedirectToAction("EditHall", new { hallId = hall.Id });
         }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> DeleteHallPhoto(int PhotoId, int HallId)
+        [HttpGet]
+        public async Task<ActionResult> DeleteHallPhoto(int PhotoId)
         {
+            var userId =_userManager.GetCurrentUserId(HttpContext);
+            var user = await _providerService.GetByIdAsync(userId);
+            
             var photo = await _hallPhotoService.GetByIdAsync(PhotoId);
+            var hallId = photo.HallId;
+            var hall = await _hallService.GetByIdAsync(hallId);
+
+            if(user==null)
+                return RedirectToAction("Index");
+            if (user.SpaceId != hall.SpaceId)
+                return RedirectToAction("AccessDenied", "Account");
+
             string fileName = photo.Url;
             string rootPath = _env.WebRootPath;
-            string filePath = Path.Combine(rootPath, "photos", fileName);
+            string filePath = Path.Combine(rootPath,fileName);
             bool isDeleted = SaveFile.DeleteFile(filePath);
             if (isDeleted)
             {
                 await _hallPhotoService.DeleteAsync(photo.Id);
-                RedirectToAction("EditHall", HallId);
+                return RedirectToAction("EditHall", new {hallId=hall.Id});
             }
             return NotFound();
         }
@@ -409,19 +427,30 @@ namespace GetSit.Controllers
             return RedirectToAction("Index");
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> DeleteServicePhoto(int PhotoId, int ServiceId)
+        [HttpGet]
+        public async Task<ActionResult> DeleteServicePhoto(int PhotoId)
         {
+            var userId = _userManager.GetCurrentUserId(HttpContext);
+            var user = await _providerService.GetByIdAsync(userId);
+
             var photo = await _servicePhotoService.GetByIdAsync(PhotoId);
+            var serviceId = photo.ServiceId;
+            var service = await _spaceService_service.GetByIdAsync(serviceId);
+
+            if (user == null)
+                return RedirectToAction("Index");
+            if (user.SpaceId != service.SpaceId)
+                return RedirectToAction("AccessDenied", "Account");
+
+
             string fileName = photo.Url;
             string rootPath = _env.WebRootPath;
-            string filePath = Path.Combine(rootPath, "photos", fileName);
+            string filePath = Path.Combine(rootPath, fileName);
             bool isDeleted = SaveFile.DeleteFile(filePath);
             if (isDeleted)
             {
                 await _servicePhotoService.DeleteAsync(photo.Id);
-                RedirectToAction("EditService", ServiceId);
+                RedirectToAction("EditService", serviceId);
             }
             return NotFound();
         }

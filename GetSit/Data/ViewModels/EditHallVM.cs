@@ -9,8 +9,6 @@ namespace GetSit.Data.ViewModels
     public class EditHallVM
     {
         [Required]
-        public SpaceHall Hall { get; set; }
-        [Required]
         public int SpaceId { get; set; }
         [Required]
         public string SpacePhotoUrl { get; set; }
@@ -18,6 +16,17 @@ namespace GetSit.Data.ViewModels
         public string SpaceName { get; set; }
         [Required]
         public string SpaceBio { get; set; }
-        public List<IFormFile> Files { get; set; }
+        [Required]
+        public int HallId { get; set; }
+        public int Capacity { get; set; }
+        [Required]
+        public float CostPerHour { get; set; }
+        [Required]
+        public string Description { get; set; }
+        [Required]
+        public HallType Type { get; set; }
+        public List<HallPhoto>? HallPhotos { get; set; }
+        public List<HallFacility>? HallFacilities { get; set; }
+        public List<IFormFile>? Files { get; set; }
     }
 }
