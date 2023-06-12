@@ -5,24 +5,15 @@ namespace GetSit.Data.Services
 {
     public class ServicePhotoService:EntityBaseRepository<ServicePhoto>,IServicePhotoService
     {
+        AppDBcontext _context;
         public ServicePhotoService(AppDBcontext context):base(context)
         {
-
+            _context = context;
         }
-
-        public string GetPhotoFileName(int photoId)
+        public List<ServicePhoto> GetByServiceId(int ServiceId)
         {
-            throw new NotImplementedException();
+            return _context.ServicePhoto.Where(p=>p.ServiceId== ServiceId).ToList();
         }
 
-        public Task<IFormFile> GetThumbnailAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task UpdateThumbnailAsync(int id, string result)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
