@@ -231,7 +231,7 @@ namespace GetSit.Controllers
 
             /*Add thumbnail*/
             int cnt = 0;
-            var thumbnailPath = SaveFile.HallPhoto(vm.Thumbnail, vm.SpaceName, service.Id, cnt);
+            var thumbnailPath = SaveFile.ServicePhoto(vm.Thumbnail, vm.SpaceName, service.Id, cnt);
             if (thumbnailPath != null)
             {
                 await _servicePhotoService.AddAsync(new ServicePhoto()
@@ -341,13 +341,17 @@ namespace GetSit.Controllers
             
             var photo = await _hallPhotoService.GetByIdAsync(PhotoId);
             var hallId = photo.HallId;
-            var hall = await _hallService.GetByIdAsync(hallId);
+            var hall = await _hallService.GetByIdAsync(hallId,h=>h.HallPhotos);
 
             if(user==null)
                 return RedirectToAction("Index");
             if (user.SpaceId != hall.SpaceId)
                 return RedirectToAction("AccessDenied", "Account");
-
+                return NotFound();
+            if (hall.HallPhotos.Count() <= 1)
+            {
+                return NotFound();
+            }
             string fileName = photo.Url;
             string rootPath = _env.WebRootPath;
             string filePath = Path.Combine(rootPath,fileName);
@@ -366,7 +370,8 @@ namespace GetSit.Controllers
         public async Task<IActionResult> EditServiceAsync(int ServiceId)
         {
             if (ServiceId == 0)
-                return RedirectToAction("Index");
+                return NotFound();
+
             var service = await _spaceService_service.GetByIdAsync(ServiceId,s=>s.ServicePhotos);
             var userId = _userManager.GetCurrentUserId(HttpContext);
             var user = await _providerService.GetByIdAsync(userId);
@@ -381,7 +386,11 @@ namespace GetSit.Controllers
                 SpaceBio = space.Bio,
                 SpaceName = space.Name,
                 SpacePhotoUrl = space.Photos.First().Url,
-                Service=service
+                ServiceId=service.Id,
+                ServiceName = service.Name,
+                Description=service.Description,
+                Price=service.Price,
+                ServicePhotos=_servicePhotoService.GetByServiceId(service.Id)
             };
             return View(vm);
         }
@@ -390,18 +399,18 @@ namespace GetSit.Controllers
         {
             if (!ModelState.IsValid)
             {
-                vm.Service = await _spaceService_service.GetByIdAsync(vm.Service.Id,s=>s.ServicePhotos);
+                vm.ServicePhotos= _servicePhotoService.GetByServiceId(vm.ServiceId);
                 return View(vm);
             }
-            var service = await _spaceService_service.GetByIdAsync(vm.Service.Id);
+            var service = await _spaceService_service.GetByIdAsync(vm.ServiceId);
             if (service == null)
             {
                 return NotFound();
             }
 
-            service.Name = vm.Service.Name;
-            service.Description = vm.Service.Description;
-            service.Price = vm.Service.Price;
+            service.Name = vm.ServiceName;
+            service.Description = vm.Description;
+            service.Price = vm.Price;
 
             foreach (var file in vm.Files)
             {
@@ -424,9 +433,8 @@ namespace GetSit.Controllers
                 }
             }
             await _spaceService_service.UpdateAsync(service.Id, service);
-            return RedirectToAction("Index");
+            return RedirectToAction("EditService", new { ServiceId = service.Id });
         }
-
         [HttpGet]
         public async Task<ActionResult> DeleteServicePhoto(int PhotoId)
         {
@@ -435,13 +443,16 @@ namespace GetSit.Controllers
 
             var photo = await _servicePhotoService.GetByIdAsync(PhotoId);
             var serviceId = photo.ServiceId;
-            var service = await _spaceService_service.GetByIdAsync(serviceId);
+            var service = await _spaceService_service.GetByIdAsync(serviceId,s=>s.ServicePhotos);
 
             if (user == null)
-                return RedirectToAction("Index");
+                return RedirectToAction("AccessDenied", "Account");
             if (user.SpaceId != service.SpaceId)
                 return RedirectToAction("AccessDenied", "Account");
-
+            if (service.ServicePhotos.Count() <= 1)
+            {
+                return NotFound();
+            }
 
             string fileName = photo.Url;
             string rootPath = _env.WebRootPath;
@@ -450,7 +461,7 @@ namespace GetSit.Controllers
             if (isDeleted)
             {
                 await _servicePhotoService.DeleteAsync(photo.Id);
-                RedirectToAction("EditService", serviceId);
+                return RedirectToAction("EditService", new { ServiceId = service.Id });
             }
             return NotFound();
         }

@@ -14,7 +14,14 @@ namespace GetSit.Data.ViewModels
         [Required]
         public string SpaceBio { get; set; }
         [Required]
-        public SpaceService Service { get; set; }
-        public List<IFormFile> Files { get; set; }
+        public int ServiceId { get; set; }
+        [Required]
+        public string ServiceName { get; set; }
+        [Required]
+        public float Price { get; set; }
+        [Required]
+        public string Description { get; set; }
+        public List<ServicePhoto>? ServicePhotos { get; set; }
+        public List<IFormFile>? Files { get; set; }
     }
 }
