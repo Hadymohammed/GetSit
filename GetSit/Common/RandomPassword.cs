@@ -3,14 +3,10 @@ using System.Text;
 
 namespace GetSit.Common
 {
-    public class RandomPassword
+    public static class RandomPassword
     {
-        AppDBcontext _context;
-        public RandomPassword(AppDBcontext context)
-        {
-            _context = context;
-        }
-        public string GenerateRandomPassword(int length)
+      
+        public static string GenerateRandomPassword(int length)
         {
             const string lowercaseChars = "abcdefghijklmnopqrstuvwxyz";
             const string uppercaseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
