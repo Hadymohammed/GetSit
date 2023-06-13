@@ -11,7 +11,7 @@ namespace GetSit.Models
         [Key]
         public int Id { get; set; }
         [Required]
-        public SpaceContacts ContactType { get; set; }
+        public ContactType ContactType { get; set; }
         public string Contact { get; set; }
         [Required, ForeignKey("SpaceId")]
         public int SpaceId { get; set; }
