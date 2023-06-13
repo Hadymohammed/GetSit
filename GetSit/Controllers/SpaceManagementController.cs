@@ -90,108 +90,37 @@ namespace GetSit.Controllers
             };
             return View(viewModel);
         }
-        bool PresirvedPhoneNumber(string PhoneNumber)
-        {
-            return (_spacePhoneService.GetByPhoneNumber(PhoneNumber) != null);
-        }
-        [HttpGet]
-        public IActionResult AddPhoneNumber()
-        {
-            return View();
-        }
         [HttpPost]
-        public async Task<IActionResult> AddPhoneNumber(SpacePhone AddNewSpacePhone)
+        public async Task<IActionResult> AddContact(SpaceContact contact)
         {
             if (!ModelState.IsValid)
             {
-                return View(AddNewSpacePhone);
+                return RedirectToAction("Index");
             }
-            if (!PresirvedPhoneNumber(AddNewSpacePhone.PhoneNumber))
+
+            var userId = _userManager.GetCurrentUserId(HttpContext);
+            var user = await _providerService.GetByIdAsync(userId);
+            if (user == null)
             {
-                ModelState.AddModelError("PhoneNumber", "Invalid email");
-                return View(AddPhoneNumber());
+                return RedirectToAction("AccessDenied", "Account");
             }
-            HttpContext.Session.SetString("NewNumberModel", JsonConvert.SerializeObject(AddNewSpacePhone));
-            var otpVm = new OTPVM();
-            otpVm.Phone = AddNewSpacePhone.PhoneNumber;
-            return RedirectToAction("PhoneOTP", otpVm);
-        }
-        [HttpGet]
-        public IActionResult PhoneOTP(OTPVM? otpVm)
-        {
-            if (otpVm is null)
-                RedirectToAction("AddPhoneNumber");
-            OTPServices.SendPhoneOTP(HttpContext, otpVm.Phone);
-            return View(otpVm);
-        }
-        [HttpPost]
-        public async Task<IActionResult> PhoneOTPAsync(OTPVM otp)
-        {
-            if (!ModelState.IsValid)
+
+            var NewContact = new SpaceContact()
             {
-                return View(otp);
-            }
-            if (OTPServices.VerifyOTP(HttpContext, otp) == false)
-            {
-                ModelState.AddModelError("OTP", "InValid Code");
-                return View(otp);
-            }
-            var stringUser = HttpContext.Session.GetString("NewNumberModel");
-            var AddPhoneNumber = JsonConvert.DeserializeObject<RegisterVM>(stringUser) as RegisterVM;
-            if (AddPhoneNumber is null)
-                RedirectToAction("AddPhoneNumber");
-            // Using SpaceId as default value here
-            var SpaceId = 1;
-            var NewPhone = new SpacePhone()
-            {
-                PhoneNumber = AddPhoneNumber.PhoneNumber,
-                SpaceId = SpaceId,
+                Contact = contact.Contact,
+                SpaceId = (int)user.SpaceId,
+                ContactType = contact.ContactType
             };
 
             try
             {
-                await _spacePhoneService.AddAsync(NewPhone);
-                return RedirectToAction("SpaceManagement");
+                await _spaceContactService.AddAsync(NewContact);
+                return RedirectToAction("Index");
             }
             catch (Exception error)
             {
-                return View(AddPhoneNumber);
+                return RedirectToAction("Index");
             }
-            return RedirectToAction("AddPhoneNumber");
-        }
-        [HttpGet]
-        public IActionResult AddContact()
-        {
-            return View();
-        }
-        [HttpPost]
-        public async Task<IActionResult> AddContact(SpaceContact NewspaceContact)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(NewspaceContact);
-            }
-            if (NewspaceContact.Contact is null)
-                RedirectToAction("AddContact");
-            // Using SpaceId as default value here
-            var SpaceId = 1;
-            var AddNewContact = new SpaceContact()
-            {
-                Contact = NewspaceContact.Contact,
-                SpaceId = SpaceId,
-                ContactType = NewspaceContact.ContactType
-            };
-
-            try
-            {
-                await _spaceContactService.AddAsync(AddNewContact);
-                return RedirectToAction("SpaceManagement");
-            }
-            catch (Exception error)
-            {
-                return View(NewspaceContact);
-            }
-            return RedirectToAction("AddPhoneNumber");
         }
 
         #region Create New Hall
