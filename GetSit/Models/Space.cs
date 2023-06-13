@@ -23,7 +23,7 @@ namespace GetSit.Models
         public string GPSLocation { get; set; }
         [Required,DefaultValue(true)]
         public bool IsFast { get; set; }
-        [Required,AllowNull]
+        [AllowNull]
         public string ?BankAccount { get; set; }
         public IEnumerable<SpacePhoto> Photos  { get; set; }
         [Required]
