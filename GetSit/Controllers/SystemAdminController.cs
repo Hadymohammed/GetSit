@@ -55,7 +55,7 @@ namespace GetSit.Controllers
         {
             return View();
         }
-        [HttpPost]
+        [HttpGet]
         public IActionResult AcceptRepest(int requestId)       {
             var request= _hallRequestService.GetById(requestId);
             var hall =request.Hall;
@@ -71,7 +71,7 @@ namespace GetSit.Controllers
             var request = _hallRequestService.GetById(requestId);
             request.comment = comment;
             request.Status = ReqestStatus.Rejected;
-            request.Date = DateTime.Now();
+            request.Date=DateTime.Now;
             _hallRequestService.UpdateRequest(request);
             
             return View("Index");

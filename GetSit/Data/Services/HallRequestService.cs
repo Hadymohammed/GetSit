@@ -22,6 +22,11 @@ namespace GetSit.Data.Services
             _context.Remove(request);
             _context.SaveChanges();
         }
+        public void UpdateRequest(HallRequest request)
+        {
+            _context.Update(request);
+            _context.SaveChanges();
+        }
 
         public List<HallRequest> GetPendingBySpaceId(int spaceId, params Expression<Func<HallRequest, object>>[] includeProperties)
         {
