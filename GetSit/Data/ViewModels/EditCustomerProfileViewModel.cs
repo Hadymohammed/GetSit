@@ -17,7 +17,7 @@ namespace GetSit.Models
         [AllowNull]
         public string? City { get; set; }
         [DataType(DataType.Url), AllowNull]
-        public string ProfilePictureUrl { get; set; } 
+        public string ProfilePictureUrl { get; set; }
         [Required, Phone, Display(Name = "Phone number")]
         public string PhoneNumber { get; set; }
 
