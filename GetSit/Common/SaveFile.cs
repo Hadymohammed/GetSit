@@ -1,4 +1,5 @@
 ﻿using GetSit.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 
@@ -51,5 +52,6 @@ namespace GetSit.Common
             }
             return null;
         }
+
     }
 }
