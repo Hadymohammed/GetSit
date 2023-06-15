@@ -1,4 +1,5 @@
 ﻿using GetSit.Data.Base;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
@@ -19,11 +20,12 @@ namespace GetSit.Models
         [Required]
         public SpaceHall Hall { get; set; }
         [AllowNull, ForeignKey("BookingId")]
-        public int BookingId { get; set; }
+        public int? BookingId { get; set; }
         public Booking? Booking { get; set; }
-
+        [DefaultValue(false), AllowNull]
+        public bool? isGuest { get; set; }
         [AllowNull, ForeignKey("GuestBookingId")]
-        public int GuestBookingId { get; set; }
+        public int? GuestBookingId { get; set; }
         public GuestBooking? GuestBooking { get; set; }
 
         public PaymentDetail paymentDetail { get; set; }
