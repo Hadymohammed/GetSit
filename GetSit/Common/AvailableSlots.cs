@@ -20,7 +20,9 @@ namespace GetSit.Common
             var bookings = _context.Booking
                            .Where(b => b.BookingHalls.Any(h => h.HallId == hallId && b.DesiredDate == date))
                            .ToList();
-
+            var guestBooking = _context.GuestBooking
+                            .Where(b=>b.BookingHalls.Any(h => h.HallId == hallId && b.DesiredDate == date))
+                            .ToList();
             var space = _context.Space.Where(s => s.Halls.Any(h => h.Id == hallId)).FirstOrDefault();
 
             // check if the day is out of space working days
@@ -56,13 +58,21 @@ namespace GetSit.Common
                     foreach (var booking in bookings)
                     {
                         var EndTime = booking.StartTime.Add(TimeSpan.FromHours(booking.NumberOfHours));
-                        if (booking.StartTime <= endTimeSlot && EndTime > timeSlots[slotIdx].Item1)
+                        if (booking.StartTime <= timeSlots[slotIdx].Item1 && EndTime >= endTimeSlot)
                         {
                             isAvailable = false;
                             break;
                         }
                     }
-
+                    foreach (var booking in guestBooking)
+                    {
+                        var EndTime = booking.EndTime;
+                        if (booking.StartTime <= timeSlots[slotIdx].Item1 && EndTime >= endTimeSlot)
+                        {
+                            isAvailable = false;
+                            break;
+                        }
+                    }
                     // If the time slot is available, add it to the list of available time slots
                     if (isAvailable)
                     {
