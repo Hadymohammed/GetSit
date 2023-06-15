@@ -14,11 +14,9 @@ namespace GetSit.Data.ViewModels
         public string LastName { get; set; }
         [Required, Phone, Display(Name = "Phone number")]
         public string PhoneNumber { get; set; }
-        [Required]
-        public SpaceHall SelectedHall { get; set; }
-        [Required]
-        public Space SelectedSpace { get; set; }
-        [Required]
+        public int HallId { get; set; }
+        public SpaceHall? SelectedHall { get; set; }
+        public Space? SelectedSpace { get; set; }
         public List<Tuple<TimeSpan, bool>>? AvailableSlots { get; set; }
         [AllowNull]
         public Dictionary<int, int> SelectedServicesQuantities { get; set; }
@@ -27,10 +25,10 @@ namespace GetSit.Data.ViewModels
         public DateTime FilterDate { get; set; }
         [Required, DataType(DataType.Date)]
         public DateTime DesiredDate { get; set; }
-        [Required, DataType(DataType.Date)]
-        public TimeSpan StartTime { get; set; }
-        [Required, DataType(DataType.Date)]
-        public TimeSpan EndTime { get; set; }
+        [Required]
+        public string StartTime { get; set; }
+        [Required]
+        public string EndTime { get; set; }
         [Required]
         public float TotalCost { get; set; }
         public List<Dictionary<DateTime, List<Tuple<TimeSpan, bool>>>>? SlotsForWeek { get; set; }
