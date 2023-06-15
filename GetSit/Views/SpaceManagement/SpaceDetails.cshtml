@@ -1,0 +1,210 @@
+﻿@using GetSit.Data.ViewModels
+@using GetSit.Data.enums
+
+@model SpaceDetailsVM
+
+<link rel="stylesheet" href="~/css/spaceDetails.css" asp-append-version="true" />
+<div class="container col-md-8">
+    <!--Main Container-->
+    <div>
+        <!--Profile Data-->
+        <div class="profile-data" style="
+    border-bottom: 10px solid #dadbdf;
+    border-radius: 15px;
+    width:100%">
+            <div class="profile-cover" style="position:relative;">
+                <img class="slider-image" style="height:250px;" src=".@Model.Space.SpaceCover"/>
+            </div>
+            <div>
+                <div class="profile-card">
+                    @{
+                        string url = "." + Model.Space.SpaceLogo;
+                        <img style="width: 100px;" class="silder-image" src="@url" />
+                    }
+                    <div class="profile-name">@Model.Space.Name</div>
+                    <div class="profile-bio">
+                        @Model.Space.Bio
+                    </div>
+                </div>
+            </div>
+            <div class="profile-meta">
+                <div class="Location">
+                    <i class="fa-solid fa-location-dot" style="color: #545454;"></i>
+                    <span>@Model.Space.Country, @Model.Space.City</span>
+                </div>
+                <div class="profile-date">
+                    <i class="fa-solid fa-calendar-days" style="color: #545454;"></i>
+                    <span>Opening Date 15 Aug 2020</span>
+                </div>
+            </div>
+        </div>
+        <div class="container py-4">
+            <div class="row">
+                <div class="col-md-12">
+                    <form asp-action="SpaceDetails" enctype="multipart/form-data">
+                        <input type="hidden" asp-for="Space.Id"/>
+                        <input type="hidden" asp-for="Space.Name"/>
+                        <input type="hidden" asp-for="Space.GPSLocation"/>
+                        <input type="hidden" asp-for="Space.BankAccount"/>
+                        <h3>Main</h3>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label asp-for="Cover" class="form-label">Change space cover:</label>
+                                <input type="file" class="form-control" asp-for="Cover" accept="image/png, image/png, image/jpeg">
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Logo" class="form-label">Change space logo:</label>
+                                <input type="file" class="form-control" asp-for="Logo" accept="image/png, image/png, image/jpeg">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Space.Bio" class="form-label"></label>
+                            <textarea type="text" asp-for="Space.Bio" class="form-control" maxlength="200">
+                            </textarea>
+                            <span asp-validation-for="@Model.Space.Bio" class="text-danger"></span>
+                        </div>
+                        
+                        <h3>Address</h3>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label asp-for="Space.Country" class="form-label"></label>
+                                <input type="text" asp-for="Space.Country" class="form-control" />
+                                <span asp-validation-for="Space.Country" class="text-danger"></span>
+
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="Space.City" class="form-label"></label>
+                                <input type="text" asp-for="Space.City" class="form-control" />
+                                <span asp-validation-for="Space.City" class="text-danger"></span>
+
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="Space.Street" class="form-label"></label>
+                                <input type="text" asp-for="Space.Street" class="form-control" />
+                                <span asp-validation-for="Space.Street" class="text-danger"></span>
+
+                            </div>
+                        </div>
+                        
+                        <h3>Social Media Links</h3>
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="Space.Facebook" class="form-label">Facebook:</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fab fa-facebook"></i></span>
+                                        <input type="text" asp-for="Space.Facebook" class=" form-control" placeholder="Enter your Facebook profile URL">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="Space.Twitter" class=" form-label">Twitter:</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fab fa-twitter"></i></span>
+                                        <input type="text" asp-for="Space.Twitter" class="form-control" placeholder="Enter your Twitter profile URL">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                            <div class="col-md-6 mb-3">
+                                    <label asp-for="Space.Email" class="form-label">Email:</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                        <input type="email" asp-for="Space.Email" class="form-control" placeholder="Enter your email address">
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                    <label asp-for="Space.Instagram" class="form-label">Instagram:</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fab fa-instagram"></i></span>
+                                        <input type="text" asp-for="Space.Instagram" class="form-control" placeholder="Enter your Instagram profile URL">
+                                </div>
+                            </div>
+                            </div>
+
+                        </div>
+                        
+                        <h2>Phone Numbers</h2>
+                        <div id="phoneNumbers">
+                            <div class="phone-input-group mb-3">
+                                @{
+                                    var index = 0;
+                                }
+
+                                @foreach (var phone in Model.Space.Phones)
+                                {
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                        <input type="tel" class="form-control" placeholder="Enter Phone number" name="Space.Phones[@index]" value="@phone.PhoneNumber" />
+                                        <a style="z-index:5;" asp-controller="SpaceManagement" asp-action="DeletePhone" class="btn btn-danger remove-saved-phone" asp-route-PhoneId="@phone.Id"><i class="fas fa-times"></i></a>
+                                    </div>
+
+                                    index++;
+                                }
+                            </div>
+                        </div>
+
+                        <div style="
+                        align-items: center;
+                        display: flex;
+                        flex-direction: column;">
+                            <div id="addPhoneNumber" style="display: flex;
+                                 column-gap: 5px;
+                                 width: fit-content;
+                                 align-items: center;
+                                 cursor:pointer;">
+                                <i class="fa-solid fa-circle-plus" style="color: #23B000;"></i>
+                                <div>Add phone number</div> 
+                            </div>
+                        </div>
+                        <hr>
+                        <!-- Rest of the form fields -->
+                        <button type="submit" class="btn btn-primary">Update Profile</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            // Add Phone Number button click event
+            $('#addPhoneNumber').on('click', function () {
+                var phoneGroup = $('<div>').addClass('phone-input-group mb-3');
+                var inputGroup = $('<div>').addClass('input-group');
+                var icon = $('<span>').addClass('input-group-text').html('<i class="fas fa-phone"></i>');
+                var input = $('<input>').attr({
+                    type: 'tel',
+                    name: 'NewPhones',
+                    class: 'form-control',
+                    placeholder: 'Enter Phone number'
+                });
+                var removeButton = $('<button>').attr({
+                    type: 'button',
+                    class: 'btn btn-danger remove-phone'
+                }).html('<i class="fas fa-times"></i>');
+
+                inputGroup.append(icon, input, removeButton);
+                phoneGroup.append(inputGroup);
+                $('#phoneNumbers').append(phoneGroup);
+            });
+
+            // Remove Phone Number button click event
+            $(document).on('click', '.remove-phone', function () {
+                $(this).closest('.phone-input-group').remove();
+            });
+            $(document).on('click', '.remove-saved-phone', function () {
+              var phoneNumberGroup = $(this).closest('.phone-input-group');
+              var phoneNumber = phoneNumberGroup.find('input').val();
+
+              // Display confirmation alert
+              var confirmDelete = confirm('Are you sure you want to delete the phone number: ' + phoneNumber + '?');
+              if (!confirmDelete) {
+                return false; // Cancel the default action of the remove button
+              }
+            });
+        });
+    </script>
+}
