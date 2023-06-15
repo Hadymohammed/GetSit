@@ -43,7 +43,6 @@ namespace GetSit.Controllers
             IServicePhotoService servicePhotoService,
             IBookingService bookingService,
             ISpacePhotoService spacePhotoService,
-            IBookingService bookingService,
             IWebHostEnvironment env)
         {
             _env = env;
@@ -289,42 +288,55 @@ namespace GetSit.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditHallAsync(EditHallVM vm, Facility[] facilities)
+public async Task<IActionResult> EditHallAsync(EditHallVM vm, Facility[] facilities)
+{
+    if (!ModelState.IsValid)
+    {
+        vm.SpaceHall = await _hallService.GetByIdAsync(vm.SpaceId, h => h.HallPhotos);
+        return View(vm);
+    }
+
+    var hall = await _hallService.GetByIdAsync(vm.Id);
+    hall.Description = vm.Description;
+    hall.CostPerHour = vm.CostPerHour;
+    //Add new Photos
+    foreach (var file in vm.Files)
+    {
+        var photo = new HallPhoto()
         {
-            if (!ModelState.IsValid)
+            HallId = hall.Id,
+            Url = "Temp",
+        };
+        await _hallPhotoService.AddAsync(photo);
+        var filePath = await SaveFile.HallPhoto(file, vm.SpaceName, hall.Id, photo.Id);
+        if (filePath == null)
+        {
+            //undo adding photo
+            await _hallPhotoService.DeleteAsync(photo.Id);
+        }
+        else
+        {
+            photo.Url = filePath;
+            await _hallPhotoService.UpdateAsync(photo.Id, photo);
+        }
+    }
+            hall.HallFacilities.Clear();
+            foreach (var facility in facilities)
             {
-                vm.SpaceHall = await _hallService.GetByIdAsync(vm.SpaceHall.Id, h => h.HallPhotos);
-                return View(vm);
+                var hallFacility = new HallFacility()
+                {
+                    Facility = facility,
+                    HallId = hall.Id,
+                    Hall = hall,
+                };
+                await _hallFacilityService.AddAsync(hallFacility);
             }
 
-            var hall = await _hallService.GetByIdAsync(vm.Id);
-            hall.Description = vm.Description;
-            hall.CostPerHour = vm.CostPerHour;
-            //Add new Photos
-            foreach (var file in vm.Files)
-            {
-                var photo = new HallPhoto()
-                {
-                    HallId = hall.Id,
-                    Url = "Temp",
-                };
-                await _hallPhotoService.AddAsync(photo);
-                var filePath = await SaveFile.HallPhoto(file, vm.SpaceName, hall.Id, photo.Id);
-                if (filePath == null)
-                {
-                    //undo adding photo
-                    await _hallPhotoService.DeleteAsync(photo.Id);
-                }
-                else
-                {
-                    photo.Url = filePath;
-                    await _hallPhotoService.UpdateAsync(photo.Id, photo);
-                }
-            }
-            await _hallService.UpdateAsync(hall.Id, hall);
-            return RedirectToAction("Index");
-        }
-        [HttpPost]
+           await _hallService.UpdateAsync(hall.Id, hall);
+    return RedirectToAction("Index");
+}
+
+                [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteHallPhoto(int PhotoId, int HallId)
         {
@@ -425,5 +437,6 @@ namespace GetSit.Controllers
             return NotFound();
         }
         #endregion
+
     }
 }

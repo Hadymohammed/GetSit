@@ -9,5 +9,10 @@ namespace GetSit.Data.Services
         {
 
         }
+
+        public Task DeleteByHallIdAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

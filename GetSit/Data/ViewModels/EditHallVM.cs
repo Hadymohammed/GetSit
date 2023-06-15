@@ -19,5 +19,10 @@ namespace GetSit.Data.ViewModels
         [Required]
         public string SpaceBio { get; set; }
         public List<IFormFile> Files { get; set; }
+        public HallType Type { get; internal set; }
+        public float CostPerHour { get; internal set; }
+        public string Description { get; internal set; }
+        public int Id { get; internal set; }
+        public object SpaceHall { get; internal set; }
     }
 }

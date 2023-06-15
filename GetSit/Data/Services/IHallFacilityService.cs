@@ -3,7 +3,8 @@ using GetSit.Models;
 
 namespace GetSit.Data.Services
 {
-    public interface IHallFacilityService:IEntityBaseRepository<HallFacility>
+    public interface IHallFacilityService : IEntityBaseRepository<HallFacility>
     {
+        Task DeleteByHallIdAsync(int id);
     }
 }

@@ -14,6 +14,11 @@ namespace GetSit.Data.Services
             _context = context;
         }
 
+        public Task<object> GetByIdAsync(object id, Func<SpaceHall, object> value)
+        {
+            throw new NotImplementedException();
+        }
+
         public List<SpaceHall> GetBySpaceId(int spaceId, params Expression<Func<SpaceHall, object>>[] includeProperties)
         {
             IQueryable<SpaceHall> query = _context.Set<SpaceHall>();
