@@ -51,5 +51,84 @@ namespace GetSit.Common
             }
             return null;
         }
+        public static bool DeleteFile(string filePath)
+        {
+            filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\", filePath);
+            try
+            {
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+            return false;
+        }
+        public static async Task<string> SpaceLogo(IFormFile file, string SpaceName)
+        {
+            try
+            {
+                if (file != null && file.Length > 0)
+                {
+                    string ext = Path.GetExtension(file.FileName);
+                    var fileName = SpaceName + "_Logo"+ ext;
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\resources\\SpacePhotos", fileName);//NeedCompletePath
+                    using (var fileSrteam = new FileStream(filePath, FileMode.Create))
+                    {
+                        await file.CopyToAsync(fileSrteam);
+                    }
+                    return ".\\resources\\SpacePhotos\\" + fileName;
+                }
+                return null;
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+            return null;
+        }
+        public static async Task<string> SpaceCover(IFormFile file, string SpaceName)
+        {
+            try
+            {
+                if (file != null && file.Length > 0)
+                {
+                    string ext = Path.GetExtension(file.FileName);
+                    var fileName = SpaceName + "_Cover" + ext;
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\resources\\SpacePhotos", fileName);//NeedCompletePath
+                    using (var fileSrteam = new FileStream(filePath, FileMode.Create))
+                    {
+                        await file.CopyToAsync(fileSrteam);
+                    }
+                    return ".\\resources\\SpacePhotos\\" + fileName;
+                }
+                return null;
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+            return null;
+        }
+        public static async Task<bool> Save_FileAsync(IFormFile file,string filePath)
+        {
+            try
+            {
+                using (var fileSrteam = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(fileSrteam);
+                }
+                return true;
+            }
+            catch(Exception err)
+            {
+                return false;
+            }
+            return false;
+        }
     }
 }
