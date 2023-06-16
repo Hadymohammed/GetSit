@@ -51,5 +51,21 @@ namespace GetSit.Common
             }
             return null;
         }
+        public static bool DeleteFile(string filePath)
+        {
+            try
+            {
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+               return false;
+            }
+            return false;
+        }
     }
 }
