@@ -379,7 +379,8 @@ namespace GetSit.Controllers
                 await _context.Token.AddAsync(Token);
                 _context.SaveChanges();
                 var UId = Token.Id;
-                string oneTimeAddStaffLink = Url.Action("RegisterProvider", "Account", new { uid = UId, token = Token.token }, Request.Scheme);
+
+                string oneTimeAddStaffLink = Url.Action("RegisterProvider", "Account", new { uid = UId, role=UserRole.Provider,token = Token.token }, Request.Scheme);
                 Common.AddStaffEmail.SendEmailAddStaff(NewStaff.Email, oneTimeAddStaffLink);
                 return RedirectToAction("Index");
             }

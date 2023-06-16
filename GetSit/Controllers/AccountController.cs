@@ -149,7 +149,7 @@ namespace GetSit.Controllers
             }
 
             /*check if the entered email in register is already in database*/
-            if (register.Role!=UserRole.Provider && PresirvedEmail(register.Email))
+            if ((register.Role!=UserRole.Provider|| register.Role != UserRole.Admin) && PresirvedEmail(register.Email))
             {
 
                 ModelState.AddModelError("Email", "This email already has an account.");
@@ -225,7 +225,7 @@ namespace GetSit.Controllers
 
                     try
                     {
-                        await _adminSerivce.AddAsync(admin);
+                        await _adminSerivce.UpdateAsync(admin.Id,admin);
                         await _userManager.SignIn(HttpContext, admin);
                         return RedirectToAction("AdminProfile", "Account");
                     }
@@ -310,7 +310,7 @@ namespace GetSit.Controllers
             return View();
         }
         [HttpGet]
-        public async Task<IActionResult> RegisterProvider(int UID, string token)
+        public async Task<IActionResult> RegisterProvider(int UID, UserRole Role,string token)
         {
             
             if (_context.Token.Where(t => t.Id == UID) == null || Common.JwtTokenHelper.ValidateToken(token) == null)
@@ -331,7 +331,7 @@ namespace GetSit.Controllers
                 Email = SpaceEmployee.Email,
                 PhoneNumber = SpaceEmployee.PhoneNumber,
                 Birthdate = SpaceEmployee.Birthdate,
-                Role=UserRole.Provider
+                Role=Role
             });
             return View();
         }
