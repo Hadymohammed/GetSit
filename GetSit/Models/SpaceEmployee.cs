@@ -1,13 +1,14 @@
 ﻿using GetSit.Data.Base;
 using GetSit.Data.enums;
 using GetSit.Data.Security;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 
 namespace GetSit.Models
 {
-    public class SpaceEmployee:IAbstractUser,IEntityBase
+    public class SpaceEmployee : IAbstractUser, IEntityBase
     {
         [Key]
         public int Id { get; set; }
@@ -29,6 +30,8 @@ namespace GetSit.Models
         public string? Country { get; set; }
         [AllowNull]
         public string? City { get; set; }
+        [AllowNull, DefaultValue(false)]
+        public Boolean? Registerd { get; set; }
         [Required]
         public SpaceEmployeeRole EmployeeRole { get; set; } = SpaceEmployeeRole.Super;
         [ForeignKey("SpaceId"), AllowNull]

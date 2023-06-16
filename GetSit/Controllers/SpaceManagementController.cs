@@ -4,18 +4,26 @@ using GetSit.Data.enums;
 using GetSit.Data.Security;
 using GetSit.Data.Services;
 using GetSit.Data.ViewModels;
-
+using System.Web;
 using GetSit.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Win32;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Linq;
+using Microsoft.AspNetCore.Http.Extensions;
 
 namespace GetSit.Controllers
 {
     [Authorize(Roles = "Provider")]//Error:Convert UserRole to class
     public class SpaceManagementController : Controller
     {
+        private readonly ICustomerService _customerService;
+        private readonly ISpaceEmployeeService _spaceEmployeeService;
+        private readonly ISystemAdminService _adminSerivce;
+        private readonly ISpacePhoneService _spacePhoneService;
         #region Dependacies
         readonly IUserManager _userManager;
         readonly AppDBcontext _context;
@@ -36,7 +44,8 @@ namespace GetSit.Controllers
             IHallPhotoService hallPhotoService,
             ISpaceService_Service spaceService_service,
             IServicePhotoService servicePhotoService,
-            IBookingService bookingService)
+            IBookingService bookingService, 
+            ISpacePhoneService spacePhoneService)
         {
             _userManager = userManager;
             _context = context;
@@ -48,19 +57,20 @@ namespace GetSit.Controllers
             _spaceService_service = spaceService_service;
             _servicePhotoService = servicePhotoService;
             _bookingService = bookingService;
+            _spacePhoneService = spacePhoneService;
         }
         #endregion
         public async Task<IActionResult> IndexAsync()
         {
             var SpaceIdStirng = "";
             var spaceIdInt = 0;
-            if (HttpContext.Request.Cookies.Where(c=>c.Key=="SpaceId").FirstOrDefault().Value is null)
+            if (HttpContext.Request.Cookies.Where(c => c.Key == "SpaceId").FirstOrDefault().Value is null)
             {
                 var providerId = _userManager.GetCurrentUserId(HttpContext);
                 var provider = await _providerService.GetByIdAsync(providerId);
                 spaceIdInt = (int)provider.SpaceId;
-                SpaceIdStirng = spaceIdInt.ToString();
-                if(SpaceIdStirng != String.Empty)
+                SpaceIdStirng = provider.SpaceId.ToString();
+                if (SpaceIdStirng != String.Empty)
                     HttpContext.Response.Cookies.Append("SpaceId", SpaceIdStirng);
             }
             else
@@ -68,23 +78,90 @@ namespace GetSit.Controllers
                 SpaceIdStirng = HttpContext.Request.Cookies.Where(c => c.Key == "SpaceId").FirstOrDefault().Value;
                 int.TryParse(SpaceIdStirng, out spaceIdInt);
             }
-            Space space =await _spaceSerivce.GetByIdAsync(spaceIdInt, s => s.Photos);
+            Space space = await _spaceSerivce.GetByIdAsync(spaceIdInt, s => s.Photos);
             SpaceManagementVM viewModel = new()
             {
                 Space = space,
-                Halls = _hallService.GetBySpaceId(spaceIdInt,h=>h.HallPhotos,h=>h.HallFacilities),
+                Halls = _hallService.GetBySpaceId(spaceIdInt, h => h.HallPhotos, h => h.HallFacilities),
                 Services = _spaceService_service.GetBySpaceId(spaceIdInt, s => s.ServicePhotos),
                 Employees = _providerService.GetBySpaceId(spaceIdInt),
                 Bookings = _bookingService.GetBySpaceId(spaceIdInt)
-        };
+            };
             return View(viewModel);
         }
+        [HttpGet]
+        public IActionResult AddPhoneNumber()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddPhoneNumber(SpacePhone AddNewSpacePhone)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(AddNewSpacePhone);
+            }
+            HttpContext.Session.SetString("NewNumberModel", JsonConvert.SerializeObject(AddNewSpacePhone));
+            var otpVm = new OTPVM();
+            otpVm.Phone = AddNewSpacePhone.PhoneNumber;
+            return RedirectToAction("PhoneOTP", otpVm);
+        }
+        [HttpGet]
+        public IActionResult PhoneOTP(OTPVM? otpVm)
+        {
+            if (otpVm is null)
+                RedirectToAction("AddPhoneNumber");
+            OTPServices.SendPhoneOTP(HttpContext, otpVm.Phone);
+            return View(otpVm);
+        }
+        [HttpPost]
+        public async Task<IActionResult> PhoneOTPAsync(OTPVM otp)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(otp);
+            }
+            if (OTPServices.VerifyOTP(HttpContext, otp) == false)
+            {
+                ModelState.AddModelError("OTP", "InValid Code");
+                return View(otp);
+            }
+            var stringUser = HttpContext.Session.GetString("NewNumberModel");
+            var AddPhoneNumber = JsonConvert.DeserializeObject<RegisterVM>(stringUser) as RegisterVM;
+            if (AddPhoneNumber is null)
+                RedirectToAction("AddPhoneNumber");
+            // Using SpaceId as default value here
+            var SpaceId = 1;
+            var NewPhone = new SpacePhone()
+            {
+                PhoneNumber = AddPhoneNumber.PhoneNumber,
+                SpaceId = SpaceId,
+            };
+
+            try
+            {
+                await _spacePhoneService.AddAsync(NewPhone);
+                return RedirectToAction("SpaceManagement");
+            }
+            catch (Exception error)
+            {
+                return View(AddPhoneNumber);
+            }
+            return RedirectToAction("AddPhoneNumber");
+        }
+        [HttpGet]
+        public IActionResult AddContact()
+        {
+            return View();
+        }
+        [HttpPost]
+
         #region Create New Hall
         [HttpGet]
         public async Task<IActionResult> AddHallAsync()
         {
             var SpaceIdStirng = "";
-            var spaceIdInt=0;
+            var spaceIdInt = 0;
             if (HttpContext.Request.Cookies.Where(c => c.Key == "SpaceId").FirstOrDefault().Value is null)
             {
                 var providerId = _userManager.GetCurrentUserId(HttpContext);
@@ -100,7 +177,7 @@ namespace GetSit.Controllers
                 int.TryParse(SpaceIdStirng, out spaceIdInt);
             }
             //Space space = _context.Space.Include(s => s.Photos).Where(s => s.Id.ToString() == SpaceId).FirstOrDefault();
-            Space space =await _spaceSerivce.GetByIdAsync(spaceIdInt, s=>s.Photos);
+            Space space = await _spaceSerivce.GetByIdAsync(spaceIdInt, s => s.Photos);
             AddHallVM vm = new()
             {
                 SpaceId = space.Id,
@@ -179,8 +256,7 @@ namespace GetSit.Controllers
             {
                 var providerId = _userManager.GetCurrentUserId(HttpContext);
                 var provider = _context.SpaceEmployee.Where(e => e.Id == providerId).FirstOrDefault();
-                spaceIdInt = (int)provider.SpaceId;
-                SpaceIdStirng = spaceIdInt.ToString();
+                SpaceIdStirng = provider.SpaceId.ToString();
                 if (SpaceIdStirng != String.Empty)
                     HttpContext.Response.Cookies.Append("SpaceId", SpaceIdStirng);
             }
@@ -190,7 +266,7 @@ namespace GetSit.Controllers
                 int.TryParse(SpaceIdStirng, out spaceIdInt);
             }
             //Space space = _context.Space.Include(s => s.Photos).Where(s => s.Id.ToString() == SpaceId).FirstOrDefault();
-            Space space =await _spaceSerivce.GetByIdAsync(spaceIdInt, s=>s.Photos);
+            Space space = await _spaceSerivce.GetByIdAsync(spaceIdInt, s => s.Photos);
             AddServiceVM vm = new()
             {
                 SpaceId = space.Id,
@@ -211,12 +287,12 @@ namespace GetSit.Controllers
             var service = new SpaceService()
             {
                 SpaceId = vm.SpaceId,
-                Name=vm.ServiceName,
+                Name = vm.SpaceName,
                 Description = vm.Description,
                 Price = vm.CostPerUnit
             };
             await _spaceService_service.AddAsync(service);
-            
+
             /*Add thumbnail*/
             int cnt = 0;
             var thumbnailPath = SaveFile.HallPhoto(vm.Thumbnail, vm.SpaceName, service.Id, cnt);
@@ -237,7 +313,7 @@ namespace GetSit.Controllers
                 if (filePath != null)
                 {
                     /*Add hall photo*/
-                    
+
                     await _servicePhotoService.AddAsync(new ServicePhoto()
                     {
                         ServiceId = service.Id,
@@ -248,6 +324,53 @@ namespace GetSit.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");
         }
+        [HttpGet]
+        public IActionResult AddStaff()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddStaff(SpaceEmployee NewStaff)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(NewStaff);
+            }
+            string password = RandomPassword.GenerateRandomPassword(8);
+            // Using SpaceId as default value here
+            var AddNewstaff = new SpaceEmployee()
+            {
+                FirstName = NewStaff.FirstName,
+                LastName = NewStaff.LastName,
+                Email = NewStaff.Email,
+                Password = PasswordHashing.Encode(password),
+                PhoneNumber = NewStaff.PhoneNumber,
+                Birthdate = NewStaff.Birthdate,
+                EmployeeRole = NewStaff.EmployeeRole
+            };
+
+            try
+            {
+                await _spaceEmployeeService.AddAsync(AddNewstaff);
+                var SpaceEmployeeId = AddNewstaff.Id;
+                var JwtSecurtiyToken = Common.JwtTokenHelper.GenerateJwtToken(NewStaff.Email, SpaceEmployeeId);
+                var Token = new Token
+                {
+                    token = JwtSecurtiyToken
+                };
+                _context.Token.AddAsync(Token);
+                var UId = Token.Id;
+                string oneTimeAddStaffLink = Url.Action("RegisterProvider", "Account", new { uid = UId, token = Token }, Request.Scheme);
+                Common.AddStaffEmail.SendEmailAddStaff(NewStaff.Email, oneTimeAddStaffLink);
+                return RedirectToAction("SpaceManagement");
+            }
+            catch (Exception error)
+            {
+                return View(NewStaff);
+            }
+            return RedirectToAction("AddNewstaff");
+        }
+
         #endregion
     }
 }
