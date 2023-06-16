@@ -17,7 +17,6 @@ using static System.Reflection.Metadata.BlobBuilder;
 
 namespace GetSit.Controllers
 {
-    [Authorize (policy : "CustomerPolicy")] 
     public class BookingController : Controller
     {
         private readonly AppDBcontext _context;
@@ -52,7 +51,7 @@ namespace GetSit.Controllers
             _paymentSerivce = paymentService;
             _paymentDetailService = paymentDetailService;
         }
-        [HttpGet]
+        [HttpGet,Authorize(Roles ="Customer")]
         public async Task<IActionResult> Index (int HallID)
         {
            
@@ -87,7 +86,7 @@ namespace GetSit.Controllers
         }
 
         
-        [HttpPost]
+        [HttpPost, Authorize(Roles = "Customer")]
         public async Task<IActionResult> Book(BookingVM viewModel)
         {
 
