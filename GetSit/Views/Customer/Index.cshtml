@@ -1,5 +1,8 @@
 ﻿@using GetSit.Data.enums;
 @model Customer
+@section styles {
+    <link href="~/css/profile.css" rel="stylesheet" />
+}
 
 <div class="banner">
     <!-- here the bg  -->
@@ -50,7 +53,7 @@
                             </div>
                             @if (book.BookingStatus == BookingStatus.Accepted)
                             {
-                                <button type="button" class="book-btn-accepted btn btn-primary">accepted</button>
+                                <button type="button" class="btn btn-success btn-sm ml-1">Accepted</button>
                             }
                             else if (book.BookingStatus == BookingStatus.Rejected){
                                 <button type="button" class="book-btn-accepted rejected">Rejected</button>
@@ -70,25 +73,28 @@
         <aside class="widgets item-responsive item-3">
             <div class="widget follow">
                 <div class="title">
-                    <strong>Teams</strong>
+                    <strong>Favorite Hall</strong>
                     <!-- <a href="">View all</a> -->
                 </div>
                 <ul>
-                    <li>
-                        <div class="profile">
-                            <img src="avatar.png" alt="Avatar">
-                            <div class="info">
-                                <div>
+                    @foreach(var hall in Model.FavoriteHalls)
+                    {
+                        <li>
+                            <div class="profile">
+                                <img src="@hall.SpaceHall.HallPhotos[0].Url" alt="Avatar">
+                                <div class="info">
                                     <div>
-                                        <a href="#" class="no-decor">
-                                            <strong>Gabriel</strong>
-                                        </a>
+                                        <div>
+                                            <a href="#" class="no-decor">
+                                                <strong>@hall.SpaceHall.Space.Name</strong>
+                                            </a>
+                                        </div>
+                                        <div class="job-title">@hall.SpaceHall.Type</div>
                                     </div>
-                                    <div class="job-title">job Title</div>
                                 </div>
                             </div>
-                        </div>
-                    </li>
+                        </li>
+                    }
                 </ul>
             </div>
         </aside>

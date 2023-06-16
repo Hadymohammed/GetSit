@@ -25,6 +25,8 @@ namespace GetSit.Data.Services
                 ThenInclude(b=>b.BookingHalls).
                 ThenInclude(h=>h.Hall).
                 ThenInclude(s=>s.Space).
+                Include(c=>c.FavoriteHalls).
+                ThenInclude(h=>h.SpaceHall).ThenInclude(p=>p.HallPhotos).
                 FirstOrDefault();
             return customer;
         }
