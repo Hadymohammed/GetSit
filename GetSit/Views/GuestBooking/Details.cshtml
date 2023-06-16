@@ -121,45 +121,8 @@
             </div>
         </div>
     </div>
-    <button type="button" class="add-item-btn" data-toggle="modal" data-target="#confirmUploadModal">Add Item to Order</button>
-    <div class="modal fade" id="confirmUploadModal" tabindex="-1" role="dialog" aria-labelledby="confirmUploadModalLabel" aria-hidden="true ">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="confirmUploadModalLabel">Add services</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    @foreach (var service in @Model.SpaceServices)
-                    {
-                        <div>
-                            <div class="edit-list-item">
-                                <span class="con-list-item service-name">@service.Name</span>
-                                <span class="con-list-item ">$<span class="service-cost">@service.Price</span></span>
-                                <div class="counter-container">
-                                    <button class="counter-btn decrement material-symbols-outlined hover-effect no-border-btn">
-                                        remove
-                                    </button>
-                                    <span class="counter-value">0</span>
-                                    <button class="counter-btn increment material-symbols-outlined hover-effect no-border-btn">
-                                        add
-                                    </button>
-                                </div>
-                                @* Hidden input field to store the service ID and quantity data *@
-                                <input type="hidden" index="@service.Id" id="SelectedServicesQuantities_@service.Id" name="SelectedServicesQuantities[@service.Id]" class="service-quant" value="0" />
-                            </div>
-                        </div>
-                    }
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Create</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <a class="add-item-btn" asp-action="Edit" asp-controller="GuestBooking" asp-route-bookingId="@Model.Booking.Id">Edit Booking</a>
+    
 </div>
 @section scripts{
     <script>
@@ -167,43 +130,9 @@
         $(document).ready(function () {
             setupDropDownService();
         });
-        $(document).ready(function () {
-            // Add event listener to the button to open the modal
-            $('.add-item-btn').click(function () {
-                $('#confirmUploadModal').modal('show');
-            });
-        });
-
-
-        function initAddItemModal() {
-            const addButton = document.querySelector('.add-item-btn');
-
-            // Get the modal element
-            const modal = document.querySelector('.modal');
-
-            // Get the close button element
-            const closeButton = document.querySelector('.modal-close');
-
-            // Add event listener to the button to open the modal
-            addButton.addEventListener('click', function () {
-                modal.style.display = 'block';
-            });
-
-            // Add event listener to the close button to close the modal
-            closeButton.addEventListener('click', function () {
-                modal.style.display = 'none';
-            });
-
-            // Close the modal if the user clicks outside the modal content
-            window.addEventListener('click', function (event) {
-                if (event.target === modal) {
-                    modal.style.display = 'none';
-                }
-            });
-        }
-
+        
         function setupDropDownService() {
-            var $dropdown = $(".dropdown-menu");
+            var $dropdown = $(".service-menu");
 
             $dropdown.on("click", ".counter-btn", function (e) {
                 e.preventDefault();

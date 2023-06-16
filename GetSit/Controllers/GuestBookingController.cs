@@ -294,6 +294,7 @@ namespace GetSit.Controllers
             /* create object from the class to get the available timeslots*/
             AvailableSlots slots = new AvailableSlots(_context);
 
+            var endSlots = slots.GetAvailableEndSlots(hall.Id, booking.DesiredDate, booking.StartTime);
 
             var userbooking = new BookingDetailsVM
             {
@@ -302,7 +303,7 @@ namespace GetSit.Controllers
                 PhoneNumber = booking.PhoneNumber,
                 HallDetail = halldetail,
                 Space = space,
-                SpaceServices=spaceServices,
+                SpaceServices = spaceServices,
                 BookingDate = booking.BookingDate,
                 DesiredDate = booking.DesiredDate,
                 StartTime = booking.StartTime,
@@ -310,16 +311,80 @@ namespace GetSit.Controllers
                 Paid = booking.Paid,
                 TotalCost = booking.TotalCost,
                 servicesDetails = servicesDetails,
-                Employee=employee,
-                Booking=booking
+                Employee = employee,
+                Booking = booking,
+                EndSlots = endSlots
+            };
+            return View(userbooking);
+        }
+        [HttpGet]
+        public async Task<IActionResult> Edit(int bookingId)
+        {
+            if (bookingId < 1)
+                return NotFound();
+
+            var booking = (GuestBooking)_context.GuestBooking.Where(i => i.Id == bookingId)
+                .Include(i => i.BookingHalls)
+                    .ThenInclude(b => b.BookedServices)
+                .FirstOrDefault();
+            var payment = _paymentSerivce.GetByBookingId(bookingId);
+            if (booking == null)
+                return NotFound();
+
+            var hall = _context.SpaceHall
+                .Where(i => i.Id == booking.BookingHalls.First().Id).FirstOrDefault();
+
+            var space = await _spaceService.GetByIdAsync(hall.SpaceId);
+
+            var halldetail = _context.PaymentDetail
+                .Include(d=>d.BookingHall)
+                    .ThenInclude(b=>b.Hall)
+                        .ThenInclude(h=>h.HallPhotos)
+                .FirstOrDefault(i => i.BookingHallId == booking.BookingHalls.First().Id);
+
+            var servicesDetails = _context.PaymentDetail
+                                .Include(d => d.BookingHallService)
+                                    .ThenInclude(s => s.Service)
+                                        .ThenInclude(ss=>ss.ServicePhotos)
+                                .Where(d => d.PaymentId == payment.Id).ToList();
+            servicesDetails.RemoveAt(0);
+
+            var employee = await _providerService.GetByIdAsync(booking.EmployeeId);
+
+            var spaceServices = _serviceService.GetBySpaceId(space.Id);
+
+         
+            /* create object from the class to get the available timeslots*/
+            AvailableSlots slots = new AvailableSlots(_context);
+
+            var endSlots = slots.GetAvailableEndSlots(hall.Id, booking.DesiredDate, booking.StartTime);
+
+            var userbooking = new BookingDetailsVM
+            {
+                FirstName = booking.FirstName,
+                LastName = booking.LastName,
+                PhoneNumber = booking.PhoneNumber,
+                HallDetail = halldetail,
+                Space = space,
+                SpaceServices = spaceServices,
+                BookingDate = booking.BookingDate,
+                DesiredDate = booking.DesiredDate,
+                StartTime = booking.StartTime,
+                EndTime = booking.EndTime,
+                Paid = booking.Paid,
+                TotalCost = booking.TotalCost,
+                servicesDetails = servicesDetails,
+                Employee = employee,
+                Booking = booking,
+                EndSlots = endSlots
             };
             return View(userbooking);
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditBooking(int ID, GuestBookingVM viewModel)
+        public async Task<IActionResult> Edit(BookingDetailsVM viewModel)
         {
-            var Booking = _context.GuestBooking.FirstOrDefault(b => b.Id == ID);
+            var Booking = _context.GuestBooking.FirstOrDefault(b => b.Id == viewModel.Booking.Id);
 
             var hall = _context.SpaceHall
                .Where(i => i.Id == Booking.BookingHalls.First().Id).FirstOrDefault();
@@ -331,21 +396,12 @@ namespace GetSit.Controllers
             AvailableSlots slots = new AvailableSlots(_context);
 
             var filterDate = viewModel.DesiredDate;
-            var IndexModel = new GuestBookingVM
-            {
-                SelectedHall = hall,
-                SelectedSpace = space,
-                AvailableSlots = slots.GetAvailableSlotsForDay(viewModel.SelectedHall.Id, filterDate),
-                FilterDate = filterDate,
-                SlotsForWeek = slots.GetAvailableSlotsForWeek(viewModel.SelectedHall.Id, filterDate)
-            };
-
-
-
+            
             if (!ModelState.IsValid)
             {
-                return RedirectToAction("GetBookingDetails", viewModel);
+                return RedirectToAction("Details", new {bookingId= viewModel.Booking.Id });
             }
+            /*
             int startH = 0, startM = 0; GetHoursAndMinutes(viewModel.StartTime, out startH, out startM);
             TimeSpan start = new TimeSpan(startH, startM, 0);
             int endH = 0, endM = 0; GetHoursAndMinutes(viewModel.EndTime, out endH, out endM);
@@ -358,7 +414,7 @@ namespace GetSit.Controllers
                 return RedirectToAction("GetBookingDetails", viewModel);
             }
 
-            /*Send unavailable error to the employee*/
+            // Send unavailable error to the employee
             if (!slots.IsTimeSlotAvailable(viewModel.SelectedHall.Id, viewModel.DesiredDate, start, end))
             {
                 return RedirectToAction("GetBookingDetails", viewModel);
@@ -444,6 +500,7 @@ namespace GetSit.Controllers
                 }
                 _context.SaveChanges();
             }
+            */
 
             return RedirectToAction("GetBookingDetails", "CustomerAccount");
         }

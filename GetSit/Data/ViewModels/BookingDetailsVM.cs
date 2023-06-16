@@ -18,7 +18,9 @@ namespace GetSit.Data.ViewModels
         public float TotalCost { get; set; }
         public List<PaymentDetail>? servicesDetails { get; set; }
         public float? Paid { get; set; }
-
+        public List<TimeSpan>? EndSlots { get; set; }
         public List<SpaceService>? SpaceServices { get; set; }
+        public Dictionary<int, int>? SelectedServicesQuantities { get; set; }
+
     }
 }
