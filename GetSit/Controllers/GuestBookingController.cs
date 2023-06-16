@@ -255,59 +255,63 @@ namespace GetSit.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetBookingDetails(int ID)
+        public async Task<IActionResult> Details(int bookingId)
         {
-            GuestBooking booking = (GuestBooking)_context.GuestBooking.Include(i => i.BookingHalls).ThenInclude(i => i.BookedServices)
-                .Where(i => i.Id == ID).FirstOrDefault();
+            if (bookingId < 1)
+                return NotFound();
+
+            var booking = (GuestBooking)_context.GuestBooking.Where(i => i.Id == bookingId)
+                .Include(i => i.BookingHalls)
+                    .ThenInclude(b => b.BookedServices)
+                .FirstOrDefault();
+            var payment = _paymentSerivce.GetByBookingId(bookingId);
+            if (booking == null)
+                return NotFound();
 
             var hall = _context.SpaceHall
                 .Where(i => i.Id == booking.BookingHalls.First().Id).FirstOrDefault();
 
-            var space = _context.Space
-                .Where(s => s.Halls.Any(h => h.Id == hall.Id)).FirstOrDefault();
+            var space = await _spaceService.GetByIdAsync(hall.SpaceId);
 
-            var services = _context.BookingHallService.Where(i => i.BookingHallId == hall.Id).ToList();
+            var halldetail = _context.PaymentDetail
+                .Include(d=>d.BookingHall)
+                    .ThenInclude(b=>b.Hall)
+                        .ThenInclude(h=>h.HallPhotos)
+                .FirstOrDefault(i => i.BookingHallId == booking.BookingHalls.First().Id);
 
-            Dictionary<int, int> SelectedServices = new Dictionary<int, int>();
-            List<PaymentDetail> paymentDetails = new List<PaymentDetail>();
-            Dictionary<int, PaymentStatus> ServicesStatus = new Dictionary<int, PaymentStatus>();
+            var servicesDetails = _context.PaymentDetail
+                                .Include(d => d.BookingHallService)
+                                    .ThenInclude(s => s.Service)
+                                        .ThenInclude(ss=>ss.ServicePhotos)
+                                .Where(d => d.PaymentId == payment.Id).ToList();
+            servicesDetails.RemoveAt(0);
 
-            // get the payment details
-            var halldetail = _context.PaymentDetail.Where(i => i.BookingHallId == hall.Id).FirstOrDefault();
-            paymentDetails.Add(halldetail);
+            var employee = await _providerService.GetByIdAsync(booking.EmployeeId);
 
-            foreach (var service in services)
-            {
-                SelectedServices.Add(service.Id, service.NumberOfUnits);
-                var detail = _context.PaymentDetail.Where(i => i.BookingHallServiceId == service.Id).FirstOrDefault();
-                ServicesStatus.Add(service.Id, detail.Status);
-                paymentDetails.Add(detail);
-            }
+            var spaceServices = _serviceService.GetBySpaceId(space.Id);
 
-
+         
             /* create object from the class to get the available timeslots*/
             AvailableSlots slots = new AvailableSlots(_context);
 
-            var filterDate = booking.DesiredDate;
 
-            var userbooking = new GuestBookingVM
+            var userbooking = new BookingDetailsVM
             {
                 FirstName = booking.FirstName,
                 LastName = booking.LastName,
                 PhoneNumber = booking.PhoneNumber,
-                SelectedHall = hall,
-                SelectedSpace = space,
+                HallDetail = halldetail,
+                Space = space,
+                SpaceServices=spaceServices,
                 BookingDate = booking.BookingDate,
                 DesiredDate = booking.DesiredDate,
-                StartTime = booking.StartTime.ToString("hh:mm tt"),
-                EndTime = booking.EndTime.ToString("hh:mm tt"),
+                StartTime = booking.StartTime,
+                EndTime = booking.EndTime,
                 Paid = booking.Paid,
                 TotalCost = booking.TotalCost,
-                SelectedServicesQuantities = SelectedServices,
-                paymentDetails = paymentDetails,
-                FilterDate = filterDate,
-                AvailableSlots = slots.GetAvailableSlotsForDay(hall.Id, filterDate),
-                SlotsForWeek = slots.GetAvailableSlotsForWeek(hall.Id, filterDate)
+                servicesDetails = servicesDetails,
+                Employee=employee,
+                Booking=booking
             };
             return View(userbooking);
         }

@@ -5,5 +5,6 @@ namespace GetSit.Data.Services
 {
     public interface IPaymentService:IEntityBaseRepository<Payment>
     {
+        public Payment GetByBookingId(int bookingId);
     }
 }
