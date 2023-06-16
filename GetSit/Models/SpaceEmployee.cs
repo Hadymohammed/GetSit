@@ -1,6 +1,7 @@
 ﻿using GetSit.Data.Base;
 using GetSit.Data.enums;
 using GetSit.Data.Security;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
@@ -34,5 +35,10 @@ namespace GetSit.Models
         [ForeignKey("SpaceId"), AllowNull]
         public int? SpaceId { get; set; }
         public Space? Space { get; set; }
+
+        public List<GuestBooking>? GuestBookings { get; set; }
+
+        [Required, DefaultValue(false)]
+        public bool IsApproved { get; set; }
     }
 }

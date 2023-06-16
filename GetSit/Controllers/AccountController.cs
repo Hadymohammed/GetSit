@@ -206,7 +206,7 @@ namespace GetSit.Controllers
             switch (register.Role)
             {
                 case UserRole.Admin:
-                    var admin = new SystemAdmin()
+                    var admin = new SystemAdminController()
                     {
 
                         FirstName = register.FirstName,
@@ -283,7 +283,7 @@ namespace GetSit.Controllers
         [Authorize(Roles = "Admin")]//error enum must be used
         public async Task<IActionResult> AdminProfileAsync()
         {
-            var user = (SystemAdmin)await _userManager.GetCurrentUserAsync(HttpContext);
+            var user = (SystemAdminController)await _userManager.GetCurrentUserAsync(HttpContext);
             return View(user);
         }
         [Authorize(Roles = "Customer")]//error enum must be used

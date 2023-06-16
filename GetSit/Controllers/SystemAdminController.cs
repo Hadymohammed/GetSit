@@ -1,4 +1,4 @@
-﻿using GetSit.Data.Security;
+using GetSit.Data.Security;
 using GetSit.Data.Services;
 using GetSit.Data;
 
@@ -47,8 +47,19 @@ namespace GetSit.Controllers
             _hallRequestService = HallRequestService;
         }
         #endregion
-        public IActionResult Index()
-        {
+        [HttpGet]
+        public async Task<IActionResult> Index() { 
+            List<Tuple<int,int>> JoinRequest = new List<Tuple<int,int>>();
+            foreach (var space in _context.Space)
+            {
+                if (space.IsApproved==false)
+                {
+                    int ProviderId = _context.SpaceEmployee.Where(i => i.SpaceId == space.Id).FirstOrDefault().Id;
+                    JoinRequest.Add(Tuple.Create(ProviderId , space.Id)); 
+                }
+            }
+            List<Tuple<int, int>> HallRequest = new List<Tuple<int, int>>();
+            foreach (var request in _context.)
             return View();
         }
         public IActionResult ViewRepest(int requestId)
