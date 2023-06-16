@@ -111,7 +111,8 @@
                                     {
                                         <div class="booking-status confirmed-color">@booking.BookingStatus</div>
                                     }
-                                    <a>Details and actions</a>
+                                    <a asp-action="Details" asp-controller="Booking" asp-route-bookingId="@booking.Id">Details and actions</a>
+
                                 </div>
                             </div>
                         </div>

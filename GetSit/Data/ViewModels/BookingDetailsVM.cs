@@ -5,11 +5,13 @@ namespace GetSit.Data.ViewModels
     public class BookingDetailsVM
     {
         public SpaceEmployee Employee { get; set; }
+        public Customer? customer { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string PhoneNumber { get; set; }
         public PaymentDetail? HallDetail { get; set; }
         public Space? Space { get; set; }
+        public Booking? CustomerBooking { get; set; }
         public GuestBooking? Booking { get; set; }
         public DateTime BookingDate { get; set; }
         public DateTime DesiredDate { get; set; }

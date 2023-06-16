@@ -3,6 +3,7 @@ using GetSit.Data;
 using GetSit.Data.enums;
 using GetSit.Data.Security;
 using GetSit.Data.ViewModels;
+using GetSit.Data.Services;
 using GetSit.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -21,12 +22,36 @@ namespace GetSit.Controllers
     {
         private readonly AppDBcontext _context;
         private readonly IUserManager _userManager;
-        public BookingController( AppDBcontext context, IUserManager userManager)
+        private readonly ISpaceEmployeeService _providerService;
+        private readonly ISpaceService _spaceService;
+        private readonly ISpaceHallService _hallService;
+        private readonly ISpaceService_Service _serviceService;
+        private readonly IBookingHall_Service _bookingHall_service;
+        private readonly IBookingHallService_Service _bookingService_Serivce;
+        private readonly IPaymentService _paymentSerivce;
+        private readonly IPaymentDetailService _paymentDetailService;
+        public BookingController(AppDBcontext context,
+            IUserManager userManager,
+            ISpaceEmployeeService spaceEmployeeService,
+            ISpaceService spaceService,
+            ISpaceHallService spaceHallService,
+            ISpaceService_Service spaceService_Serivce,
+            IBookingHall_Service bookingHall_Service,
+            IBookingHallService_Service bookingHallService_Service,
+            IPaymentService paymentService,
+            IPaymentDetailService paymentDetailService)
         {
             _context = context;
             _userManager = userManager;
+            _providerService = spaceEmployeeService;
+            _spaceService = spaceService;
+            _serviceService = spaceService_Serivce;
+            _hallService = spaceHallService;
+            _bookingHall_service = bookingHall_Service;
+            _bookingService_Serivce = bookingHallService_Service;
+            _paymentSerivce = paymentService;
+            _paymentDetailService = paymentDetailService;
         }
-
         [HttpGet]
         public async Task<IActionResult> Index (int HallID)
         {
@@ -208,66 +233,68 @@ namespace GetSit.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetBookingDetails(int ID)
+        public async Task<IActionResult> Details(int bookingId)
         {
-            Booking booking = (Booking)_context.Booking.Include(i => i.BookingHalls).ThenInclude(i => i.BookedServices)
-                .Where(i => i.Id == ID).FirstOrDefault();
+            if (bookingId < 1)
+                return NotFound();
+
+            var booking = (Booking)_context.Booking.Where(i => i.Id == bookingId)
+                .Include(i=>i.Customer)
+                .Include(i => i.BookingHalls)
+                    .ThenInclude(b => b.BookedServices)
+                .FirstOrDefault();
+
+            var payment = _paymentSerivce.GetByBookingId(bookingId);
+            if (booking == null)
+                return NotFound();
 
             var hall = _context.SpaceHall
                 .Where(i => i.Id == booking.BookingHalls.First().Id).FirstOrDefault();
 
-            var space = _context.Space
-                .Where(s => s.Halls.Any(h => h.Id == hall.Id)).FirstOrDefault();
+            var space = await _spaceService.GetByIdAsync(hall.SpaceId);
 
-            var services = _context.BookingHallService.Where(i => i.BookingHallId == hall.Id).ToList();
+            var halldetail = _context.PaymentDetail
+                .Include(d => d.BookingHall)
+                    .ThenInclude(b => b.Hall)
+                        .ThenInclude(h => h.HallPhotos)
+                .FirstOrDefault(i => i.BookingHallId == booking.BookingHalls.First().Id);
 
-            Dictionary<int, int> SelectedServices = new Dictionary<int, int>();
-            List<PaymentDetail> paymentDetails = new List<PaymentDetail>();
-            Dictionary<int, PaymentStatus> ServicesStatus = new Dictionary<int, PaymentStatus>();
+            var servicesDetails = _context.PaymentDetail
+                                .Include(d => d.BookingHallService)
+                                    .ThenInclude(s => s.Service)
+                                        .ThenInclude(ss => ss.ServicePhotos)
+                                .Where(d => d.PaymentId == payment.Id).ToList();
+            servicesDetails.RemoveAt(0);
 
-            // get the payment details
-            var halldetail = _context.PaymentDetail.Where(i => i.BookingHallId == hall.Id).FirstOrDefault();
-            paymentDetails.Add(halldetail);
+            var spaceServices = _serviceService.GetBySpaceId(space.Id);
 
-            foreach (var service in services)
-            {
-                SelectedServices.Add(service.Id, service.NumberOfUnits);
-                var detail = _context.PaymentDetail.Where(i => i.BookingHallServiceId == service.Id).FirstOrDefault();
-                ServicesStatus.Add(service.Id, detail.Status);
-                paymentDetails.Add(detail);
-            }
-
-            TimeSpan endTime = booking.StartTime.Add(TimeSpan.FromHours(booking.NumberOfHours));
 
             /* create object from the class to get the available timeslots*/
             AvailableSlots slots = new AvailableSlots(_context);
 
-            var filterDate = booking.DesiredDate;
+            var endSlots = slots.GetAvailableEndSlots(hall.Id, booking.DesiredDate, booking.StartTime);
 
-            var customer = _context.Customer.Where(i => i.Id == booking.CustomerId).FirstOrDefault();
-
-            var userbooking = new BookingVM
+            var userbooking = new BookingDetailsVM
             {
-                SelectedHall = hall,
-                SelectedSpace = space,
+
+                HallDetail = halldetail,
+                Space = space,
+                CustomerBooking=booking,
+                customer=booking.Customer,
+                SpaceServices = spaceServices,
                 BookingDate = booking.BookingDate,
                 DesiredDate = booking.DesiredDate,
                 StartTime = booking.StartTime,
-                EndTime = endTime,
+                EndTime = booking.StartTime.Add(TimeSpan.FromHours(booking.NumberOfHours)),
                 Paid = booking.Paid,
                 TotalCost = booking.TotalCost,
-                SelectedServicesQuantities = SelectedServices,
-                paymentDetails = paymentDetails,
-                FilterDate = filterDate,
-                AvailableSlots = slots.GetAvailableSlotsForDay(hall.Id, filterDate),
-                SlotsForWeek = slots.GetAvailableSlotsForWeek(hall.Id, filterDate),
-                ServicesStatus = ServicesStatus,
-                Customer = customer
+                servicesDetails = servicesDetails,
+                EndSlots = endSlots
             };
             return View(userbooking);
         }
 
-
+        /*To do*/
         [HttpPost]
         public async Task<IActionResult> EditBookingByCustomer(int ID, BookingVM viewModel)
         {

@@ -58,8 +58,27 @@ namespace GetSit.Data
                             SpaceId=2
                         }
                     });
+                    context.SaveChanges();
                 }
+                ///Customer
+                if (!context.Customer.Any())
+                {
+                    context.Customer.AddRange(new List<Customer>()
+                    {
+                        new Customer
+                        {
+                            FirstName="Khalid",
+                            LastName="Ali",
+                            Email="Customer@meto.com",
+                            Password=PasswordHashing.Encode("Customer1234"),
+                            PhoneNumber="01015608885",
+                            Birthdate= new DateTime(1980,7,7),
+                            ProfilePictureUrl="./resources/site/user-profile-icon.jpg"
+
+                        }
+                    });
                 context.SaveChanges();
+                }
                 //Space Phone
                 if (!context.SpacePhone.Any())
                 {
