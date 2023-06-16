@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GetSit.Migrations
 {
     [DbContext(typeof(AppDBcontext))]
-    [Migration("20230616155045_merge")]
+    [Migration("20230616162711_merge")]
     partial class merge
     {
         /// <inheritdoc />
@@ -836,7 +836,7 @@ namespace GetSit.Migrations
             modelBuilder.Entity("GetSit.Models.HallRequest", b =>
                 {
                     b.HasOne("GetSit.Models.SpaceHall", "Hall")
-                        .WithMany()
+                        .WithMany("HallRequests")
                         .HasForeignKey("HallId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1029,6 +1029,8 @@ namespace GetSit.Migrations
                     b.Navigation("HallFacilities");
 
                     b.Navigation("HallPhotos");
+
+                    b.Navigation("HallRequests");
                 });
 
             modelBuilder.Entity("GetSit.Models.SpaceService", b =>

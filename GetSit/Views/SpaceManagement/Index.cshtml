@@ -2,7 +2,7 @@
 @using GetSit.Data.enums
 @model SpaceManagementVM
 
-<div class="main manage-container">
+<v class="main manage-container">
 <link rel="stylesheet" href="~/css/SpaceManagement.css" asp-append-version="true" />
 
     <!--Main Container-->
@@ -43,6 +43,7 @@
                     <li class="nav-item"><a class="nav-link active" href="#schedule">Schedule</a></li>
                     <li class="nav-item"><a class="nav-link" href="#our-halls">Our Halls</a></li>
                     <li class="nav-item"><a class="nav-link" href="#our-serivces">Our Services</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#our-Request">Our Request</a></li>
                 </ul>
             </nav>
 
@@ -195,6 +196,60 @@
                         Add new Service
                     </a>
                 </div>
+            </section>
+            <!--Requests-->
+            <section id="our-Request" class="fade-in">
+                @if (Model.Requests.Count == 0)
+                {
+                    <div class="empty">
+                        No Request yet! Add new ones.
+                    </div>
+                }
+             
+                @foreach (var request in Model.Requests)
+                {
+                    
+                    <div class="product-card booking-hall fade-in">
+                        
+                        <div class="product-content">
+                            <div class="product-photo">
+                                <div>@request.Date.Day</div>
+                                <div>@request.Date.ToString("MMM")</div>
+                                <div>@request.Date.Year</div>
+                            </div>
+                            <div class="booking-details">
+                                <div>
+                                    <h3 class="product-name">@request.Hall.Type </h3>
+                                    <p class="product-description">@request.Date.DayOfWeek  </p>
+                                    
+                                </div>
+                                <div class="booking-actions">
+                                    @if (request.Status == ReqestStatus.pending)
+                                    {
+                                        <a asp-controller="SpaceManagement" asp-action="RequestDeteles" asp-route-RequestID="@request.Id"> <div class="booking-status pending-color">@request.Status</div></a>
+                                    }
+                                    @if (request.Status == ReqestStatus.Accepted)
+                                    {
+                                        <a asp-controller="SpaceManagement" asp-action="RequestDeteles" asp-route-RequestID="@request.Id"> <div class="booking-status accepted-color">@request.Status</div></a>
+
+                                        
+                                    }
+                                    @if (request.Status == ReqestStatus.Rejected)
+                                    {
+                                        <a asp-controller="SpaceManagement" asp-action="RequestDeteles" asp-route-RequestID="@request.Id"> <div class="booking-status cancelled-color">@request.Status
+                                    </div> </a>
+                                        
+                                    }
+                                    
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                                    
+              
             </section>
 
         </div>

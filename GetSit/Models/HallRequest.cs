@@ -13,8 +13,5 @@ namespace GetSit.Models
 
         public int HallId { get; set; }
         public SpaceHall Hall { get; set; }
-
-        
-
     }
 }

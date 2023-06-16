@@ -833,7 +833,7 @@ namespace GetSit.Migrations
             modelBuilder.Entity("GetSit.Models.HallRequest", b =>
                 {
                     b.HasOne("GetSit.Models.SpaceHall", "Hall")
-                        .WithMany()
+                        .WithMany("HallRequests")
                         .HasForeignKey("HallId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1026,6 +1026,8 @@ namespace GetSit.Migrations
                     b.Navigation("HallFacilities");
 
                     b.Navigation("HallPhotos");
+
+                    b.Navigation("HallRequests");
                 });
 
             modelBuilder.Entity("GetSit.Models.SpaceService", b =>
