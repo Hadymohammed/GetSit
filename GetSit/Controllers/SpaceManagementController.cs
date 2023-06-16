@@ -30,7 +30,11 @@ namespace GetSit.Controllers
         readonly ISpaceService_Service _spaceService_service;
         readonly IServicePhotoService _servicePhotoService;
         readonly IBookingService _bookingService;
+
+        readonly IHallRequestService _hallRequestService;
+
         readonly ISpacePhotoService _spacePhotoService;
+
 
         public SpaceManagementController(IUserManager userManager,
             AppDBcontext context,
@@ -42,8 +46,12 @@ namespace GetSit.Controllers
             ISpaceService_Service SpaceService_service,
             IServicePhotoService servicePhotoService,
             IBookingService bookingService,
-            ISpacePhotoService spacePhotoService,
+
+            IHallRequestService HallRequestService,
+
+          ISpacePhotoService spacePhotoService,
             IWebHostEnvironment env)
+
         {
             _env = env;
             _userManager = userManager;
@@ -56,7 +64,11 @@ namespace GetSit.Controllers
             _spaceService_service = SpaceService_service;
             _servicePhotoService = servicePhotoService;
             _bookingService = bookingService;
+
+            _hallRequestService = HallRequestService;
+
             _spacePhotoService = spacePhotoService;
+
         }
         #endregion
 
@@ -69,10 +81,12 @@ namespace GetSit.Controllers
                 /*replace spaceId cookie (Security)*/
                 var providerId = _userManager.GetCurrentUserId(HttpContext);
                 var provider = await _providerService.GetByIdAsync(providerId);
+
                 spaceIdInt = (int)provider.SpaceId;
 
-                SpaceIdStirng = spaceIdInt.ToString();
-                if(SpaceIdStirng != String.Empty)
+                SpaceIdStirng = provider.ToString();
+
+                if (SpaceIdStirng != String.Empty)
                     HttpContext.Response.Cookies.Append("SpaceId", SpaceIdStirng);
             }
             else
@@ -84,10 +98,13 @@ namespace GetSit.Controllers
             SpaceManagementVM viewModel = new()
             {
                 Space = space,
-                Halls = _hallService.GetBySpaceId(spaceIdInt, h => h.HallPhotos, h => h.HallFacilities),
+
+                Halls = _hallService.GetAcceptedBySpaceId(spaceIdInt, h => h.HallPhotos, h => h.HallFacilities),
                 Services = _spaceService_service.GetBySpaceId(spaceIdInt, s => s.ServicePhotos),
                 Employees = _providerService.GetBySpaceId(spaceIdInt),
-                Bookings = _bookingService.GetBySpaceId(spaceIdInt)
+                Bookings = _bookingService.GetBySpaceId(spaceIdInt),
+                Requests = _hallRequestService.GetPendingBySpaceId(spaceIdInt),
+
             };
             return View(viewModel);
         }
@@ -102,7 +119,9 @@ namespace GetSit.Controllers
                 var providerId = _userManager.GetCurrentUserId(HttpContext);
                 var provider = await _providerService.GetByIdAsync(providerId);
                 spaceIdInt = (int)provider.SpaceId;
+
                 SpaceIdStirng = provider.SpaceId.ToString();
+
                 if (SpaceIdStirng != String.Empty)
                     HttpContext.Response.Cookies.Append("SpaceId", SpaceIdStirng);
             }
@@ -112,8 +131,11 @@ namespace GetSit.Controllers
                 int.TryParse(SpaceIdStirng, out spaceIdInt);
             }
             //Space space = _context.Space.Include(s => s.Photos).Where(s => s.Id.ToString() == SpaceId).FirstOrDefault();
+
+            
             Space space = await _spaceSerivce.GetByIdAsync(spaceIdInt, s => s.Photos);
-            AddHallVM vm = new()
+            AddHallVM vm = new AddHallVM()
+
             {
                 SpaceId = space.Id,
                 SpaceName = space.Name,
@@ -177,10 +199,18 @@ namespace GetSit.Controllers
                     });
                 }
             }
+            /*Add request*/
+            var request = new HallRequest()
+            {
+                Hall = hall,
+                Status = ReqestStatus.pending,
+                Date = DateTime.Now,
+            };
+            _hallRequestService.AddRequest(request);
+
             return RedirectToAction("Index");
         }
         #endregion
-
         #region Create New Service
         [HttpGet]
         public async Task<IActionResult> AddServiceAsync()
@@ -223,7 +253,7 @@ namespace GetSit.Controllers
             var service = new SpaceService()
             {
                 SpaceId = vm.SpaceId,
-                Name=vm.ServiceName,
+                Name = vm.ServiceName,
                 Description = vm.Description,
                 Price = vm.CostPerUnit
             };
@@ -261,6 +291,17 @@ namespace GetSit.Controllers
             return RedirectToAction("Index");
         }
         #endregion
+
+        #region Request Deteles
+        public async Task<IActionResult> RequestDeteles(int RequestId)
+        {
+
+            var request = _hallRequestService.GetById(RequestId);
+            return View(request);
+        }
+
+        #endregion
+
         
         #region Edit Hall
         [HttpGet]
@@ -466,5 +507,6 @@ namespace GetSit.Controllers
             return NotFound();
         }
         #endregion
+
     }
 }

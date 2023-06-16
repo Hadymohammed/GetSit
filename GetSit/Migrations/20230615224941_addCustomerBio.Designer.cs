@@ -4,6 +4,7 @@ using GetSit.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GetSit.Migrations
 {
     [DbContext(typeof(AppDBcontext))]
-    partial class AppDBcontextModelSnapshot : ModelSnapshot
+    [Migration("20230615224941_addCustomerBio")]
+    partial class addCustomerBio
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -271,33 +274,6 @@ namespace GetSit.Migrations
                     b.HasIndex("HallId");
 
                     b.ToTable("HallPhoto");
-                });
-
-            modelBuilder.Entity("GetSit.Models.HallRequest", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("HallId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<string>("comment")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("HallId");
-
-                    b.ToTable("HallRequest");
                 });
 
             modelBuilder.Entity("GetSit.Models.Payment", b =>
@@ -830,17 +806,6 @@ namespace GetSit.Migrations
                     b.Navigation("Hall");
                 });
 
-            modelBuilder.Entity("GetSit.Models.HallRequest", b =>
-                {
-                    b.HasOne("GetSit.Models.SpaceHall", "Hall")
-                        .WithMany("HallRequests")
-                        .HasForeignKey("HallId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Hall");
-                });
-
             modelBuilder.Entity("GetSit.Models.Payment", b =>
                 {
                     b.HasOne("GetSit.Models.Booking", "Booking")
@@ -1026,8 +991,6 @@ namespace GetSit.Migrations
                     b.Navigation("HallFacilities");
 
                     b.Navigation("HallPhotos");
-
-                    b.Navigation("HallRequests");
                 });
 
             modelBuilder.Entity("GetSit.Models.SpaceService", b =>
