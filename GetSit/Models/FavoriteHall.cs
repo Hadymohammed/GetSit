@@ -14,6 +14,7 @@ namespace GetSit.Models
         public Customer  customer { get; set; }
         [ForeignKey("HallId")]
         public int HallId { get; set; }
+        
         [Required]
         public SpaceHall SpaceHall { get; set; }
 

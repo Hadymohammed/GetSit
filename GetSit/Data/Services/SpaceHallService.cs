@@ -1,4 +1,5 @@
 ﻿using GetSit.Data.Base;
+using GetSit.Data.enums;
 using GetSit.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -9,7 +10,7 @@ namespace GetSit.Data.Services
     {
         private readonly AppDBcontext _context;
 
-        public SpaceHallService(AppDBcontext context):base(context)
+        public SpaceHallService(AppDBcontext context) : base(context)
         {
             _context = context;
         }
@@ -19,6 +20,17 @@ namespace GetSit.Data.Services
             IQueryable<SpaceHall> query = _context.Set<SpaceHall>();
             query = includeProperties.Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
             return query.Where(n => n.SpaceId == spaceId).ToList();
+        }
+        public void UpdateHall(SpaceHall Hall)
+        {
+            _context.Update(Hall);
+            _context.SaveChanges();
+        }
+        public List<SpaceHall> GetAcceptedBySpaceId(int spaceId, params Expression<Func<SpaceHall, object>>[] includeProperties)
+        {
+            IQueryable<SpaceHall> query = _context.Set<SpaceHall>();
+            query = includeProperties.Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
+            return query.Where(n => n.SpaceId == spaceId && n.Status == HallStatus.Accepted).ToList();
         }
 
         public async Task<IEnumerable<SpaceHall>> GetBySpaceName(string Key)

@@ -1,31 +1,53 @@
-﻿using GetSit.Data.ViewModels;
-using GetSit.Data.enums;
-using GetSit.Models;
-using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel;
-using GetSit.Data;
-using Microsoft.Win32;
 using GetSit.Data.Security;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.DataProtection.XmlEncryption;
-using GetSit.Common;
-using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
-using Microsoft.AspNetCore.Mvc.Routing;
 using GetSit.Data.Services;
+using GetSit.Data;
+
+using Microsoft.AspNetCore.Mvc;
+using GetSit.Data.enums;
+
 namespace GetSit.Controllers
 {
-    public class SystemAdminController
+    public class SystemAdminController : Controller
     {
-        private readonly AppDBcontext _context;
-        private readonly IUserManager _userManager;
-        public SystemAdminController(AppDBcontext context, IUserManager userManager)
-        {
-            _context = context;
-            _userManager = userManager;
-        }
-        [HttpGet]
+        #region Dependacies
+        readonly IUserManager _userManager;
+        readonly AppDBcontext _context;
+        readonly ISpaceEmployeeService _providerService;
+        readonly ISpaceService _spaceSerivce;
+        readonly ISpaceHallService _hallService;
+        readonly IHallFacilityService _hallFacilityService;
+        readonly IHallPhotoService _hallPhotoService;
+        readonly ISpaceService_Service _spaceService_service;
+        readonly IServicePhotoService _servicePhotoService;
+        readonly IBookingService _bookingService;
+        readonly IHallRequestService _hallRequestService;
+        public SystemAdminController(IUserManager userManager,
+            AppDBcontext context,
+            ISpaceEmployeeService spaceEmployeeService,
+            ISpaceService spaceService,
+            ISpaceHallService hallService,
+            IHallFacilityService hallFacilityService,
+            IHallPhotoService hallPhotoService,
+            ISpaceService_Service spaceService_service,
+            IServicePhotoService servicePhotoService,
+            IBookingService bookingService,
+            IHallRequestService HallRequestService)
 
+        {
+            _userManager = userManager;
+            _context = context;
+            _providerService = spaceEmployeeService;
+            _spaceSerivce = spaceService;
+            _hallService = hallService;
+            _hallFacilityService = hallFacilityService;
+            _hallPhotoService = hallPhotoService;
+            _spaceService_service = spaceService_service;
+            _servicePhotoService = servicePhotoService;
+            _bookingService = bookingService;
+            _hallRequestService = HallRequestService;
+        }
+        #endregion
+        [HttpGet]
         public async Task<IActionResult> Index() { 
             List<Tuple<int,int>> JoinRequest = new List<Tuple<int,int>>();
             foreach (var space in _context.Space)
@@ -40,6 +62,31 @@ namespace GetSit.Controllers
             foreach (var request in _context.)
             return View();
         }
+        public IActionResult ViewRepest(int requestId)
+        {
+            return View();
+        }
+        [HttpGet]
+        public IActionResult AcceptRepest(int requestId)
+        {
+            var request = _hallRequestService.GetById(requestId);
+            var hall = request.Hall;
+            hall.Status = HallStatus.Accepted;
+            _hallService.UpdateHall(hall);
+            _hallRequestService.DeleteRequest(request);
+            return View("Index");
+        }
+
+        [HttpPost]
+        public IActionResult RejectRepest(int requestId, string comment)
+        {
+            var request = _hallRequestService.GetById(requestId);
+            request.comment = comment;
+            request.Status = ReqestStatus.Rejected;
+            request.Date = DateTime.Now;
+            _hallRequestService.UpdateRequest(request);
+
+            return View("Index");
+        }
     }
 }
-  
