@@ -42,8 +42,27 @@ namespace GetSit.Data
                     });
                     context.SaveChanges();
                 }
+                ///Customer
+                if (!context.Customer.Any())
+                {
+                    context.Customer.AddRange(new List<Customer>()
+                    {
+                        new Customer
+                        {
+                            FirstName="Khalid",
+                            LastName="Ali",
+                            Email="Customer@meto.com",
+                            Password=PasswordHashing.Encode("Customer1234"),
+                            PhoneNumber="01015608885",
+                            Birthdate= new DateTime(1980,7,7),
+                            ProfilePictureUrl="./resources/site/user-profile-icon.jpg"
+
+                        }
+                    });
+                    context.SaveChanges();
+                }
                 //Space Employee
-                if(!context.SpaceEmployee.Any())
+                if (!context.SpaceEmployee.Any())
                 {
                     context.SpaceEmployee.AddRange(new List<SpaceEmployee>()
                     {
@@ -80,6 +99,25 @@ namespace GetSit.Data
                             SpaceId=2,
                             PhoneNumber="01010101011"
                         },
+                    });
+                    context.SaveChanges();
+                }
+                ///Customer
+                if (!context.SystemAdmin.Any())
+                {
+                    context.SystemAdmin.AddRange(new List<SystemAdmin>()
+                    {
+                        new SystemAdmin
+                        {
+                            FirstName="Khalid",
+                            LastName="Ali",
+                            Email="Admin@meto.com",
+                            Password=PasswordHashing.Encode("Admin1234"),
+                            PhoneNumber="01015608885",
+                            Birthdate= new DateTime(1980,7,7),
+                            ProfilePictureUrl="./resources/site/user-profile-icon.jpg"
+
+                        }
                     });
                     context.SaveChanges();
                 }
