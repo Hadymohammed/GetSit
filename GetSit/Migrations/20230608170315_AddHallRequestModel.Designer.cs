@@ -4,6 +4,7 @@ using GetSit.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GetSit.Migrations
 {
     [DbContext(typeof(AppDBcontext))]
-    partial class AppDBcontextModelSnapshot : ModelSnapshot
+    [Migration("20230608170315_AddHallRequestModel")]
+    partial class AddHallRequestModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -129,9 +132,6 @@ namespace GetSit.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Bio")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Birthdate")
                         .HasColumnType("datetime2");
@@ -271,7 +271,6 @@ namespace GetSit.Migrations
                     b.HasIndex("HallId");
 
                     b.ToTable("HallPhoto");
-
                 });
 
             modelBuilder.Entity("GetSit.Models.HallRequest", b =>
@@ -299,7 +298,6 @@ namespace GetSit.Migrations
                     b.HasIndex("HallId");
 
                     b.ToTable("HallRequest");
-
                 });
 
             modelBuilder.Entity("GetSit.Models.Payment", b =>

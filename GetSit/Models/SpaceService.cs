@@ -22,5 +22,7 @@ namespace GetSit.Models
         public Space Space { get; set; }
         [Required]
         public List<BookingHallService> Bookings { get; set; }
+        
+
     }
 }

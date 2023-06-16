@@ -10,7 +10,7 @@ namespace GetSit.Models
         [Key]
         public int Id { get; set; }
 
-  [ForeignKey("SpaceId")]
+        [ForeignKey("SpaceId")]
         public int SpaceId { get; set; }
         public Space Space { get; set; }
 
@@ -33,6 +33,8 @@ namespace GetSit.Models
         public List<FavoriteHall> FavoriteHalls { get; set; }
         [Required]
         public List<BookingHall> Bookings { get; set; }
+        public List<HallRequest> Requests { get; set; }
+
 
     }
 }
