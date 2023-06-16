@@ -25,8 +25,8 @@ namespace GetSit.Controllers
             _userManager = userManager;
         }
         [HttpGet]
-        public async Task<IActionResult> Index()
-        {
+
+        public async Task<IActionResult> Index() { 
             List<Tuple<int,int>> JoinRequest = new List<Tuple<int,int>>();
             foreach (var space in _context.Space)
             {
@@ -37,7 +37,7 @@ namespace GetSit.Controllers
                 }
             }
             List<Tuple<int, int>> HallRequest = new List<Tuple<int, int>>();
-            
+            foreach (var request in _context.)
             return View();
         }
     }
