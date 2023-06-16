@@ -118,7 +118,7 @@ namespace GetSit.Controllers
                         
                     }
                     await _userManager.SignIn(HttpContext, customer);
-                    return RedirectToAction("CustomerProfile", "Account");
+                    return RedirectToAction("Index", "Customer");
                     break;
                 default:
                     break;
@@ -303,6 +303,6 @@ namespace GetSit.Controllers
             return View();
         }
 
-
+        
     }
 }
