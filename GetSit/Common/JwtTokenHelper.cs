@@ -14,7 +14,7 @@ namespace GetSit.Common
         // Generate token
         public static string GenerateJwtToken(string username, int Id)
         {
-            var Jwtkey = "asdfghjk";
+            var Jwtkey = "35f7a951b0494e5a9852d35a33cd6cc8";
             var JwtExpireDays = "2";
             var Jwtissuer = "https://localhost:7181";
             var claims = new List<Claim>
@@ -40,7 +40,7 @@ namespace GetSit.Common
 
         public static string ValidateToken(string token)
         {
-            var Jwtkey = "asdfghjk";
+            var Jwtkey = "35f7a951b0494e5a9852d35a33cd6cc8";
             if (token == null)
                 return null;
             var tokenHandler = new JwtSecurityTokenHandler();

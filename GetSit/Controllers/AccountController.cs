@@ -149,8 +149,9 @@ namespace GetSit.Controllers
             }
 
             /*check if the entered email in register is already in database*/
-            if (PresirvedEmail(register.Email))
+            if (register.Role!=UserRole.Provider && PresirvedEmail(register.Email))
             {
+
                 ModelState.AddModelError("Email", "This email already has an account.");
                 return View(register);
             }
@@ -213,7 +214,7 @@ namespace GetSit.Controllers
                 case UserRole.Admin:
                     var admin = new SystemAdmin()
                     {
-
+                        Id= (int)register.UserId,
                         FirstName = register.FirstName,
                         LastName = register.LastName,
                         Email = register.Email,
@@ -236,6 +237,7 @@ namespace GetSit.Controllers
                 case UserRole.Provider:
                     var provider = new SpaceEmployee()
                     {
+                        Id = (int)register.UserId,
                         FirstName = register.FirstName,
                         LastName = register.LastName,
                         Email = register.Email,
@@ -246,7 +248,7 @@ namespace GetSit.Controllers
 
                     try
                     {
-                        await _spaceEmployeeService.AddAsync(provider);
+                        await _spaceEmployeeService.UpdateAsync(provider.Id,provider);
                         await _userManager.SignIn(HttpContext, provider);
                         return RedirectToAction("ProviderProfile", "Account");
                     }
@@ -310,21 +312,26 @@ namespace GetSit.Controllers
         [HttpGet]
         public async Task<IActionResult> RegisterProvider(int UID, string token)
         {
+            
             if (_context.Token.Where(t => t.Id == UID) == null || Common.JwtTokenHelper.ValidateToken(token) == null)
             {
                 return RedirectToAction("AccessDenied");
             }
+
             var UserIdStr = Common.JwtTokenHelper.ValidateToken(token);
             var UserId = 0;
             int.TryParse(UserIdStr, out UserId);
             var SpaceEmployee = await _spaceEmployeeService.GetByIdAsync(UserId);
+            Common.SessoinHelper.saveObject(HttpContext,  "TokenId" ,new {id=UID}  );
             return RedirectToAction("RegisterGet", new RegisterVM()
             {
+                UserId = SpaceEmployee.Id,
                 FirstName = SpaceEmployee.FirstName,
                 LastName = SpaceEmployee.LastName,
                 Email = SpaceEmployee.Email,
                 PhoneNumber = SpaceEmployee.PhoneNumber,
                 Birthdate = SpaceEmployee.Birthdate,
+                Role=UserRole.Provider
             });
             return View();
         }

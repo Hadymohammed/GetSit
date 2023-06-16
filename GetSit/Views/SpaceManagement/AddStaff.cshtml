@@ -1,0 +1,83 @@
+﻿
+@using GetSit.Data.ViewModels
+@using GetSit.Data.enums
+@model AddStaffVM
+
+<link rel="stylesheet" href="~/css/SpaceManagement.css" />
+<div class="container">
+    <div>
+        <!--Space Data-->
+        <div class="profile-card" style="top: 0px;">
+            @{
+                string url = "../" + Model.SpacePicUrl;
+            }
+            <img src="@url" />
+            <div class="profile-name">@Model.SpaceName</div>
+            <div class="profile-bio">
+                @Model.SpaceBio
+            </div>
+        </div>
+    </div>
+    <h1>Add Employee</h1>
+    <form asp-action="AddStaff" method="post">
+        <input asp-for="@Model.SpaceId" hidden />
+        <input asp-for="@Model.SpaceEmployeeId" hidden />
+        <input asp-for="@Model.SpaceBio" hidden />
+        <input asp-for="@Model.SpacePicUrl" hidden />
+        <input asp-for="@Model.SpaceName" hidden />
+        <div class="addHall-container">
+            <div class="addHall-left-column">
+                <div class="addHall-main-card">
+                    <div class="addHall-sub-card">
+                        <h4>Main</h4>
+                        <div class="form-group">
+                            <label asp-for="FirstName">First Name:</label>
+                            <input type="text" asp-for="FirstName" class="form-control" maxlength="30" />
+                            <span asp-validation-for="@Model.FirstName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="LastName">Last Name:</label>
+                            <input type="text" asp-for="LastName" class="form-control" maxlength="30" />
+                            <span asp-validation-for="@Model.LastName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Email">Email:</label>
+                            <input type="text" asp-for="Email" class="form-control" maxlength="30" />
+                            <span asp-validation-for="@Model.Email" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Birthdate">Birthdate:</label>
+                            <input type="date" asp-for="Birthdate" class="form-control" maxlength="30" />
+                            <span asp-validation-for="@Model.Birthdate" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="PhoneNumber">Phone Number:</label>
+                            <input type="text" asp-for="PhoneNumber" class="form-control" maxlength="30" />
+                            <span asp-validation-for="@Model.PhoneNumber" class="text-danger"></span>
+                        </div>
+                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#confirmUploadModal">Add Employee</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="confirmUploadModal" tabindex="-1" role="dialog" aria-labelledby="confirmUploadModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmUploadModalLabel">Confirmation</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to Add this new employee?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Add</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

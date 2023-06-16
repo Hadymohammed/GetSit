@@ -325,16 +325,33 @@ namespace GetSit.Controllers
             return RedirectToAction("Index");
         }
         [HttpGet]
-        public IActionResult AddStaff()
+        public async Task<IActionResult> AddStaff()
         {
-            return View();
+
+            var UserId = _userManager.GetCurrentUserId(HttpContext);
+            var User=await _providerService.GetByIdAsync(UserId);
+            var Space=await _spaceSerivce.GetByIdAsync((int)User.SpaceId,s=>s.Photos);
+            return View(new AddStaffVM() { 
+                SpaceId = Space.Id,
+                SpaceBio = Space.Bio,
+                SpaceName = Space.Name,
+                SpacePicUrl=Space.Photos.First().Url, 
+                SpaceEmployeeId=User.Id
+            });
         }
         [HttpPost]
-        public async Task<IActionResult> AddStaff(SpaceEmployee NewStaff)
+        public async Task<IActionResult> AddStaff(AddStaffVM NewStaff)
         {
             if (!ModelState.IsValid)
             {
                 return View(NewStaff);
+            }
+            var UserId = _userManager.GetCurrentUserId(HttpContext);
+            var User = await _providerService.GetByIdAsync(UserId);
+            var Space = await _spaceSerivce.GetByIdAsync(User.Id, s => s.Photos);
+            if (User.SpaceId != NewStaff.SpaceId)
+            {
+                return RedirectToAction("AccessDenied","Account");
             }
             string password = RandomPassword.GenerateRandomPassword(8);
             // Using SpaceId as default value here
@@ -346,23 +363,25 @@ namespace GetSit.Controllers
                 Password = PasswordHashing.Encode(password),
                 PhoneNumber = NewStaff.PhoneNumber,
                 Birthdate = NewStaff.Birthdate,
-                EmployeeRole = NewStaff.EmployeeRole
+                Registerd=false,
+                SpaceId=Space.Id
             };
 
             try
             {
-                await _spaceEmployeeService.AddAsync(AddNewstaff);
+                await _providerService.AddAsync(AddNewstaff);
                 var SpaceEmployeeId = AddNewstaff.Id;
                 var JwtSecurtiyToken = Common.JwtTokenHelper.GenerateJwtToken(NewStaff.Email, SpaceEmployeeId);
                 var Token = new Token
                 {
                     token = JwtSecurtiyToken
                 };
-                _context.Token.AddAsync(Token);
+                await _context.Token.AddAsync(Token);
+                _context.SaveChanges();
                 var UId = Token.Id;
-                string oneTimeAddStaffLink = Url.Action("RegisterProvider", "Account", new { uid = UId, token = Token }, Request.Scheme);
+                string oneTimeAddStaffLink = Url.Action("RegisterProvider", "Account", new { uid = UId, token = Token.token }, Request.Scheme);
                 Common.AddStaffEmail.SendEmailAddStaff(NewStaff.Email, oneTimeAddStaffLink);
-                return RedirectToAction("SpaceManagement");
+                return RedirectToAction("Index");
             }
             catch (Exception error)
             {
