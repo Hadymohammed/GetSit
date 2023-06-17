@@ -211,7 +211,6 @@ namespace GetSit.Controllers
                 Booking.TotalCost += bookedHall.CostPerHour * NumberOfHours;
 
                 /*Loop over services*/
-                List<PaymentDetail> paymentServiceDetails = new List<PaymentDetail>();
                 foreach (KeyValuePair<int, int> ServiceQuantity in viewModel.SelectedServicesQuantities)
                 {
                     if (ServiceQuantity.Value > 0)
@@ -226,13 +225,15 @@ namespace GetSit.Controllers
                         };
                         await _bookingService_Serivce.AddAsync(bookingHallService);
 
-                        paymentServiceDetails.Add(new PaymentDetail
+                        var detail=new PaymentDetail()
                         {
                             TotalCost = service.Price * ServiceQuantity.Value,
                             Status = PaymentStatus.Pending,
                             Type = PaymentType.Cash,
-                            BookingHallServiceId = bookingHallService.Id
-                        });
+                            BookingHallServiceId = bookingHallService.Id,
+                            PaymentId=payment.Id,
+                        };
+                        await _paymentDetailService.AddAsync(detail);
                         Booking.TotalCost += service.Price * ServiceQuantity.Value;
                     }
                 }
@@ -252,13 +253,14 @@ namespace GetSit.Controllers
             if (bookingId < 1)
                 return NotFound();
 
-            var booking = (Booking)_context.Booking.Where(i => i.Id == bookingId)
-                .Include(i=>i.Customer)
-                .Include(i => i.BookingHalls)
-                    .ThenInclude(b => b.BookedServices)
-                    .ThenInclude(s=>s.BookingHall)
-                .FirstOrDefault();
+            var booking = (Booking)_context.Booking
+    .Where(i => i.Id == bookingId)
+    .Include(i => i.Customer)
+    .Include(i => i.BookingHalls)
+        .ThenInclude(b => b.BookedServices)
+    .FirstOrDefault();
 
+            var hall = await _hallSerivce.GetByIdAsync(booking.BookingHalls[0].HallId);
             if (booking == null)
                 return NotFound();
 
@@ -270,7 +272,7 @@ namespace GetSit.Controllers
             {
                 var user = await _providerService.GetByIdAsync(userId);
                 role = UserRole.Provider;
-                if (booking.BookingHalls.First().Hall.SpaceId != user.SpaceId)
+                if (hall.SpaceId != user.SpaceId)
                     return RedirectToAction("AccessDenied", "Account");
             }
             else if(userRole == "Customer")
@@ -286,11 +288,7 @@ namespace GetSit.Controllers
 
             var payment = _paymentSerivce.GetByCustomerBookingId(bookingId);
             
-
-            var hall = _context.SpaceHall
-                .Where(i => i.Id == booking.BookingHalls.First().Hall.Id).FirstOrDefault();
-
-            var space = await _spaceService.GetByIdAsync(hall.SpaceId);
+             var space = await _spaceService.GetByIdAsync(hall.SpaceId);
 
             var halldetail = _context.PaymentDetail
                 .Include(d => d.BookingHall)
@@ -377,12 +375,31 @@ namespace GetSit.Controllers
                 .Include(i => i.BookingHalls)
                     .ThenInclude(b => b.BookedServices)
                 .FirstOrDefault();
-            var payment = _paymentSerivce.GetByCustomerBookingId(bookingId);
             if (booking == null)
                 return NotFound();
 
-            var hall = _context.SpaceHall
-                .Where(i => i.Id == booking.BookingHalls.First().Id).FirstOrDefault();
+            var hall = await _hallSerivce.GetByIdAsync(booking.BookingHalls.First().HallId);
+            var userId = _userManager.GetCurrentUserId(HttpContext);
+            var userRole = _userManager.GetUserRole(HttpContext);
+            #region Security
+            UserRole role = UserRole.Customer;
+            if (userRole == "Provider")//convert enum userRole to class
+            {
+                var user = await _providerService.GetByIdAsync(userId);
+                role = UserRole.Provider;
+                if (hall.SpaceId != user.SpaceId)
+                    return RedirectToAction("AccessDenied", "Account");
+            }
+            else if (userRole == "Customer")
+            {
+                var user = await _customerService.GetByIdAsync(userId);
+                role = UserRole.Customer;
+
+                if (booking.Customer.Id != user.Id)
+                    return RedirectToAction("AccessDenied", "Account");
+            }
+            #endregion
+            var payment = _paymentSerivce.GetByCustomerBookingId(bookingId);
 
             var space = await _spaceService.GetByIdAsync(hall.SpaceId);
 
@@ -405,12 +422,13 @@ namespace GetSit.Controllers
             /* create object from the class to get the available timeslots*/
             AvailableSlots slots = new AvailableSlots(_context);
 
-            var endSlots = slots.GetAvailableEndSlots(hall.Id, booking.DesiredDate, booking.StartTime);
+            var endSlots = slots.GetAvailableEndSlots(hall.Id, booking.DesiredDate, booking.StartTime.Add(TimeSpan.FromHours(booking.NumberOfHours)));
 
             var userbooking = new BookingDetailsVM
             {
                 customer=customer,
                 HallDetail = halldetail,
+                HallId=hall.Id,
                 Space = space,
                 SpaceServices = spaceServices,
                 BookingDate = booking.BookingDate,
@@ -421,112 +439,104 @@ namespace GetSit.Controllers
                 TotalCost = payment.TotalCost,
                 servicesDetails = servicesDetails,
                 CustomerBooking = booking,
-                EndSlots = endSlots
+                EndSlots = endSlots,
+                Role=role
             };
             return View(userbooking);
         }
         [HttpPost,Authorize(Roles = "Customer")]
-        public async Task<IActionResult> Edit(int ID, BookingVM viewModel)
+        public async Task<IActionResult> Edit(EditBookingPostVM viewModel)
         {
-            var Booking = _context.Booking.FirstOrDefault(b => b.Id == ID);
+            if (viewModel.HallId == null || viewModel.BookingId == null | viewModel.EndTime == null)
+            {
+                return RedirectToAction("Details",new {BookingId=viewModel.BookingId});
 
-            var hall = _context.SpaceHall
-               .Where(i => i.Id == Booking.BookingHalls.First().Id).FirstOrDefault();
+            }
+            var Booking = _context.Booking.Where(b => b.Id == viewModel.BookingId)
+               .Include(b => b.Payment)
+               .Include(b => b.BookingHalls)
+                   .ThenInclude(bb => bb.BookedServices)
+               .FirstOrDefault();
 
-            var space = _context.Space
-                .Where(s => s.Halls.Any(h => h.Id == hall.Id)).FirstOrDefault();
+            var hall = await _hallSerivce.GetByIdAsync(viewModel.HallId);
+
+            var space = await _spaceService.GetByIdAsync(hall.SpaceId);
 
             /* create object from the class to get the available timeslots*/
             AvailableSlots slots = new AvailableSlots(_context);
 
-            var filterDate = viewModel.DesiredDate;
-            var IndexModel = new BookingVM
-            {
-                SelectedHall = hall,
-                SelectedSpace = space,
-                AvailableSlots = slots.GetAvailableSlotsForDay(viewModel.SelectedHall.Id, filterDate),
-                FilterDate = filterDate,
-                SlotsForWeek = slots.GetAvailableSlotsForWeek(viewModel.SelectedHall.Id, filterDate),
-                
-            };
 
-            if (!ModelState.IsValid)
-            {
-                return RedirectToAction("GetBookingDetails", viewModel);
-            }
-            int startH = 0, startM = 0; GetHoursAndMinutes(viewModel.StartTime, out startH, out startM);
-            TimeSpan start = new TimeSpan(startH, startM, 0);
+
+            TimeSpan start = Booking.StartTime.Add(TimeSpan.FromHours(Booking.NumberOfHours));
             int endH = 0, endM = 0; GetHoursAndMinutes(viewModel.EndTime, out endH, out endM);
             TimeSpan end = new TimeSpan(endH, endM, 0);
 
             float NumberOfHours = (float)(end - start).TotalHours;
 
-            if (NumberOfHours <= 0)
+            if (NumberOfHours < 0)
             {
-                return RedirectToAction("GetBookingDetails", viewModel);
+                return RedirectToAction("Details", new { BookingId = viewModel.BookingId });
             }
 
             /*Send unavailable error to the employee*/
-            if (!slots.IsTimeSlotAvailable(viewModel.SelectedHall.Id, viewModel.DesiredDate, start, end))
+            if (!slots.IsTimeSlotAvailable(hall.Id, Booking.DesiredDate, start, end))
             {
-                return RedirectToAction("GetBookingDetails", viewModel);
+                return RedirectToAction("Details", new { BookingId = viewModel.BookingId });
             }
 
             // save the new timing in database
-
             Booking.StartTime = start;
             Booking.NumberOfHours = NumberOfHours;
-            _context.SaveChanges();
+            Booking.TotalCost += hall.CostPerHour * NumberOfHours;
 
-            Booking.TotalCost = viewModel.SelectedHall.CostPerHour * NumberOfHours;
+            var payment = await _paymentSerivce.GetByIdAsync(Booking.Payment.Id);
+            PaymentDetail halldetail = (PaymentDetail)_context.PaymentDetail.Where(i => i.BookingHallId == Booking.BookingHalls.First().Id).FirstOrDefault();
+            halldetail.TotalCost += hall.CostPerHour * NumberOfHours;
 
-            PaymentDetail halldetail = (PaymentDetail)_context.PaymentDetail.Where(i => i.BookingHallId == hall.Id).FirstOrDefault();
-
-            if (halldetail.Status == PaymentStatus.Paid)
+            if (NumberOfHours != 0 && halldetail.Status == PaymentStatus.Paid)
             {
-                Booking.Paid = hall.CostPerHour * NumberOfHours;
+                halldetail.Status = PaymentStatus.Uncompleted;
             }
-            else
-            {
-                Booking.Paid = 0;
-            }
+            await _paymentDetailService.UpdateAsync(halldetail.Id, halldetail);
 
             foreach (KeyValuePair<int, int> ServiceQuantity in viewModel.SelectedServicesQuantities)
             {
-                SpaceService service = _context.SpaceService.Where(s => s.Id == ServiceQuantity.Key).FirstOrDefault();
-                var booked = _context.BookingHallService.Where(i => i.ServiceId == service.Id &&
-                i.BookingHallId == viewModel.SelectedHall.Id).FirstOrDefault();
-                if (booked != null)
-                {
-                    if (ServiceQuantity.Value > 0)
+                SpaceService service = await _serviceService.GetByIdAsync(ServiceQuantity.Key);
+                #region updateBookedServices
+                    /*var booked = _context.BookingHallService.Where(i => i.ServiceId == service.Id &&
+                    i.BookingHallId == viewModel.SelectedHall.Id).FirstOrDefault();
+                    if (booked != null)
                     {
-                        booked.NumberOfUnits = ServiceQuantity.Value;
-                        var detail = _context.PaymentDetail.Where(i => i.BookingHallServiceId == booked.Id
-                        ).FirstOrDefault();
-
-                        Booking.TotalCost += service.Price * ServiceQuantity.Value;
-
-                        // update cost 
-                        detail.TotalCost = service.Price * ServiceQuantity.Value;
-                        if (viewModel.ServicesStatus[service.Id] == PaymentStatus.Paid)
+                        if (ServiceQuantity.Value > 0)
                         {
-                            Booking.Paid += detail.TotalCost;
+                            booked.NumberOfUnits = ServiceQuantity.Value;
+                            var detail = _context.PaymentDetail.Where(i => i.BookingHallServiceId == booked.Id
+                            ).FirstOrDefault();
+
+                            Booking.TotalCost += service.Price * ServiceQuantity.Value;
+
+                            // update cost 
+                            detail.TotalCost = service.Price * ServiceQuantity.Value;
+                            if (viewModel.ServicesStatus[service.Id] == PaymentStatus.Paid)
+                            {
+                                Booking.Paid += detail.TotalCost;
+                            }
+
+                        }
+                        else
+                        {
+                            //remove this service from booking and its related payment detail
+                            var detail = _context.PaymentDetail.Where(i => i.BookingHallServiceId == booked.Id
+                            ).FirstOrDefault();
+                            _context.BookingHallService.Remove(booked);
+                            _context.PaymentDetail.Remove(detail);
                         }
 
-                    }
-                    else
-                    {
-                        //remove this service from booking and its related payment detail
-                        var detail = _context.PaymentDetail.Where(i => i.BookingHallServiceId == booked.Id
-                        ).FirstOrDefault();
-                        _context.BookingHallService.Remove(booked);
-                        _context.PaymentDetail.Remove(detail);
-                    }
-
-                }
-                else if (ServiceQuantity.Value > 0)
+                    }*/
+                    #endregion
+                if (ServiceQuantity.Value > 0)
                 {
-                    viewModel.ServicesStatus.Add(ServiceQuantity.Key, PaymentStatus.Pending);
+                    //viewModel.ServicesStatus.Add(ServiceQuantity.Key, PaymentStatus.Pending);
 
                     // Add a new service to the booking and related payment detail
                     var BookingHallService = new BookingHallService
@@ -534,39 +544,46 @@ namespace GetSit.Controllers
                         ServiceId = ServiceQuantity.Key,
                         NumberOfUnits = ServiceQuantity.Value,
                         PricePerUnit = service.Price,
-                        BookingHallId = viewModel.SelectedHall.Id,
+                        BookingHallId = Booking.BookingHalls.First().Id,
                         Service = service,
                     };
+                    await _bookingService_Serivce.AddAsync(BookingHallService);
 
                     var paymentServiceDetail = new PaymentDetail
                     {
                         TotalCost = service.Price * ServiceQuantity.Value,
                         Status = PaymentStatus.Pending,
                         Type = PaymentType.Cash,
-                        BookingHallServiceId = BookingHallService.Id
+                        BookingHallServiceId = BookingHallService.Id,
+                        PaymentId=payment.Id
                     };
-
+                    await _paymentDetailService.AddAsync(paymentServiceDetail);
                     Booking.TotalCost += service.Price * ServiceQuantity.Value;
-
-
                 }
-                _context.SaveChanges();
             }
+            payment.TotalCost = Booking.TotalCost;
+            await _bookingService.UpdateAsync(Booking.Id, Booking);
+            await _paymentSerivce.UpdateAsync(payment.Id, payment);
+            _context.SaveChanges();
 
-            return RedirectToAction("GetBookingDetails", "Booking");
+            return RedirectToAction("Details", new {bookingId=Booking.Id});
         }
         [HttpGet, Authorize(Roles = "Customer")]
-        public async Task<IActionResult> CancelBooking(int ID)
+        public async Task<IActionResult> Cancel(int BookingId)
         {
+           
             // Get the current user 
             int id = _userManager.GetCurrentUserId(HttpContext);
-            Customer userobj = (Customer)_context.Customer.Where(i => i.Id == id);
+            Customer userobj = await _customerService.GetByIdAsync(id);
 
             //Get Booking
-            Booking booking = (Booking)_context.Booking.Where(i => i.Id == ID);
+            Booking booking = await _bookingService.GetByIdAsync(BookingId);
+            if(booking.BookingStatus==BookingStatus.Pending|| booking.BookingStatus == BookingStatus.Confirmed)
+            {
+                return RedirectToAction("Details", new { BookingId = booking.Id });
+            }
             TimeSpan difference = booking.DesiredDate - DateTime.UtcNow;
             float days = (float)difference.TotalDays;
-            booking.BookingStatus = BookingStatus.Cancelled;
             if (days <= 7 && days >= 3)
             {
                 if (booking.BookingDate != DateTime.Today && booking.Paid == 0)
@@ -612,8 +629,11 @@ namespace GetSit.Controllers
                     userobj.Penality += 50;
                 }
             }
-            _context.SaveChanges();
-            return View();
+            booking.BookingStatus = BookingStatus.Cancelled;
+            await _customerService.UpdateAsync(userobj.Id, userobj);
+            await _bookingService.UpdateAsync(booking.Id, booking);
+
+            return View("Index","Explore");
         }
     }
 }

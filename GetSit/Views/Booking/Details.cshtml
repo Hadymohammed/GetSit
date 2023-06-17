@@ -123,12 +123,12 @@
     <div class="actions">
         @if (Model.Role == UserRole.Provider)
         {
-            <a onclick="return confirmPay();" class="add-item-btn pay-btn" asp-action="Pay" asp-controller="Booking" asp-route-PaymentId="@Model.Booking.Payment.Id">Accept payment</a>
+            <a onclick="return confirmPay();" class="add-item-btn pay-btn" asp-action="Pay" asp-controller="Booking" asp-route-PaymentId="@Model.CustomerBooking.Payment.Id">Accept payment</a>
         }
         else if(Model.Role==UserRole.Customer)
         {
-            <a class="add-item-btn apply-btn" asp-action="Edit" asp-controller="Booking" asp-route-bookingId="@Model.Booking.Id">Edit Booking</a>
-            <a onclick="return confirmCancel();" class="add-item-btn cancel-btn" asp-action="Cancel" asp-controller="Booking" asp-route-BookingId="@Model.Booking.Id">Cancel</a>
+            <a class="add-item-btn apply-btn" asp-action="Edit" asp-controller="Booking" asp-route-bookingId="@Model.CustomerBooking.Id">Edit Booking</a>
+            <a onclick="return confirmCancel();" class="add-item-btn cancel-btn" asp-action="Cancel" asp-controller="Booking" asp-route-BookingId="@Model.CustomerBooking.Id">Cancel</a>
         }
     </div>
 </div>

@@ -265,9 +265,8 @@ namespace GetSit.Controllers
             if (booking == null)
                 return NotFound();
 
-            var hall = _context.SpaceHall
-                .Where(i => i.Id == booking.BookingHalls.First().Id).FirstOrDefault();
-
+            var hall = await _hallService.GetByIdAsync(booking.BookingHalls.First().HallId);
+                
             var space = await _spaceService.GetByIdAsync(hall.SpaceId);
 
             var halldetail = _context.PaymentDetail

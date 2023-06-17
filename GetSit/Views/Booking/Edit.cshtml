@@ -9,10 +9,10 @@
 
 <form asp-action="Edit" class="booking-details-container">
     <input asp-for="HallId" hidden/>
-    <input value="@Model.Booking.Id" name="BookingId" hidden/>
+    <input value="@Model.CustomerBooking.Id" name="BookingId" hidden/>
 
     <div class="col-md-7 order-box box">
-        <h3>Order : #Guest_@Model.Booking.Id <span class="order-date">@Model.BookingDate.ToString("dddd, dd MMMM yyyy") at @Model.BookingDate.ToString("hh:mm tt")</span></h3>
+        <h3>Order : #Customer_@Model.CustomerBooking.Id <span class="order-date">@Model.BookingDate.ToString("dddd, dd MMMM yyyy") at @Model.BookingDate.ToString("hh:mm tt")</span></h3>
         <hr />
         <ul class="order-list">
             <li>
@@ -126,50 +126,25 @@
             <h5>Customer details</h5>
             <div class="customer-card">
                 <div class="customer-avatar">
-                    <img src="../resources/site/user-profile-icon.jpg" alt="Customer Photo">
-                </div>
-                <div class="details col-md-9">
-                    <div class="row">
-                        <div class="col-md-6 mb-2">
-                            <div class="form-outline">
-                                <label class="form-label" asp-for="@Model.FirstName"></label>
-                                <input style="font-size:1.1rem" type="text" asp-for="@Model.FirstName" class="form-control form-control-lg" />
-                                <span asp-validation-for="@Model.FirstName" class="text-danger"></span>
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-2">
-                            <div class="form-outline">
-                                <label class="form-label" asp-for="@Model.LastName"></label>
-                                <input style="font-size:1.1rem" type="text" asp-for="@Model.LastName" class="form-control form-control-lg" />
-                                <span asp-validation-for="@Model.LastName" class="text-danger"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-outline">
-                                <label class="form-label" asp-for="@Model.PhoneNumber"></label>
-                                <input style="font-size:1.1rem" type="text" asp-for="@Model.PhoneNumber" class="form-control form-control-lg" />
-                                <span asp-validation-for="@Model.PhoneNumber" class="text-danger"></span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="employee-box box">
-            <h5>Employee details</h5>
-            <div class="customer-card">
-                <div class="customer-avatar">
-                    <img src="../@Model.Employee.ProfilePictureUrl" alt="Employee Photo">
+                    <img src=".@Model.customer.ProfilePictureUrl" alt="Customer Photo">
                 </div>
                 <div class="details">
-                    <div class="name">@Model.Employee.FirstName @Model.Employee.LastName</div>
-                    <div class="phone">Phone: @Model.Employee.PhoneNumber</div>
+                    <div class="name">@Model.customer.FirstName @Model.customer.LastName</div>
+                    <div class="phone">Phone: @Model.customer.PhoneNumber</div>
                 </div>
             </div>
         </div>
     </div>
     <div class="actions">
-        <a onclick="return confirmPay();" class="add-item-btn" asp-action="Pay" asp-controller="GuestBooking" asp-route-PaymentId="@Model.Booking.Payment.Id">Accept payment</a>
-        <button type="button" class="add-item-btn apply-btn" data-toggle="modal" data-target="#confirmUploadModal">Add Services and Update</button>
-        <a onclick="return confirmCancel();" class="add-item-btn" asp-action="Cancel" asp-controller="GuestBooking" asp-route-BookingId="@Model.Booking.Id">Cancel</a>
+       @if (Model.Role == UserRole.Provider)
+        {
+            <a onclick="return confirmPay();" class="add-item-btn pay-btn" asp-action="Pay" asp-controller="Booking" asp-route-PaymentId="@Model.CustomerBooking.Payment.Id">Accept payment</a>
+        }
+        else if(Model.Role==UserRole.Customer)
+        {
+            <a class="add-item-btn apply-btn" asp-action="Edit" asp-controller="Booking" asp-route-bookingId="@Model.CustomerBooking.Id">Edit Booking</a>
+            <a onclick="return confirmCancel();" class="add-item-btn cancel-btn" asp-action="Cancel" asp-controller="Booking" asp-route-BookingId="@Model.CustomerBooking.Id">Cancel</a>
+        }
     </div>
     <!--Confirmation Modal-->
     <div class="modal fade" id="confirmUploadModal" tabindex="-1" role="dialog" aria-labelledby="confirmUploadModalLabel" aria-hidden="true">
@@ -216,12 +191,12 @@
     <div class="actions">
         @if (Model.Role == UserRole.Provider)
         {
-            <a onclick="return confirmPay();" class="add-item-btn pay-btn" asp-action="Pay" asp-controller="Booking" asp-route-PaymentId="@Model.Booking.Payment.Id">Accept payment</a>
+            <a onclick="return confirmPay();" class="add-item-btn pay-btn" asp-action="Pay" asp-controller="Booking" asp-route-PaymentId="@Model.CustomerBooking.Payment.Id">Accept payment</a>
         }
         else if(Model.Role==UserRole.Customer)
         {
-            <a class="add-item-btn apply-btn" asp-action="Edit" asp-controller="Booking" asp-route-bookingId="@Model.Booking.Id">Edit Booking</a>
-            <a onclick="return confirmCancel();" class="add-item-btn cancel-btn" asp-action="Cancel" asp-controller="Booking" asp-route-BookingId="@Model.Booking.Id">Cancel</a>
+        <button type="button" class="add-item-btn apply-btn" data-toggle="modal" data-target="#confirmUploadModal">Add Services and Update</button>
+        <a onclick="return confirmCancel();" class="add-item-btn cancel-btn" asp-action="Cancel" asp-controller="Booking" asp-route-BookingId="@Model.CustomerBooking.Id">Cancel</a>
         }
     </div>
 </form>
