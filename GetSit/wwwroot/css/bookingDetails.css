@@ -221,9 +221,6 @@ margin-right:10px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
 }
 
 /* Modal Styles */
@@ -412,4 +409,20 @@ margin-right:10px;
 
 .select-input:focus + .icon-clock {
     color: #80bdff;
+}
+.actions {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display:flex;
+    column-gap:10px;
+}
+.pay-btn{
+
+}
+.cancel-btn{
+    background-color:black;
+}
+.apply-btn {
+    background-color: #071A84;
 }

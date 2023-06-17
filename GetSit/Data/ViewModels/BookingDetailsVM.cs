@@ -4,7 +4,8 @@ namespace GetSit.Data.ViewModels
 {
     public class BookingDetailsVM
     {
-        public SpaceEmployee Employee { get; set; }
+        public SpaceEmployee? Employee { get; set; }
+        public int? HallId { get; set; }
         public Customer? customer { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
