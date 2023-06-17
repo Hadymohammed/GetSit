@@ -56,8 +56,12 @@ namespace GetSit.Data
             //Customer Booking
             modelBuilder.Entity<Booking>().HasOne(m => m.Customer).WithMany(am => am.Bookings).HasForeignKey(m => m.CustomerId);
 
+            //Guest Booking
+            modelBuilder.Entity<GuestBooking>().HasOne(m => m.Employee).WithMany(am => am.GuestBookings).HasForeignKey(m => m.EmployeeId);
+
             //Booking has halls
             modelBuilder.Entity<BookingHall>().HasOne(m => m.Booking).WithMany(am => am.BookingHalls).HasForeignKey(m => m.BookingId);
+            modelBuilder.Entity<BookingHall>().HasOne(m => m.GuestBooking).WithMany(am => am.BookingHalls).HasForeignKey(m => m.GuestBookingId);
             modelBuilder.Entity<BookingHall>().HasOne(m => m.Hall).WithMany(am => am.Bookings).HasForeignKey(m => m.HallId);
 
             //Booking hall has service
@@ -66,6 +70,9 @@ namespace GetSit.Data
 
             //Booking has payment
             modelBuilder.Entity<Payment>().HasOne(m => m.Booking).WithOne(am => am.Payment);
+
+            // Guest Booking has payment
+            modelBuilder.Entity<Payment>().HasOne(m => m.GuestBooking).WithOne(am => am.Payment);
 
             //Payment has details
             modelBuilder.Entity<PaymentDetail>().HasOne(m => m.Payment).WithMany(am => am.Details).HasForeignKey(m => m.PaymentId);
@@ -83,6 +90,7 @@ namespace GetSit.Data
         public DbSet<Customer> Customer { get; set; }
         public DbSet<Faculty> Faculty { get; set; }
         public DbSet<FavoriteHall> FavoriteHall { get; set; }
+        public DbSet<GuestBooking> GuestBooking { get; set; }
         public DbSet<HallFacility> HallFacility { get; set; }
         public DbSet<HallPhoto> HallPhoto { get; set; }
         public DbSet<Payment> Payment { get; set; }

@@ -4,6 +4,7 @@ using GetSit.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GetSit.Migrations
 {
     [DbContext(typeof(AppDBcontext))]
-    partial class AppDBcontextModelSnapshot : ModelSnapshot
+    [Migration("20230612153654_JoinRequest")]
+    partial class JoinRequest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -72,10 +75,10 @@ namespace GetSit.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("BookingId")
+                    b.Property<int>("BookingId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("GuestBookingId")
+                    b.Property<int>("GuestBookingId")
                         .HasColumnType("int");
 
                     b.Property<int>("HallId")
@@ -86,9 +89,6 @@ namespace GetSit.Migrations
 
                     b.Property<float>("PricePerUnit")
                         .HasColumnType("real");
-
-                    b.Property<bool?>("isGuest")
-                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -337,10 +337,10 @@ namespace GetSit.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("BookingId")
+                    b.Property<int>("BookingId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("GuestBookingId")
+                    b.Property<int>("GuestBookingId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("LastUpdate")
@@ -355,18 +355,13 @@ namespace GetSit.Migrations
                     b.Property<float>("TotalCost")
                         .HasColumnType("real");
 
-                    b.Property<bool?>("isGuest")
-                        .HasColumnType("bit");
-
                     b.HasKey("Id");
 
                     b.HasIndex("BookingId")
-                        .IsUnique()
-                        .HasFilter("[BookingId] IS NOT NULL");
+                        .IsUnique();
 
                     b.HasIndex("GuestBookingId")
-                        .IsUnique()
-                        .HasFilter("[GuestBookingId] IS NOT NULL");
+                        .IsUnique();
 
                     b.ToTable("Payment");
                 });
@@ -476,6 +471,7 @@ namespace GetSit.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("BankAccount")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Bio")
@@ -785,11 +781,15 @@ namespace GetSit.Migrations
                 {
                     b.HasOne("GetSit.Models.Booking", "Booking")
                         .WithMany("BookingHalls")
-                        .HasForeignKey("BookingId");
+                        .HasForeignKey("BookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("GetSit.Models.GuestBooking", "GuestBooking")
                         .WithMany("BookingHalls")
-                        .HasForeignKey("GuestBookingId");
+                        .HasForeignKey("GuestBookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("GetSit.Models.SpaceHall", "Hall")
                         .WithMany("Bookings")
@@ -894,11 +894,15 @@ namespace GetSit.Migrations
                 {
                     b.HasOne("GetSit.Models.Booking", "Booking")
                         .WithOne("Payment")
-                        .HasForeignKey("GetSit.Models.Payment", "BookingId");
+                        .HasForeignKey("GetSit.Models.Payment", "BookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("GetSit.Models.GuestBooking", "GuestBooking")
                         .WithOne("Payment")
-                        .HasForeignKey("GetSit.Models.Payment", "GuestBookingId");
+                        .HasForeignKey("GetSit.Models.Payment", "GuestBookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Booking");
 

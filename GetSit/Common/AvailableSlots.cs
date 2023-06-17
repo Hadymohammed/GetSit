@@ -1,4 +1,4 @@
-﻿using GetSit.Data;
+using GetSit.Data;
 using GetSit.Data.enums;
 using GetSit.Models;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +20,9 @@ namespace GetSit.Common
             var bookings = _context.Booking
                            .Where(b => b.BookingHalls.Any(h => h.HallId == hallId && b.DesiredDate == date))
                            .ToList();
-
+            var guestBooking = _context.GuestBooking
+                            .Where(b=>b.BookingHalls.Any(h => h.HallId == hallId && b.DesiredDate == date))
+                            .ToList();
             var space = _context.Space.Where(s => s.Halls.Any(h => h.Id == hallId)).FirstOrDefault();
 
             // check if the day is out of space working days
@@ -56,14 +58,21 @@ namespace GetSit.Common
                     foreach (var booking in bookings)
                     {
                         var EndTime = booking.StartTime.Add(TimeSpan.FromHours(booking.NumberOfHours));
-                        // 8                     10:00                        11        10:15
                         if (booking.StartTime <= timeSlots[slotIdx].Item1 && EndTime >= endTimeSlot)
                         {
                             isAvailable = false;
                             break;
                         }
                     }
-
+                    foreach (var booking in guestBooking)
+                    {
+                        var EndTime = booking.EndTime;
+                        if (booking.StartTime <= timeSlots[slotIdx].Item1 && EndTime >= endTimeSlot)
+                        {
+                            isAvailable = false;
+                            break;
+                        }
+                    }
                     // If the time slot is available, add it to the list of available time slots
                     if (isAvailable)
                     {
@@ -91,6 +100,7 @@ namespace GetSit.Common
             }
             return availableSlotsForWeek;
         }
+
         public bool IsTimeSlotAvailable(int hallId, DateTime desiredDate, TimeSpan startTime, TimeSpan endTime)
         {
             TimeSpan duration = endTime - startTime;
@@ -106,6 +116,64 @@ namespace GetSit.Common
 
             return !NotAvailable;
         }
+public List<TimeSpan> GetAvailableEndSlots(int hallId, DateTime date,TimeSpan startTime)
+        {
+            var bookings = _context.Booking
+                           .Where(b => b.BookingHalls.Any(h => h.HallId == hallId && b.DesiredDate == date))
+                           .ToList();
+            var guestBooking = _context.GuestBooking
+                            .Where(b => b.BookingHalls.Any(h => h.HallId == hallId && b.DesiredDate == date))
+                            .ToList();
+            var space = _context.Space.Where(s => s.Halls.Any(h => h.Id == hallId)).FirstOrDefault();
 
+            // check if the day is out of space working days
+
+            var currentDay = date.DayOfWeek;
+
+            SpaceWorkingDay? obj = _context.SpaceWorkingDay.Where(h => h.SpaceId == space.Id && h.Day == currentDay).FirstOrDefault();
+            //Form the default 96 day time slots
+            TimeSpan endTime = TimeSpan.FromHours(obj.ClosingTime.TotalHours); // End time for the day
+            TimeSpan timeSlot = TimeSpan.FromMinutes(15); // Length of each time slot
+            var timeSlots = new List<Tuple<TimeSpan, bool>>();
+
+            for (TimeSpan time = new TimeSpan(0, 0, 0); time <= new TimeSpan(24, 0, 0); time += TimeSpan.FromMinutes(15))
+            {
+                Tuple<TimeSpan, bool> slot = new Tuple<TimeSpan, bool>(time, false);
+                timeSlots.Add(slot);
+            }
+            var ans = new List<TimeSpan>();
+            var slotIdx = (int)(startTime.TotalMinutes / 15);
+            for (; slotIdx < (int)(endTime.TotalMinutes / 15); slotIdx++)
+            {
+                var endTimeSlot = timeSlots[slotIdx].Item1.Add(timeSlot); // End time for the time slot
+                                                                          // Check if the time slot is available
+                var isAvailable = true;
+                foreach (var booking in bookings)
+                {
+                    var EndTime = booking.StartTime.Add(TimeSpan.FromHours(booking.NumberOfHours));
+                    if (booking.StartTime <= timeSlots[slotIdx].Item1 && EndTime >= endTimeSlot)
+                    {
+                        isAvailable = false;
+                        break;
+                    }
+                }
+                foreach (var booking in guestBooking)
+                {
+                    var EndTime = booking.EndTime;
+                    if (booking.StartTime <= timeSlots[slotIdx].Item1 && EndTime >= endTimeSlot)
+                    {
+                        isAvailable = false;
+                        break;
+                    }
+                }
+                // If the time slot is available, add it to the list of available time slots
+                if (isAvailable)
+                {
+                    ans.Add(TimeSpan.FromMinutes(slotIdx * 15));
+                }
+                else break;
+            }
+            return ans;
+        }
     }
 }

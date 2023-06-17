@@ -8,8 +8,10 @@ using GetSit.Data.ViewModels;
 using GetSit.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace GetSit.Controllers
 {
@@ -27,6 +29,7 @@ namespace GetSit.Controllers
         readonly ISpaceService_Service _spaceService_service;
         readonly IServicePhotoService _servicePhotoService;
         readonly IBookingService _bookingService;
+        readonly IGuestBookingService _guestBookingService;
         public SpaceManagementController(IUserManager userManager,
             AppDBcontext context,
             ISpaceEmployeeService spaceEmployeeService,
@@ -36,7 +39,8 @@ namespace GetSit.Controllers
             IHallPhotoService hallPhotoService,
             ISpaceService_Service spaceService_service,
             IServicePhotoService servicePhotoService,
-            IBookingService bookingService)
+            IBookingService bookingService,
+            IGuestBookingService guestBookingService)
         {
             _userManager = userManager;
             _context = context;
@@ -48,6 +52,7 @@ namespace GetSit.Controllers
             _spaceService_service = spaceService_service;
             _servicePhotoService = servicePhotoService;
             _bookingService = bookingService;
+            _guestBookingService = guestBookingService;
         }
         #endregion
         public async Task<IActionResult> IndexAsync()
@@ -75,8 +80,9 @@ namespace GetSit.Controllers
                 Halls = _hallService.GetBySpaceId(spaceIdInt,h=>h.HallPhotos,h=>h.HallFacilities),
                 Services = _spaceService_service.GetBySpaceId(spaceIdInt, s => s.ServicePhotos),
                 Employees = _providerService.GetBySpaceId(spaceIdInt),
-                Bookings = _bookingService.GetBySpaceId(spaceIdInt)
-        };
+                Bookings = _bookingService.GetBySpaceId(spaceIdInt),
+                GuestBookings=_guestBookingService.GetBySpaceId(spaceIdInt)
+            };
             return View(viewModel);
         }
         #region Create New Hall

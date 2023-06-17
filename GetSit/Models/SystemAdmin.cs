@@ -1,6 +1,7 @@
 ﻿using GetSit.Data.Base;
 using GetSit.Data.enums;
 using GetSit.Data.Security;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
@@ -23,8 +24,8 @@ namespace GetSit.Models
         [Required]
         [DataType(DataType.Date)]
         public DateTime Birthdate { get; set; }
-        [Required]
-        public string ProfilePictureUrl { get; set; } = "resource/site/user-profile-icon.jpg";
+        [DataType(DataType.Url), AllowNull, DefaultValue("./resources/site/user-profile-icon.jpg")]
+        public string? ProfilePictureUrl { get; set; }
         [AllowNull]
         public string? Country { get; set; }
         [AllowNull]
