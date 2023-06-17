@@ -58,6 +58,7 @@ namespace GetSit.Controllers
                 Password = PasswordHashing.Encode(password),
                 Email = viewModel.Email,
                 Birthdate = viewModel.Birthdate,
+                ProfilePictureUrl= "./resources/site/user-profile-icon.jpg",
                 IsApproved = false,
             };
             HttpContext.Session.SetString("RegisterModel", JsonConvert.SerializeObject(Manager));

@@ -93,7 +93,6 @@ namespace GetSit.Controllers
                 Halls = _hallService.GetBySpaceId(spaceIdInt, h => h.HallPhotos, h => h.HallFacilities),
                 Services = _spaceService_service.GetBySpaceId(spaceIdInt, s => s.ServicePhotos),
                 Employees = _providerService.GetBySpaceId(spaceIdInt),
-                Bookings = _bookingService.GetBySpaceId(spaceIdInt)
                 Bookings = _bookingService.GetBySpaceId(spaceIdInt),
                 GuestBookings=_guestBookingService.GetBySpaceId(spaceIdInt)
             };
@@ -311,10 +310,13 @@ namespace GetSit.Controllers
                 return View(vm);
             }
 
-            var hall = await _hallService.GetByIdAsync(vm.HallId);
+            var hall = await _hallService.GetByIdAsync(vm.HallId,h=>h.HallFacilities);
             hall.Description = vm.Description;
             hall.CostPerHour = vm.CostPerHour;
             //Add new Photos
+            if (vm.Files != null)
+            {
+
             foreach (var file in vm.Files)
             {
                 var photo = new HallPhoto()
@@ -335,9 +337,19 @@ namespace GetSit.Controllers
                     await _hallPhotoService.UpdateAsync(photo.Id, photo);
                 }
             }
-           
+            }
+
             /*!!!!! Toggele Facilities change*/
-            
+            hall.HallFacilities.Clear();
+            foreach (var facility in facilities)
+            {
+                var hallFacility = new HallFacility()
+                {
+                    Facility = facility,
+                    HallId = hall.Id,
+                };
+                await _hallFacilityService.AddAsync(hallFacility);
+            }
             await _hallService.UpdateAsync(hall.Id, hall);
             return RedirectToAction("EditHall", new { hallId = hall.Id });
         }
