@@ -1,0 +1,103 @@
+﻿@using GetSit.Data.enums;
+@model Customer
+@section styles {
+    <link href="~/css/profile.css" rel="stylesheet" />
+}
+
+<div class="banner">
+    <!-- here the bg  -->
+    <!--Edit-->
+    <a asp-controller="Customer" asp-action="EditProfile" class="edit-btn no-decor ">
+        <span class="material-symbols-outlined"> edit </span>
+        <p>Edit profile</p>
+    </a>
+</div>
+<div class="wrapper-content">
+    <div class="container responsive-timeline-container">
+        <aside class="profile item-responsive item-1">
+            <img src="@Model.ProfilePictureUrl" class="avatar" alt="profile image">
+            <h1>@Model.FirstName </h1>
+            <p>@Model.Bio</p>
+
+            <ul class="list">
+                <li><span class="material-symbols-outlined" style="font-size: 1.4rem;">calendar_month</span>Born the @Model.Birthdate.Day th of @Model.Birthdate.ToString("MMMM") @Model.Birthdate.Year</li>
+                <li><span class="material-symbols-outlined" style="font-size: 1.4rem;">location_on </span> @Model.Country, @Model.City</li>
+                <li><span class="material-symbols-outlined" style="font-size: 1.4rem;">school </span>@Model.Faculty.Name</li>
+                <li><span class="material-symbols-outlined" style="font-size: 1.4rem;">groups</span>Teams</li>
+
+                
+            </ul>
+        </aside>
+        <section class="timeline item-responsive item-2">
+            <h2>My booking</h2>
+            <br> <br>
+
+            @foreach(var book in Model.Bookings)
+            {
+                <div class="flex booking-container">
+                    <div class="book-date"><div class="big-num">@book.DesiredDate.Day</div> <div class="month">@book.DesiredDate.ToString("MMMM")</div></div>
+                    <div class="book-detail">
+                       
+                            <div class="booking-title"><a href="#" class="no-decor">@book.BookingHalls[0].Hall.Type</a></div>
+
+                        
+                        <div class="flex">
+                            <div class="book-date-detailed">
+                                <span>@book.DesiredDate.ToString("dddd")</span>
+                                <span>@book.DesiredDate.ToString("HH:MM")</span>
+                                <span class="small-font">( @book.NumberOfHours Hours )</span>
+                            </div>
+                            <div class="book-place flex">
+                                <span class="material-symbols-outlined"> location_on </span>
+                                <p>@book.BookingHalls[0].Hall.Space.Name</p>
+                            </div>
+                            @if (book.BookingStatus == BookingStatus.Accepted)
+                            {
+                                <button type="button" class="book-btn-accepted btn btn-primary">accepted</button>
+                            }
+                            else if (book.BookingStatus == BookingStatus.Rejected){
+                                <button type="button" class="book-btn-accepted rejected">Rejected</button>
+
+                            }
+                            else
+                            {
+                                <button type="button" class="book-btn-accepted cancelled">Cancelled</button>
+                            }
+
+                        </div>
+                    </div>
+                </div>
+            }
+
+        </section>
+        <aside class="widgets item-responsive item-3">
+            <div class="widget follow">
+                <div class="title">
+                    <strong>Favorite Hall</strong>
+                    <!-- <a href="">View all</a> -->
+                </div>
+                <ul>
+                    @foreach(var hall in Model.FavoriteHalls)
+                    {
+                        <li>
+                            <div class="profile">
+                                <img src="@hall.SpaceHall.HallPhotos[0].Url" alt="Avatar">
+                                <div class="info">
+                                    <div>
+                                        <div>
+                                            <a href="#" class="no-decor">
+                                                <strong>@hall.SpaceHall.Space.Name</strong>
+                                            </a>
+                                        </div>
+                                        <div class="job-title">@hall.SpaceHall.Type</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </aside>
+    </div>
+</div>
+

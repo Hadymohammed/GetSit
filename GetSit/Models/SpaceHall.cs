@@ -35,5 +35,6 @@ namespace GetSit.Models
         [Required]
         public List<BookingHall> Bookings { get; set; }
 
+        public List<HallRequest> HallRequests { get; set; }
     }
 }

@@ -1,0 +1,164 @@
+﻿@using GetSit.Data.ViewModels
+@model EditCustomerProfileVM
+
+<div class="main-content">
+
+    <!-- Header -->
+    <div class="header pb-8 pt-5 pt-lg-8 d-flex align-items-center"
+         style="min-height: 10rem; background-size: cover; background-position: center top;">
+        <!-- Mask -->
+        <span class="mask bg-gradient-default opacity-8"></span>
+        <!-- Header container -->
+        <div class="container-fluid d-flex align-items-center">
+        </div>
+    </div>
+    <!-- Page content -->
+    <div class="container-fluid mt--7">
+        <div class="row">
+            <div class="col-xl-4 order-xl-2 mb-5 mb-xl-0">
+                <div class="card card-profile shadow">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-3 order-lg-2">
+                            <div class="card-profile-image">
+                                <!--Img-->
+                                <a href="./Profile.html">
+                                    <img src="@Model.ProfilePictureUrl" class="rounded-circle" />
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-header text-center border-0 pt-8 pt-md-4 pb-0 pb-md-4">
+                    </div>
+                    <div class="card-body pt-0 pt-md-4">
+                        <div class="row">
+                            <div class="col">
+                                
+                            </div>
+                        </div>
+                        <div class="text-center margin-edit">
+                            <h3>
+                                <a asp="Index" class="no-decor">@Model.Name</a>
+                            </h3>
+                            <div class="h5 font-weight-300">
+                                <i class="ni location_pin mr-2"></i> Location HERE
+                            </div>
+                            <!--Title-->
+                            @if(Model.Title!= null)
+                            {
+                                <div class="h5 mt-4">
+                                    <i class="ni business_briefcase-24 mr-2"></i>Job Title @Model
+                                </div>
+                            }
+                            
+                            
+
+                            <br>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-8 order-xl-1">
+                <div class="card bg-secondary shadow">
+                    <div class="card-header bg-white border-0">
+                        <div class="row align-items-center">
+                            <div class="col-8">
+                                <h3 class="mb-0">My account</h3>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <h6 class="heading-small text-muted mb-4">User information</h6>
+                            <div class="pl-lg-4">
+                               
+                                <div class="pl-lg-4">
+                                    <div class="row">
+                                        <!--Email-->
+                                        <div class="col-md-12">
+                                            <div class="form-group focused">
+                                                <label class="form-control-label" for="input-address">
+                                                    Email
+                                                    address
+                                                </label>
+                                                <input type="email" asp-for="@Model.Email"
+                                                       class="form-control form-control-alternative"
+                                                       placeholder="jesse@example.com">
+                                            </div>
+                                        </div>
+                                        <!--Phone Number-->
+
+                                        <div class="col-md-12">
+                                            <div class="form-group focused">
+                                                <label class="form-control-label" for="input-address">
+                                                    Phone
+                                                    Number
+                                                </label>
+                                                <input asp-for="@Model.PhoneNumber"
+                                                       class="form-control form-control-alternative"
+                                                       placeholder="Phone Number" 
+                                                       type="text">
+                                            </div>
+                                        </div>
+                                        <!--Faculty-->
+                                        <div class="col-md-12">
+                                            <div class="form-group focused">
+                                                <label class="form-control-label" for="input-faculty"> Faculty </label>
+                                                <input asp-for="@Model.Faculty"
+                                                       class="form-control form-control-alternative"
+                                                       placeholder="Faculty" value="Faculty"
+                                                       type="text">
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                   
+                                </div>
+
+                                <hr class="my-4">
+                                <!-- Address -->
+                                <h6 class="heading-small text-muted mb-4">Contact information</h6>
+                                <div class="pl-lg-4">
+                                    
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <div class="form-group focused">
+                                                <label class="form-control-label" for="input-city" >City</label>
+                                                <input type="text" asp-for="@Model.City"
+                                                       class="form-control form-control-alternative" placeholder="City"
+                                                       value="New York">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group focused">
+                                                <label class="form-control-label"
+                                                       for="input-country">Country</label>
+                                                <input type="text" asp-for="@Model.Country"
+                                                       class="form-control form-control-alternative"
+                                                       placeholder="Country" value="United States">
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                                <hr class="my-4">
+                                <!-- Description -->
+                                <h6 class="heading-small text-muted mb-4">Bio</h6>
+                                <div class="pl-lg-4">
+                                    <div class="form-group focused">
+                                        <label>Bio HERE</label>
+                                        <textarea asp-for="@Model.Bio"
+                                            rows="4" class="form-control form-control-alternative"
+                                                  placeholder="A few words about you ..."> beautiful human.
+                                        </textarea>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

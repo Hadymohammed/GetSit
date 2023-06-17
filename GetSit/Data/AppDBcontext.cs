@@ -107,7 +107,7 @@ namespace GetSit.Data
         public DbSet<SystemAdmin> SystemAdmin { get; set; }
         public DbSet<Title> Title { get; set; }
 
-
+        public DbSet<HallRequest> HallRequest { get; set; }
 
     }
 }

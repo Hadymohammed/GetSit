@@ -47,6 +47,7 @@ namespace GetSit.Models
         public List<PaymentCard>? PaymentCards { get; set; }
         public List<FavoriteHall>? FavoriteHalls { get; set; }
         public List<Booking>? Bookings { get; set; }
+        public String? Bio { get; set; }
 
     }
 }   
