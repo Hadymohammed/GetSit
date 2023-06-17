@@ -77,7 +77,7 @@ namespace GetSit.Controllers
             _serviceService = serviceService;
         }
         #endregion
-        [HttpGet]
+        [HttpGet,Authorize(Roles ="Customer")]
         public async Task<IActionResult> Index(int HallID,DateTime? date)
         {
             if(HallID==0)
@@ -111,7 +111,7 @@ namespace GetSit.Controllers
 
             return View(viewModel);
         }
-        [HttpPost]
+        [HttpPost, Authorize(Roles = "Customer")]
         public async Task<IActionResult> Index(CreateCustomerBookingVM viewModel)
         {
             #region GET view model for errors
@@ -336,10 +336,13 @@ namespace GetSit.Controllers
         {
             if (PaymentId < 1)
                 return NotFound();
+            var payment = await _paymentSerivce.GetByIdAsync(PaymentId, p => p.Details, p => p.Booking);
+            var booking = await _bookingService.GetByIdAsync((int)payment.BookingId);
+            if(booking.BookingStatus==BookingStatus.Cancelled||booking.BookingStatus==BookingStatus.Rejected)
+                return BadRequest();
             #region security
             var userId = _userManager.GetCurrentUserId(HttpContext);
             var user = await _providerService.GetByIdAsync(userId);
-            var payment = await _paymentSerivce.GetByIdAsync(PaymentId, p => p.Details, p => p.Booking);
             payment.Details = _paymentDetailService.GetByPaymendId(payment.Id, d => d.BookingHall, d => d.BookingHallService);
 
             if (payment.Details[0].BookingHall != null)
@@ -578,10 +581,7 @@ namespace GetSit.Controllers
 
             //Get Booking
             Booking booking = await _bookingService.GetByIdAsync(BookingId);
-            if(booking.BookingStatus==BookingStatus.Pending|| booking.BookingStatus == BookingStatus.Confirmed)
-            {
-                return RedirectToAction("Details", new { BookingId = booking.Id });
-            }
+            
             TimeSpan difference = booking.DesiredDate - DateTime.UtcNow;
             float days = (float)difference.TotalDays;
             if (days <= 7 && days >= 3)
@@ -633,7 +633,7 @@ namespace GetSit.Controllers
             await _customerService.UpdateAsync(userobj.Id, userobj);
             await _bookingService.UpdateAsync(booking.Id, booking);
 
-            return View("Index","Explore");
+            return RedirectToAction("Index","Explore");
         }
     }
 }
