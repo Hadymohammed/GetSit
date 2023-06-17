@@ -206,7 +206,7 @@ namespace GetSit.Controllers
             switch (register.Role)
             {
                 case UserRole.Admin:
-                    var admin = new SystemAdminController()
+                    var admin = new SystemAdmin()
                     {
 
                         FirstName = register.FirstName,

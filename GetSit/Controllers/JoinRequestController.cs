@@ -148,7 +148,8 @@ namespace GetSit.Controllers
                 GPSLocation = spaceVM.SpaceGPSLocation,
                 IsFast = true,
                 IsApproved = false,
-                BankAccount="None"
+                BankAccount="None",
+                DateCreated = DateTime.Today,
             };
             await _spaceService.AddAsync(space);
             manager.SpaceId = space.Id;
@@ -210,11 +211,10 @@ namespace GetSit.Controllers
             {
                 smtp.Send(message);
             }
-
             Space.IsApproved = true;
             Employee.IsApproved = true;
+            Space.DateCreated = DateTime.Today;
             _context.SaveChanges();
-
             return View();
         }
         [Authorize(Roles = "Admin")]

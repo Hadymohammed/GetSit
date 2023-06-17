@@ -6,12 +6,18 @@ namespace GetSit.Data.ViewModels
     public class SystemAdminVM
     {
         [Required]
-        List<Tuple<int, int>>? ProviderRequest { get; set; } 
+        public List <Tuple < Space , SpaceEmployee>> ?Spaces { get; set; }
         [Required]
-        List<Tuple<int, int>>? HallRequest { get; set; }
+        public List<Tuple<HallRequest , Space>>? hallRequest { get; set; }
         [Required]
-        List<Tuple<int, int>>? ServiceRequest { get; set; } 
-
-
+        public int NumberOfCustomers  { get; set; }
+        [Required]
+        public int NumberOfSpaces { get; set; }
+        [Required]
+        public int NumberOfGuestBookings { get; set; }
+        [Required]
+        public int NumberOfBookings { get; set; }
+        [Required]
+        public SpaceEmployee SpaceEmployee { get; set; }
     }
 }

@@ -38,6 +38,7 @@ namespace GetSit.Models
 
         [Required, DefaultValue(false)]
         public bool IsApproved { get; set; }
+        public DateTime? DateCreated { get; set; }
 
     }
 }

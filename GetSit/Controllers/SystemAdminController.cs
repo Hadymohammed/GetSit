@@ -1,9 +1,12 @@
 using GetSit.Data.Security;
 using GetSit.Data.Services;
 using GetSit.Data;
-
 using Microsoft.AspNetCore.Mvc;
 using GetSit.Data.enums;
+using GetSit.Models;
+using Microsoft.EntityFrameworkCore;
+using GetSit.Data.ViewModels;
+using System;
 
 namespace GetSit.Controllers
 {
@@ -46,23 +49,42 @@ namespace GetSit.Controllers
             _bookingService = bookingService;
             _hallRequestService = HallRequestService;
         }
-        #endregion
+        #endregion          
         [HttpGet]
-        public async Task<IActionResult> Index() { 
-            List<Tuple<int,int>> JoinRequest = new List<Tuple<int,int>>();
-            foreach (var space in _context.Space)
-            {
-                if (space.IsApproved==false)
+        public async Task<IActionResult> Index() 
+        {
+			List<Tuple<Space, SpaceEmployee>> Spaces = new List<Tuple<Space, SpaceEmployee>>();
+			foreach (var space in _context.Space)
+			{
+                if (space.IsApproved == false)
                 {
-                    int ProviderId = _context.SpaceEmployee.Where(i => i.SpaceId == space.Id).FirstOrDefault().Id;
-                    JoinRequest.Add(Tuple.Create(ProviderId , space.Id)); 
-                }
+                    var provider = _context.SpaceEmployee.Where(i => i.SpaceId == space.Id).FirstOrDefault();
+					Spaces.Add(Tuple.Create(space, provider));
+
+				}
+
+			}
+			var halls = _context.HallRequest.Where(i => i.Status == 0 ).ToList();
+            List<Tuple<HallRequest, Space>> requests = new List<Tuple<HallRequest, Space>>();
+            foreach (var hall in halls)
+            {
+                var currentHall = _context.SpaceHall.Where(i=>i.Id == hall.Id).FirstOrDefault();
+                var space = _context.Space.Where(i => i.Id == currentHall.SpaceId).FirstOrDefault();
+                requests.Add(Tuple.Create(hall, space));
             }
-            List<Tuple<int, int>> HallRequest = new List<Tuple<int, int>>();
-            foreach (var request in _context.)
-            return View();
+            var viewModel = new SystemAdminVM
+            {
+                hallRequest = requests,
+                Spaces = Spaces,
+                NumberOfCustomers = _context.Customer.Count(),
+                NumberOfSpaces = _context.Space.Count(),
+                NumberOfGuestBookings = _context.GuestBooking.Count(),
+				NumberOfBookings = _context.Booking.Count(),
+		};
+
+            return View(viewModel);
         }
-        public IActionResult ViewRepest(int requestId)
+            public IActionResult ViewRepest(int requestId)
         {
             return View();
         }
@@ -76,7 +98,6 @@ namespace GetSit.Controllers
             _hallRequestService.DeleteRequest(request);
             return View("Index");
         }
-
         [HttpPost]
         public IActionResult RejectRepest(int requestId, string comment)
         {

@@ -282,8 +282,8 @@ namespace GetSit.Controllers
                 SelectedSpace = space,
                 BookingDate = booking.BookingDate,
                 DesiredDate = booking.DesiredDate,
-                StartTime = booking.StartTime,
-                EndTime = endTime,
+                StartTime = booking.StartTime.ToString("hh:mm tt"),
+                EndTime = endTime.ToString("hh:mm tt"),
                 Paid = booking.Paid,
                 TotalCost = booking.TotalCost,
                 SelectedServicesQuantities = SelectedServices,
@@ -296,8 +296,7 @@ namespace GetSit.Controllers
             };
             return View(userbooking);
         }
-
-
+        /*
         [HttpPost]
         public async Task<IActionResult> EditBookingByCustomer(int ID, BookingVM viewModel)
         {
@@ -309,7 +308,7 @@ namespace GetSit.Controllers
             var space = _context.Space
                 .Where(s => s.Halls.Any(h => h.Id == hall.Id)).FirstOrDefault();
 
-            /* create object from the class to get the available timeslots*/
+            /// create object from the class to get the available timeslots
             AvailableSlots slots = new AvailableSlots(_context);
 
             var filterDate = viewModel.DesiredDate;
@@ -335,7 +334,7 @@ namespace GetSit.Controllers
                 return RedirectToAction("GetBookingDetails", viewModel);
             }
 
-            /*Send unavailable error to the employee*/
+            //Send unavailable error to the employee
             if (!slots.IsTimeSlotAvailable(viewModel.SelectedHall.Id, viewModel.DesiredDate, viewModel.StartTime, viewModel.EndTime))
             {
                 return RedirectToAction("GetBookingDetails", viewModel);
@@ -423,7 +422,7 @@ namespace GetSit.Controllers
 
             return RedirectToAction("GetBookingDetails", "Booking");
         }
-
+        */
         [HttpPost]
         public async Task<IActionResult> EditBookingByEmployee(int ID, BookingVM viewModel)
         {
@@ -509,4 +508,5 @@ namespace GetSit.Controllers
             return View();
         }
 
+}
 }
