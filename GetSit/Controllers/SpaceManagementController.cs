@@ -225,7 +225,7 @@ namespace GetSit.Controllers
             
             /*Add thumbnail*/
             int cnt = 0;
-            var thumbnailPath = SaveFile.HallPhoto(vm.Thumbnail, vm.SpaceName, service.Id, cnt);
+            var thumbnailPath = SaveFile.ServicePhoto(vm.Thumbnail, vm.SpaceName, service.Id, cnt);
             if (thumbnailPath != null)
             {
                 await _servicePhotoService.AddAsync(new ServicePhoto()

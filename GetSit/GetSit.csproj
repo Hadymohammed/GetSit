@@ -31,6 +31,7 @@
    <ItemGroup>
      <Folder Include="wwwroot\resources\HallPhotos\" />
      <Folder Include="wwwroot\resources\ServicePhotos\" />
+     <Folder Include="wwwroot\resources\ServicePhotos\" />
    </ItemGroup>
 
   
