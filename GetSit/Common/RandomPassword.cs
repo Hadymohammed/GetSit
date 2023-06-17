@@ -5,7 +5,6 @@ namespace GetSit.Common
 {
     public static class RandomPassword
     {
-
         public static string GenerateRandomPassword(int length)
         {
             const string lowercaseChars = "abcdefghijklmnopqrstuvwxyz";

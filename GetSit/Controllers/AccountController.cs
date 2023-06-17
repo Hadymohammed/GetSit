@@ -98,7 +98,7 @@ namespace GetSit.Controllers
                         return View(login);
                     }
                     _userManager.SignIn(HttpContext, provider);
-                    return RedirectToAction("ProviderProfile", "Account");
+                    return RedirectToAction("Index", "SpaceManagement");
                     break;
                 case UserRole.Customer:
 
@@ -118,7 +118,7 @@ namespace GetSit.Controllers
 
                     }
                     await _userManager.SignIn(HttpContext, customer);
-                    return RedirectToAction("CustomerProfile", "Account");
+                    return RedirectToAction("Index", "Customer");
                     break;
                 default:
                     break;
@@ -147,7 +147,7 @@ namespace GetSit.Controllers
             {
                 return View(register);
             }
-
+            
             /*check if the entered email in register is already in database*/
             if ((register.Role!=UserRole.Provider|| register.Role != UserRole.Admin) && PresirvedEmail(register.Email))
             {
@@ -220,7 +220,8 @@ namespace GetSit.Controllers
                         Email = register.Email,
                         PhoneNumber = register.PhoneNumber,
                         Birthdate = register.Birthdate,
-                        Password = PasswordHashing.Encode(register.Password),/*Here password should be hashed*/
+                        Password = PasswordHashing.Encode (register.Password),/*Here password should be hashed*/
+                        ProfilePictureUrl = "./resources/site/user-profile-icon.jpg"
                     };
 
                     try
@@ -244,17 +245,19 @@ namespace GetSit.Controllers
                         PhoneNumber = register.PhoneNumber,
                         Birthdate = register.Birthdate,
                         Password = PasswordHashing.Encode(register.Password),/*Here password should be hashed*/
+                        ProfilePictureUrl = "./resources/site/user-profile-icon.jpg"
+
                     };
 
                     try
                     {
                         await _spaceEmployeeService.UpdateAsync(provider.Id,provider);
                         await _userManager.SignIn(HttpContext, provider);
-                        return RedirectToAction("ProviderProfile", "Account");
+                        return RedirectToAction("Index", "SpaceManagement");
                     }
                     catch (Exception error)
                     {
-                        return View(register);
+                        return RedirectToAction("Register");
                     }
                     break;
                 case UserRole.Customer:
@@ -267,14 +270,14 @@ namespace GetSit.Controllers
                         CustomerType = CustomerType.Registered,
                         Birthdate = register.Birthdate,
                         Password = PasswordHashing.Encode(register.Password),/*Here password should be hashed*/
-
+                        ProfilePictureUrl= "./resources/site/user-profile-icon.jpg"
                     };
 
                     try
                     {
                         await _customerService.AddAsync(customer);
                         await _userManager.SignIn(HttpContext, customer);
-                        return RedirectToAction("CustomerProfile");
+                        return RedirectToAction("CustomerProfile","Account");
                     }
                     catch (Exception error)
                     {
@@ -317,7 +320,6 @@ namespace GetSit.Controllers
             {
                 return RedirectToAction("AccessDenied");
             }
-
             var UserIdStr = Common.JwtTokenHelper.ValidateToken(token);
             var UserId = 0;
             int.TryParse(UserIdStr, out UserId);
@@ -335,6 +337,5 @@ namespace GetSit.Controllers
             });
             return View();
         }
-
     }
 }

@@ -1,0 +1,119 @@
+﻿@using GetSit.Data.enums;
+@model Customer
+@section styles {
+    <link href="~/css/profile.css" rel="stylesheet" />
+}
+
+<div class="banner">
+    <!-- here the bg  -->
+    <!--Edit-->
+    <a asp-controller="Customer" asp-action="EditProfile" class="edit-btn no-decor ">
+        <span class="material-symbols-outlined"> edit </span>
+        <p>Edit profile</p>
+    </a>
+</div>
+<div class="wrapper-content">
+    <div class="container responsive-timeline-container">
+        <aside class="profile item-responsive item-1">
+            <img src="@Model.ProfilePictureUrl" class="avatar" alt="profile image">
+            <h1>@Model.FirstName </h1>
+            <p>@Model.Bio</p>
+
+            <ul class="list">
+                <li><span class="material-symbols-outlined" style="font-size: 1.4rem;">calendar_month</span>Born the @Model.Birthdate.Day th of @Model.Birthdate.ToString("MMMM") @Model.Birthdate.Year</li>
+                <li><span class="material-symbols-outlined" style="font-size: 1.4rem;">location_on </span> @Model.Country, @Model.City</li>
+                @if(Model.Faculty!=null)
+                {
+                     <li><span class="material-symbols-outlined" style="font-size: 1.4rem;">school </span>@Model.Faculty.Name</li>
+                }
+                <li><span class="material-symbols-outlined" style="font-size: 1.4rem;">groups</span>Teams</li>
+
+                
+            </ul>
+        </aside>
+        <section class="timeline item-responsive item-2">
+            <h2>My booking</h2>
+            <br> <br>
+
+            @foreach(var booking in Model.Bookings)
+            {
+                <div class="product-card booking-hall fade-in">
+                    <div id="BookingDate" hidden>@booking.DesiredDate.ToShortDateString()</div>
+                    <div id="BookingHallId" hidden>@booking.BookingHalls[0].HallId</div>
+                    <div class="product-content">
+                        <div class="product-photo">
+                            <div>@booking.DesiredDate.Day</div>
+                            <div>@booking.DesiredDate.ToString("MMM")</div>
+                            <div>@booking.DesiredDate.Year</div>
+                        </div>
+                        <div class="booking-details">
+                                <div>
+                                    <h3 class="product-name">@booking.BookingHalls[0].Hall.Space.Name : @booking.BookingHalls[0].Hall.Type</h3>
+                                    <p class="product-description">@booking.BookingDate.DayOfWeek @booking.StartTime <span>(@booking.NumberOfHours hours)</span></p>
+                                    <p>@booking.Customer.FirstName @booking.Customer.LastName</p>
+                                </div>
+                                <div class="booking-actions">
+                                    @if (booking.BookingStatus == BookingStatus.Pending)
+                                    {
+                                        <div class="booking-status pending-color">@booking.BookingStatus</div>
+                                    }
+                                    @if (booking.BookingStatus == BookingStatus.Missed)
+                                    {
+                                        <div class="booking-status missed-color">@booking.BookingStatus</div>
+                                    }
+                                    @if (booking.BookingStatus == BookingStatus.Cancelled)
+                                    {
+                                        <div class="booking-status cancelled-color">@booking.BookingStatus</div>
+                                    }
+                                    @if (booking.BookingStatus == BookingStatus.Accepted)
+                                    {
+                                        <div class="booking-status accepted-color">@booking.BookingStatus</div>
+                                    }
+                                    @if (booking.BookingStatus == BookingStatus.Rejected)
+                                    {
+                                        <div class="booking-status rejected-color">@booking.BookingStatus</div>
+                                    }
+                                    @if (booking.BookingStatus == BookingStatus.Confirmed
+                                   )
+                                    {
+                                        <div class="booking-status confirmed-color">@booking.BookingStatus</div>
+                                    }
+                                    <a asp-action="Details" asp-controller="Booking" asp-route-BookingId="@booking.Id">Details</a>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+        </section>
+        <aside class="widgets item-responsive item-3">
+            <div class="widget follow">
+                <div class="title">
+                    <strong>Favorite Hall</strong>
+                    <!-- <a href="">View all</a> -->
+                </div>
+                <ul>
+                    @foreach(var hall in Model.FavoriteHalls)
+                    {
+                        <li>
+                            <div class="profile">
+                                <img src="@hall.SpaceHall.HallPhotos[0].Url" alt="Avatar">
+                                <div class="info">
+                                    <div>
+                                        <div>
+                                            <a href="#" class="no-decor">
+                                                <strong>@hall.SpaceHall.Space.Name</strong>
+                                            </a>
+                                        </div>
+                                        <div class="job-title">@hall.SpaceHall.Type</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </aside>
+    </div>
+</div>
+

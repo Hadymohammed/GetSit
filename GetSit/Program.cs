@@ -50,6 +50,7 @@ builder.Services.AddScoped<IBookingHallService_Service, BookingHallService_Servi
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IFacultyService, FacultyService>();
 builder.Services.AddScoped<IFavoriteHallService, FavoriteHallService>();
+builder.Services.AddScoped<IGuestBookingService, GuestBookingService>();
 builder.Services.AddScoped<IHallFacilityService, HallFacilityService>();
 builder.Services.AddScoped<IHallPhotoService, HallPhotoService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
@@ -65,6 +66,7 @@ builder.Services.AddScoped<ISpaceService_Service, SpaceService_Service>();
 builder.Services.AddScoped<ISpaceWorkingDayService, SpaceWorkingDayService>();
 builder.Services.AddScoped<ISystemAdminService, SystemAdminService>();
 builder.Services.AddScoped<ITitleService, TitleService>();
+builder.Services.AddScoped<IHallRequestService, HallRequestService>();
 
 var app = builder.Build();
 AppDbInitializer.Seed(app);

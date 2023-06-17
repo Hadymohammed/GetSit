@@ -2,7 +2,7 @@
 @using GetSit.Data.enums
 @model SpaceManagementVM
 
-<div class="main manage-container">
+<v class="main manage-container">
 <link rel="stylesheet" href="~/css/SpaceManagement.css" asp-append-version="true" />
 
     <!--Main Container-->
@@ -10,12 +10,12 @@
         <!--Profile Data-->
         <div class="profile-data">
             <div class="profile-cover">
-                <img src="@Model.Space.Photos.First().Url"/>
+                <img src="@Model.Space.SpaceCover"/>
             </div>
-            <div>
+            <div style="position: relative;">
                 <div class="profile-card">
                     @{
-                        var url="../"+Model.Space.Photos.First().Url;
+                        var url="../"+Model.Space.SpaceLogo;
                                         <img src="@url" />
                     }
                     <div class="profile-name">@Model.Space.Name</div>
@@ -23,8 +23,39 @@
                         @Model.Space.Bio
                     </div>
                 </div>
+                <a asp-action="SpaceDetails" asp-controller="SpaceManagement" asp-route-SpaceId="@Model.Space.Id" class="edit-link">
+                    <i class="fa-regular fa-pen-to-square"></i>
+                    <span>Edit Details</span>
+                </a>
+            </div>
+            <div class="phone-numbers">
+                @foreach (var phone in Model.Space.Phones)
+                {
+                    <a href="#" class="phone-number">
+                        <i class="fas fa-phone"></i>
+                        @phone.PhoneNumber</a>
+                }
             </div>
             <div class="profile-meta">
+                <div class="social-links">
+                    @if (Model.Space.Facebook != null)
+                    {
+                        <a href="@Model.Space.Facebook" target="_blank" class="social-link"><i class="fab fa-facebook"></i></a>
+                    }
+
+                    @if (Model.Space.Instagram != null)
+                    {
+                        <a href="@Model.Space.Instagram" target="_blank" class="social-link"><i class="fab fa-instagram"></i></a>
+                    }
+                    @if(Model.Space.Twitter != null)
+                    {
+                        <a href="@Model.Space.Twitter" target="_blank" class="social-link"><i class="fab fa-twitter"></i></a>
+                    }
+                    @if (Model.Space.Email != null)
+                    {
+                        <a href="mailto:@Model.Space.Email" class="social-link"><i class="fas fa-envelope"></i></a>
+                    }
+                </div>
                 <div class="Location">
                     <i class="fa-solid fa-location-dot" style="color: #545454;"></i>
                     <span>@Model.Space.Country, @Model.Space.City</span>
@@ -43,6 +74,7 @@
                     <li class="nav-item"><a class="nav-link active" href="#schedule">Schedule</a></li>
                     <li class="nav-item"><a class="nav-link" href="#our-halls">Our Halls</a></li>
                     <li class="nav-item"><a class="nav-link" href="#our-serivces">Our Services</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#our-Request">Our Request</a></li>
                 </ul>
             </nav>
 
@@ -62,7 +94,7 @@
                         </select>
                     </div>
                 </div>
-                @if(Model.Bookings.Count==0)
+                @if(Model.Bookings.Count==0 && Model.GuestBookings.Count==0)
                 {
                     <div class="empty">
                         No upcoming bookings!
@@ -81,9 +113,33 @@
                             </div>
                             <div class="booking-details">
                                 <div>
+                                <div>
                                     <h3 class="product-name">@booking.BookingHalls[0].Hall.Type : @booking.BookingHalls[0].HallId</h3>
                                     <p class="product-description">@booking.BookingDate.DayOfWeek @booking.StartTime <span>(@booking.NumberOfHours hours)</span></p>
                                     <p>@booking.Customer.FirstName @booking.Customer.LastName</p>
+                                </div>
+                                
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                @foreach (var booking in Model.GuestBookings)
+                {
+                    <div class="product-card booking-hall fade-in">
+                    <div id="BookingDate" hidden>@booking.DesiredDate.ToShortDateString()</div>
+                    <div id="BookingHallId" hidden>@booking.BookingHalls[0].HallId</div>
+                        <div class="product-content">
+                            <div class="product-photo">
+                                <div>@booking.DesiredDate.Day</div>
+                                <div>@booking.DesiredDate.ToString("MMM")</div>
+                                <div>@booking.DesiredDate.Year</div>
+                            </div>
+                            <div class="booking-details">
+                                <div>
+                                    <h3 class="product-name">@booking.BookingHalls[0].Hall.Type : @booking.BookingHalls[0].HallId</h3>
+                                    <p class="product-description">@booking.BookingDate.DayOfWeek @booking.StartTime <span>: @booking.EndTime</span></p>
+                                    <p>Guest : @booking.FirstName @booking.LastName</p>
                                 </div>
                                 <div class="booking-actions">
                                     @if(booking.BookingStatus == BookingStatus.Pending)
@@ -111,17 +167,40 @@
                                     {
                                         <div class="booking-status confirmed-color">@booking.BookingStatus</div>
                                     }
-                                    <a>Details and actions</a>
+                                    <a asp-action="Details" asp-controller="GuestBooking" asp-route-BookingId="@booking.Id">Details and actions</a>
                                 </div>
                             </div>
                         </div>
                     </div>
                 }
                 <div style="text-align: center;">
-                    <a asp-action="AddBooking" class="add-hall-btn">
+                    <a href="#" class="add-hall-btn" data-bs-toggle="modal" data-bs-target="#addBookingModal">
                         <div><i class="fa-solid fa-circle-plus" style="color: #23B000;"></i></div>
                         <div>Add Booking</div>
                     </a>
+                </div>
+                <div class="modal fade" id="addBookingModal" tabindex="-1" aria-labelledby="addBookingModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="addBookingModalLabel">Choose Hall</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <ul class="list-group">
+                                    <!-- List of items -->
+                                    @foreach (var hall in Model.Halls)
+                                    {
+                                        <li class="list-group-item" data-item-id="@hall.Id">@hall.Type: @hall.Id</li>
+                                    }
+                                </ul>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" onclick="saveBooking()">Continue</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -149,7 +228,7 @@
                                     <span class="badge">@facility.Facility</span>
                                 }
                             </div>
-                            <button class="buy-button">Edit</button>
+                            <a asp-controller="SpaceManagement" asp-action="EditHall" asp-route-HallId="@hall.Id" class="buy-button">Edit</a>
                         </div>
                     </div>
                 </div>
@@ -184,7 +263,7 @@
                                     <span class="badge">Free Shipping</span>
                                     <span class="badge">1-Year Warranty</span>
                                 </div>
-                                <button class="buy-button">Edit</button>
+                                <a asp-controller="SpaceManagement" asp-action="EditService" asp-route-ServiceId="@service.Id" class="buy-button">Edit</a>
                             </div>
                         </div>
                     </div>
@@ -195,6 +274,60 @@
                         Add new Service
                     </a>
                 </div>
+            </section>
+            <!--Requests-->
+            <section id="our-Request" class="fade-in">
+                @if (Model.Requests.Count == 0)
+                {
+                    <div class="empty">
+                        No Request yet! Add new ones.
+                    </div>
+                }
+             
+                @foreach (var request in Model.Requests)
+                {
+                    
+                    <div class="product-card booking-hall fade-in">
+                        
+                        <div class="product-content">
+                            <div class="product-photo">
+                                <div>@request.Date.Day</div>
+                                <div>@request.Date.ToString("MMM")</div>
+                                <div>@request.Date.Year</div>
+                            </div>
+                            <div class="booking-details">
+                                <div>
+                                    <h3 class="product-name">@request.Hall.Type </h3>
+                                    <p class="product-description">@request.Date.DayOfWeek  </p>
+                                    
+                                </div>
+                                <div class="booking-actions">
+                                    @if (request.Status == ReqestStatus.pending)
+                                    {
+                                        <a asp-controller="SpaceManagement" asp-action="RequestDeteles" asp-route-RequestID="@request.Id"> <div class="booking-status pending-color">@request.Status</div></a>
+                                    }
+                                    @if (request.Status == ReqestStatus.Accepted)
+                                    {
+                                        <a asp-controller="SpaceManagement" asp-action="RequestDeteles" asp-route-RequestID="@request.Id"> <div class="booking-status accepted-color">@request.Status</div></a>
+
+                                        
+                                    }
+                                    @if (request.Status == ReqestStatus.Rejected)
+                                    {
+                                        <a asp-controller="SpaceManagement" asp-action="RequestDeteles" asp-route-RequestID="@request.Id"> <div class="booking-status cancelled-color">@request.Status
+                                    </div> </a>
+                                        
+                                    }
+                                    
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                                    
+              
             </section>
 
         </div>
@@ -207,7 +340,7 @@
             {
                 <div class="user-profile">
                     <div class="profile-picture">
-                        <img src="./resources/site/user-profile-icon.jpg" alt="User 1 Photo">
+                        <img src="./resources/site/user1.jpg" alt="User 1 Photo">
                     </div>
                     <div class="user-info">
                         <div class="member-data">
@@ -233,7 +366,7 @@
             {
                 <div class="user-profile">
                     <div class="profile-picture">
-                        <img src="./resources/site/user-profile-icon.jpg" alt="User 1 Photo">
+                        <img src="./resources/site/user1.jpg" alt="User 1 Photo">
                     </div>
                     <div class="user-info">
                         <div class="member-data">
@@ -264,6 +397,9 @@
             $('#date-filter').val(formattedDate);
 
             filter();
+            $('.list-group-item').on('click', function () {
+                selectGuestHall($(this));
+            });
             
     });
     const matchDateFilter = (element, filterDate) => {
@@ -295,6 +431,20 @@
             })
     }
     
+        function selectGuestHall(item) {
+            $('.list-group-item').removeClass('active');
+            item.addClass('active');
+
+            $('#addBookingModal').data('selected-item-id', item.data('item-id'));
+        }
+        function saveBooking() {
+            var selectedItemId = $('#addBookingModal').data('selected-item-id');
+
+            if (selectedItemId) {
+                // Redirect to the Index action of GuestBookingController with the HallId query string parameter
+                window.location.href = '@Url.Action("Index", "GuestBooking")' + '?HallId=' + selectedItemId;
+            }
+        }
     </script>
 
 }

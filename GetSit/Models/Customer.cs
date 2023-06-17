@@ -1,4 +1,4 @@
-﻿using GetSit.Data.Base;
+using GetSit.Data.Base;
 using GetSit.Data.enums;
 using GetSit.Data.Security;
 using System.ComponentModel;
@@ -26,8 +26,10 @@ namespace GetSit.Models
         public string PhoneNumber { get; set; }
         [DataType(DataType.Date)]
         public DateTime Birthdate { get; set; }
-        [DataType(DataType.Url), AllowNull]
-        public string ProfilePictureUrl { get; set; } = "resource/site/user-profile-icon.jpg";
+        [DataType(DataType.Url), AllowNull,DefaultValue("resource/site/user-profile-icon.jpg")]
+        public string? ProfilePictureUrl { get; set; }
+        [DataType(DataType.Url), AllowNull,DefaultValue("resource/site/Cover_PlaceHolder.png")]
+        public string? CoverPrictureUrl { get; set; }
         public CustomerType CustomerType { get; set; }
         [AllowNull]
         public string? Country { get; set; }
@@ -45,6 +47,7 @@ namespace GetSit.Models
         public List<PaymentCard>? PaymentCards { get; set; }
         public List<FavoriteHall>? FavoriteHalls { get; set; }
         public List<Booking>? Bookings { get; set; }
+        public String? Bio { get; set; }
 
     }
 }   
