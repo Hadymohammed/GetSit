@@ -60,6 +60,8 @@ namespace GetSit.Common
                         var EndTime = booking.StartTime.Add(TimeSpan.FromHours(booking.NumberOfHours));
                         if (booking.StartTime <= timeSlots[slotIdx].Item1 && EndTime >= endTimeSlot)
                         {
+                            if (booking.BookingStatus == BookingStatus.Cancelled || booking.BookingStatus == BookingStatus.Rejected)
+                                continue;
                             isAvailable = false;
                             break;
                         }
@@ -69,6 +71,8 @@ namespace GetSit.Common
                         var EndTime = booking.EndTime;
                         if (booking.StartTime <= timeSlots[slotIdx].Item1 && EndTime >= endTimeSlot)
                         {
+                            if (booking.BookingStatus == BookingStatus.Cancelled || booking.BookingStatus == BookingStatus.Rejected)
+                                continue;
                             isAvailable = false;
                             break;
                         }
@@ -150,8 +154,10 @@ public List<TimeSpan> GetAvailableEndSlots(int hallId, DateTime date,TimeSpan st
                 var isAvailable = true;
                 foreach (var booking in bookings)
                 {
+                    if (booking.BookingStatus == BookingStatus.Cancelled || booking.BookingStatus == BookingStatus.Rejected)
+                        continue;
                     var EndTime = booking.StartTime.Add(TimeSpan.FromHours(booking.NumberOfHours));
-                    if (booking.StartTime <= timeSlots[slotIdx].Item1 && EndTime >= endTimeSlot)
+                    if (booking.StartTime < timeSlots[slotIdx].Item1 && EndTime >= endTimeSlot)
                     {
                         isAvailable = false;
                         break;
@@ -159,8 +165,10 @@ public List<TimeSpan> GetAvailableEndSlots(int hallId, DateTime date,TimeSpan st
                 }
                 foreach (var booking in guestBooking)
                 {
+                    if (booking.BookingStatus == BookingStatus.Cancelled || booking.BookingStatus == BookingStatus.Rejected)
+                        continue;
                     var EndTime = booking.EndTime;
-                    if (booking.StartTime <= timeSlots[slotIdx].Item1 && EndTime >= endTimeSlot)
+                    if (booking.StartTime < timeSlots[slotIdx].Item1 && EndTime >= endTimeSlot)
                     {
                         isAvailable = false;
                         break;
