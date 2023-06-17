@@ -24,14 +24,14 @@ namespace GetSit.Common
             int otpValue = new Random().Next(100000, 999999);
             httpContext.Session.SetString(SessionKey,otpValue.ToString());
                 #region sendingProcess
-                const string accountSid = "AC05e0b2b4734def1ab1637e37c217f496";
-                const string authToken = "0f9042d2a7c56de397a45db227bed592";
+                const string accountSid = "AC341704b0e6aac63c0cce380809b4c370";
+                const string authToken = "e7d7ce3a1fff7842291aa952625b1af1";
 
                 TwilioClient.Init(accountSid, authToken);
 
                 var message = MessageResource.Create(
                     body: "Your Otp value is " + otpValue.ToString(),
-                    from: new Twilio.Types.PhoneNumber("+13613385724"),
+                    from: new Twilio.Types.PhoneNumber("+14067097984"),
                     to: new Twilio.Types.PhoneNumber("+2"+phone)
                 );
                 #endregion

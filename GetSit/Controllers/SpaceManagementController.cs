@@ -1,4 +1,4 @@
-﻿using GetSit.Common;
+using GetSit.Common;
 using GetSit.Data;
 using GetSit.Data.enums;
 using GetSit.Data.Security;
@@ -9,9 +9,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
+using static System.Reflection.Metadata.BlobBuilder;
+
 namespace GetSit.Controllers
 {
     [Authorize(Roles = "Provider")]//Error:Convert UserRole to class
@@ -30,10 +33,10 @@ namespace GetSit.Controllers
         readonly ISpaceService_Service _spaceService_service;
         readonly IServicePhotoService _servicePhotoService;
         readonly IBookingService _bookingService;
-
         readonly IHallRequestService _hallRequestService;
-
+        readonly ISpacePhoneService _spacePhoneService;
         readonly ISpacePhotoService _spacePhotoService;
+        readonly IGuestBookingService _guestBookingService;
 
 
         public SpaceManagementController(IUserManager userManager,
@@ -46,12 +49,11 @@ namespace GetSit.Controllers
             ISpaceService_Service SpaceService_service,
             IServicePhotoService servicePhotoService,
             IBookingService bookingService,
-
             IHallRequestService HallRequestService,
-
-          ISpacePhotoService spacePhotoService,
-            IWebHostEnvironment env)
-
+            ISpacePhotoService spacePhotoService,
+            ISpacePhoneService spacePhoneService,
+            IWebHostEnvironment env,
+            IGuestBookingService guestBookingService)
         {
             _env = env;
             _userManager = userManager;
@@ -64,11 +66,10 @@ namespace GetSit.Controllers
             _spaceService_service = SpaceService_service;
             _servicePhotoService = servicePhotoService;
             _bookingService = bookingService;
-
             _hallRequestService = HallRequestService;
-
             _spacePhotoService = spacePhotoService;
-
+            _spacePhoneService = spacePhoneService;
+            _guestBookingService = guestBookingService;
         }
         #endregion
 
@@ -94,20 +95,134 @@ namespace GetSit.Controllers
                 SpaceIdStirng = HttpContext.Request.Cookies.Where(c => c.Key == "SpaceId").FirstOrDefault().Value;
                 int.TryParse(SpaceIdStirng, out spaceIdInt);
             }
-            Space space = await _spaceSerivce.GetByIdAsync(spaceIdInt, s => s.Photos);
+            Space space =await _spaceSerivce.GetByIdAsync(spaceIdInt, s => s.Photos,s=>s.Phones);
             SpaceManagementVM viewModel = new()
             {
                 Space = space,
-
                 Halls = _hallService.GetAcceptedBySpaceId(spaceIdInt, h => h.HallPhotos, h => h.HallFacilities),
                 Services = _spaceService_service.GetBySpaceId(spaceIdInt, s => s.ServicePhotos),
                 Employees = _providerService.GetBySpaceId(spaceIdInt),
                 Bookings = _bookingService.GetBySpaceId(spaceIdInt),
                 Requests = _hallRequestService.GetPendingBySpaceId(spaceIdInt),
-
+                 GuestBookings=_guestBookingService.GetBySpaceId(spaceIdInt)
             };
             return View(viewModel);
         }
+        #region SpaceDetails
+        public async Task<IActionResult> SpaceDetails(int SpaceId)
+        {
+            if (SpaceId == 0)
+                return NotFound();
+            int userId = _userManager.GetCurrentUserId(HttpContext);
+            var user = await _providerService.GetByIdAsync(userId);
+            if (user == null)
+                return RedirectToAction("AccessDenied", "Account");
+            if(user.SpaceId!=SpaceId)
+                return RedirectToAction("AccessDenied", "Account");
+
+            var space = await _spaceSerivce.GetByIdAsync((int)user.SpaceId,s=>s.Photos,s=>s.Phones);
+            return View(new SpaceDetailsVM()
+            {
+                Space=space
+            });
+        }
+        [HttpPost]
+        public async Task<IActionResult> SpaceDetails(SpaceDetailsVM vm)
+        {
+            if (!ModelState.IsValid)
+            {
+                vm.Space= await _spaceSerivce.GetByIdAsync(vm.Space.Id, s => s.Photos, s => s.Phones);
+                return View(vm);
+            }
+            var space = await _spaceSerivce.GetByIdAsync(vm.Space.Id);
+            int userId = _userManager.GetCurrentUserId(HttpContext);
+            var user = await _providerService.GetByIdAsync(userId);
+            if (user == null)
+                return RedirectToAction("AccessDenied", "Account");
+            if (user.SpaceId != space.Id)
+                return RedirectToAction("AccessDenied", "Account");
+
+            space.Bio = vm.Space.Bio;
+            space.Facebook = vm.Space.Facebook;
+            space.Twitter = vm.Space.Twitter;
+            space.Instagram = vm.Space.Instagram;
+            space.Email = vm.Space.Email;
+            space.Country = vm.Space.Country;
+            space.City=vm.Space.City;
+            space.Street = vm.Space.Street;
+
+            /*save phones*/
+            if (vm.NewPhones != null)
+            {
+                foreach (var phone in vm.NewPhones)
+                {
+                    var nwPhone = new SpacePhone()
+                    {
+                        SpaceId = space.Id,
+                        PhoneNumber = phone
+                    };
+                    await _spacePhoneService.AddAsync(nwPhone);
+                }
+            }
+            /*Update Logo*/
+            if (vm.Logo != null)
+            {
+                /*delete old one*/
+                var oldPath = space.SpaceLogo;
+
+                if ((oldPath != null && SaveFile.DeleteFile(oldPath))|| oldPath == null)
+                {
+                    string nwPath = await SaveFile.SpaceLogo(vm.Logo, space.Name);
+                    if (nwPath != null)
+                    {
+                        space.SpaceLogo = nwPath;
+                    }
+
+                    else space.SpaceLogo = "resource/site/logo-social.png";
+                }
+                
+            }
+            /*Update Cover*/
+            if (vm.Cover != null)
+            {
+                /*delete old one*/
+                var oldPath = space.SpaceCover;
+
+                if ((oldPath != null && SaveFile.DeleteFile(oldPath))|| oldPath == null)
+                {
+                    string nwPath = await SaveFile.SpaceCover(vm.Cover, space.Name);
+                    if (nwPath != null)
+                    {
+                        space.SpaceCover = nwPath;
+                    }
+
+                    else space.SpaceCover = "resource/site/Cover_PlaceHolder.png";
+                }
+
+            }
+            await _spaceSerivce.UpdateAsync(space.Id, space);
+            return RedirectToAction("SpaceDetails", new { SpaceId = space.Id });
+        }
+        [HttpGet]
+        public async Task<IActionResult> DeletePhone(int PhoneId)
+        {
+            if (PhoneId == 0)
+                return NotFound();
+            int userId = _userManager.GetCurrentUserId(HttpContext);
+            var user = await _providerService.GetByIdAsync(userId);
+            if (user == null)
+                return RedirectToAction("AccessDenied", "Account");
+            var phone =await _spacePhoneService.GetByIdAsync(PhoneId);
+            if (phone == null)
+                return NotFound();
+
+            if (user.SpaceId != phone.SpaceId)
+                return RedirectToAction("AccessDenied", "Account");
+            await _spacePhoneService.DeleteAsync(phone.Id);
+            return RedirectToAction("SpaceDetails", new { SpaceId = phone.SpaceId });
+        }
+        #endregion
+
         #region Create New Hall
         [HttpGet]
         public async Task<IActionResult> AddHallAsync()
@@ -344,10 +459,13 @@ namespace GetSit.Controllers
                 return View(vm);
             }
 
-            var hall = await _hallService.GetByIdAsync(vm.HallId);
+            var hall = await _hallService.GetByIdAsync(vm.HallId,h=>h.HallFacilities);
             hall.Description = vm.Description;
             hall.CostPerHour = vm.CostPerHour;
             //Add new Photos
+            if (vm.Files != null)
+            {
+
             foreach (var file in vm.Files)
             {
                 var photo = new HallPhoto()
@@ -368,9 +486,19 @@ namespace GetSit.Controllers
                     await _hallPhotoService.UpdateAsync(photo.Id, photo);
                 }
             }
-           
+            }
+
             /*!!!!! Toggele Facilities change*/
-            
+            hall.HallFacilities.Clear();
+            foreach (var facility in facilities)
+            {
+                var hallFacility = new HallFacility()
+                {
+                    Facility = facility,
+                    HallId = hall.Id,
+                };
+                await _hallFacilityService.AddAsync(hallFacility);
+            }
             await _hallService.UpdateAsync(hall.Id, hall);
             return RedirectToAction("EditHall", new { hallId = hall.Id });
         }

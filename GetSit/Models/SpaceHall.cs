@@ -2,6 +2,7 @@
 using GetSit.Data.enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 
 namespace GetSit.Models
 {
@@ -13,8 +14,6 @@ namespace GetSit.Models
   [ForeignKey("SpaceId")]
         public int SpaceId { get; set; }
         public Space Space { get; set; }
-
-        
         [Required]
         public int Capacity { get; set; }
         [Required]
@@ -25,6 +24,8 @@ namespace GetSit.Models
         public HallStatus Status { get; set; }
         [Required]
         public HallType Type { get; set; }
+        [AllowNull]
+        public string? Thumbnail { get; set; }= "resource/site/user-profile-icon.jpg";
         [Required]
         public List<HallPhoto> HallPhotos { get; set; }
         [Required]
