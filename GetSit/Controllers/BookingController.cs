@@ -31,6 +31,9 @@ namespace GetSit.Controllers
         private readonly IBookingHallService_Service _bookingService_Serivce;
         private readonly IPaymentService _paymentSerivce;
         private readonly IPaymentDetailService _paymentDetailService;
+        private readonly ISpaceEmployeeService _providerService;
+        private readonly ICustomerService _customerService;
+        private readonly ISpaceService_Service _serviceService;
         public static void GetHoursAndMinutes(string timeSpanString, out int hours, out int minutes)
         {
             DateTime time;
@@ -54,7 +57,10 @@ namespace GetSit.Controllers
             IBookingHallService_Service bookingService_Serivce,
             IPaymentService paymentService,
             IPaymentDetailService paymentDetailService,
-            ISpaceService spaceService)
+            ISpaceService spaceService,
+            ISpaceEmployeeService providerService,
+            ICustomerService customerService,
+            ISpaceService_Service serviceService)
         {
             _context = context;
             _userManager = userManager;
@@ -63,9 +69,12 @@ namespace GetSit.Controllers
             _bookingHall_service = bookingHall_service;
             _spaceService_Service = spaceService_Service;
             _bookingService_Serivce = bookingService_Serivce;
-            _paymentSerivce= paymentService;
-            _paymentDetailService= paymentDetailService;
-            _spaceService= spaceService;
+            _paymentSerivce = paymentService;
+            _paymentDetailService = paymentDetailService;
+            _spaceService = spaceService;
+            _providerService = providerService;
+            _customerService = customerService;
+            _serviceService = serviceService;
         }
         #endregion
         [HttpGet]
@@ -122,19 +131,8 @@ namespace GetSit.Controllers
                 SelectedSpace = space,
                 AvailableSlots = slots.GetAvailableSlotsForDay(viewModel.HallId, filterDate),
                 FilterDate = filterDate
-            }
-            var Booking = new Booking
-            {
-                CustomerId = id,
-                BookingDate = viewModel.BookingDate,
-                DesiredDate = viewModel.DesiredDate,
-                StartTime = viewModel.StartTime,
-                NumberOfHours = NumberOfHours,
-                TotalCost = viewModel.TotalCost,
-                Paid = 0,
-                BookingStatus = BookingStatus.Accepted,
-                BookingType = BookingType.Individual,
             };
+            
             IndexModel.SlotsForWeek = slots.GetAvailableSlotsForWeek(viewModel.HallId, filterDate);
 
             #endregion
@@ -456,8 +454,12 @@ namespace GetSit.Controllers
             {
                 return RedirectToAction("GetBookingDetails", viewModel);
             }
+            int startH = 0, startM = 0; GetHoursAndMinutes(viewModel.StartTime, out startH, out startM);
+            TimeSpan start = new TimeSpan(startH, startM, 0);
+            int endH = 0, endM = 0; GetHoursAndMinutes(viewModel.EndTime, out endH, out endM);
+            TimeSpan end = new TimeSpan(endH, endM, 0);
 
-            float NumberOfHours = (float)(viewModel.EndTime - viewModel.StartTime).TotalHours;
+            float NumberOfHours = (float)(end - start).TotalHours;
 
             if (NumberOfHours <= 0)
             {
@@ -465,13 +467,14 @@ namespace GetSit.Controllers
             }
 
             /*Send unavailable error to the employee*/
-            if (!slots.IsTimeSlotAvailable(viewModel.SelectedHall.Id, viewModel.DesiredDate, viewModel.StartTime, viewModel.EndTime))
+            if (!slots.IsTimeSlotAvailable(viewModel.SelectedHall.Id, viewModel.DesiredDate, start, end))
             {
                 return RedirectToAction("GetBookingDetails", viewModel);
             }
 
             // save the new timing in database
-            Booking.StartTime = viewModel.StartTime;
+
+            Booking.StartTime = start;
             Booking.NumberOfHours = NumberOfHours;
             _context.SaveChanges();
 
