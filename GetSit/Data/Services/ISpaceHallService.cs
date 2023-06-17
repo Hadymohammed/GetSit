@@ -8,6 +8,5 @@ namespace GetSit.Data.Services
     {
         public Task<IEnumerable<SpaceHall>> GetBySpaceName(String Key);
         public List<SpaceHall> GetBySpaceId(int spaceId, params Expression<Func<SpaceHall, object>>[] includeProperties);
-
     }
 }
