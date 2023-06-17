@@ -254,11 +254,11 @@ namespace GetSit.Controllers
                 return NotFound();
 
             var booking = (Booking)_context.Booking
-    .Where(i => i.Id == bookingId)
-    .Include(i => i.Customer)
-    .Include(i => i.BookingHalls)
-        .ThenInclude(b => b.BookedServices)
-    .FirstOrDefault();
+                .Where(i => i.Id == bookingId)
+                .Include(i => i.Customer)
+                .Include(i => i.BookingHalls)
+                    .ThenInclude(b => b.BookedServices)
+                .FirstOrDefault();
 
             var hall = await _hallSerivce.GetByIdAsync(booking.BookingHalls[0].HallId);
             if (booking == null)

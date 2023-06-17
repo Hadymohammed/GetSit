@@ -18,6 +18,16 @@ namespace GetSit.Data.Services
             var favoriteHall= _context.FavoriteHall.Where(h => h.HallId == HId).Where(c => c.CustomerId == CId).FirstOrDefault();
             return favoriteHall;
         }
+
+        public List<FavoriteHall> GetByUserId(int CustomerId)
+        {
+            return _context.FavoriteHall.Where(c => c.CustomerId == CustomerId)
+                    .Include(h => h.SpaceHall)
+                        .ThenInclude(p => p.HallPhotos)
+                    .Include(c => c.SpaceHall)
+                        .ThenInclude(x => x.Space).ToList();    
+        }
+
         public async Task ToggleAysnc(int HId,int CId)
         {
             FavoriteHall FavHall = GetByHallIdAndUserId(HId,CId);

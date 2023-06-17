@@ -13,6 +13,7 @@
         </div>
     </div>
     <!-- Page content -->
+    x<form asp-action="EditProfile" asp-controller="Customer" enctype="multipart/form-data">
     <div class="container-fluid mt--7">
         <div class="row">
             <div class="col-xl-4 order-xl-2 mb-5 mb-xl-0">
@@ -21,9 +22,7 @@
                         <div class="col-lg-3 order-lg-2">
                             <div class="card-profile-image">
                                 <!--Img-->
-                                <a href="./Profile.html">
-                                    <img src="@Model.ProfilePictureUrl" class="rounded-circle" />
-                                </a>
+                                <img src="https://st3.depositphotos.com/6672868/13701/v/1600/depositphotos_137014128-stock-illustration-user-profile-icon.jpg" class="rounded-circle" />
                             </div>
                         </div>
                     </div>
@@ -39,17 +38,35 @@
                             <h3>
                                 <a asp="Index" class="no-decor">@Model.Name</a>
                             </h3>
+                            
                             <div class="h5 font-weight-300">
-                                <i class="ni location_pin mr-2"></i> Location HERE
+                                <i class="ni location_pin mr-2"></i> 
+                                @if (Model.Country != null && Model.City != null){
+                                    <span>@Model.Country, @Model.City </span>
+                                }
+                                else{
+                                    <span>Location</span>
+                                }
+                                    
                             </div>
                             <!--Title-->
                             @if(Model.Title!= null)
                             {
                                 <div class="h5 mt-4">
-                                    <i class="ni business_briefcase-24 mr-2"></i>Job Title @Model
+                                    <i class="ni business_briefcase-24 mr-2"></i>Job Title @Model.Title
                                 </div>
                             }
-                            
+
+                                <div class="form-group" style="
+                                                            display: flex;
+                                                            justify-content: space-between;
+                                                            align-items: center;
+                                                        ">
+                                    <label for="Photo">Change profile photo:</label>
+                                    <input type="file" class="form-control-file" asp-for="Photo" style="
+                                                                                                width: fit-content;
+                                                                                            ">
+                                </div>
                             
 
                             <br>
@@ -69,7 +86,9 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <form>
+
+                            <input asp-for="Name" hidden/>
+                            <input asp-for="Title" hidden/>
                             <h6 class="heading-small text-muted mb-4">User information</h6>
                             <div class="pl-lg-4">
                                
@@ -82,9 +101,9 @@
                                                     Email
                                                     address
                                                 </label>
-                                                <input type="email" asp-for="@Model.Email"
+                                                <input type="email" asp-for="Email"
                                                        class="form-control form-control-alternative"
-                                                       placeholder="jesse@example.com">
+                                                      readonly>
                                             </div>
                                         </div>
                                         <!--Phone Number-->
@@ -98,17 +117,14 @@
                                                 <input asp-for="@Model.PhoneNumber"
                                                        class="form-control form-control-alternative"
                                                        placeholder="Phone Number" 
-                                                       type="text">
+                                                       type="text" readonly>
                                             </div>
                                         </div>
                                         <!--Faculty-->
                                         <div class="col-md-12">
                                             <div class="form-group focused">
                                                 <label class="form-control-label" for="input-faculty"> Faculty </label>
-                                                <input asp-for="@Model.Faculty"
-                                                       class="form-control form-control-alternative"
-                                                       placeholder="Faculty" value="Faculty"
-                                                       type="text">
+                                                <input asp-for="@Model.Faculty" class="form-control form-control-alternative" placeholder="Faculty" value="Faculty" type="text">
                                             </div>
                                         </div>
 
@@ -125,18 +141,13 @@
                                         <div class="col-lg-4">
                                             <div class="form-group focused">
                                                 <label class="form-control-label" for="input-city" >City</label>
-                                                <input type="text" asp-for="@Model.City"
-                                                       class="form-control form-control-alternative" placeholder="City"
-                                                       value="New York">
+                                                <input type="text" asp-for="@Model.City" class="form-control form-control-alternative" placeholder="City">
                                             </div>
                                         </div>
                                         <div class="col-lg-4">
                                             <div class="form-group focused">
-                                                <label class="form-control-label"
-                                                       for="input-country">Country</label>
-                                                <input type="text" asp-for="@Model.Country"
-                                                       class="form-control form-control-alternative"
-                                                       placeholder="Country" value="United States">
+                                                <label class="form-control-label" for="input-country">Country</label>
+                                                <input type="text" asp-for="@Model.Country" class="form-control form-control-alternative" placeholder="Country">
                                             </div>
                                         </div>
                                         
@@ -150,11 +161,11 @@
                                         <label>Bio HERE</label>
                                         <textarea asp-for="@Model.Bio"
                                             rows="4" class="form-control form-control-alternative"
-                                                  placeholder="A few words about you ..."> beautiful human.
+                                                  placeholder="A few words about you ...">
                                         </textarea>
                                     </div>
                                 </div>
-                                <button type="submit" class="btn btn-primary">Submit</button>
+                                <button type="submit" class="btn btn-primary">Update</button>
                         </form>
                     </div>
                 </div>

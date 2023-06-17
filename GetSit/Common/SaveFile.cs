@@ -130,5 +130,29 @@ namespace GetSit.Common
             }
             return false;
         }
+        public static async Task<string> userPic(IFormFile file, int userId)
+        {
+            try
+            {
+                if (file != null && file.Length > 0)
+                {
+                    string ext = Path.GetExtension(file.FileName);
+                    var fileName ="Profile_"+userId.ToString()+ ext;
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\resources\\Profiles", fileName);//NeedCompletePath
+                    using (var fileSrteam = new FileStream(filePath, FileMode.Create))
+                    {
+                        await file.CopyToAsync(fileSrteam);
+                    }
+                    return ".\\resources\\Profiles\\" + fileName;
+                }
+                return null;
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+            return null;
+        }
+
     }
 }
