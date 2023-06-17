@@ -1,9 +1,9 @@
 ﻿@using GetSit.Data.ViewModels
-@model BookingVM
+@model GuestBookingVM
 
-<link rel="stylesheet" href="./css/booking.css" />
+<link rel="stylesheet" href="./css/guestBooking.css" />
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-<form asp-action="Index" asp-controller="Booking" method="post">
+<form asp-action="Index" asp-controller="GuestBooking" method="post">
     <input hidden asp-for="FilterDate" />
     <div class="container">
         <div class="header">
@@ -14,9 +14,6 @@
                     <span>@Model.SelectedSpace.City,</span>
                     <span>@Model.SelectedSpace.Street</span>
                 </div>
-            </div>
-            <div class="header-actions">
-                <i class="fa-regular fa-heart color-red"></i>
             </div>
         </div>
         <!--slider-->
@@ -84,12 +81,6 @@
                         </div>
                     </div>
                 </div>
-                <hr />
-                <!--Space-bio-->
-                <div class="space-bio">
-                    <h3 class="card-header-title">About this space</h3>
-                    <div class="bio">@Model.SelectedSpace.Bio</div>
-                </div>
                 <!-- facilities-->
                 @if (Model.SelectedHall.HallFacilities.Capacity != 0)
                 {
@@ -104,57 +95,6 @@
                     </div>
                 }
 
-                <hr />
-                <!--Services-->
-                <div class="sec-box">
-                    <h2 class="card-header-title">Space Services </h2>
-                    <div class="services-contanier">
-                        <!-- amenities card starts -->
-                        @foreach (var service in Model.SelectedSpace.Services)
-                        {
-                            <div class="product-card">
-                                <div class="product-content">
-                                    <div class="product-photo">
-                                        <img src="@service.ServicePhotos.First().Url" alt="Product Photo">
-                                    </div>
-                                    <div class="product-details">
-                                        <h3 class="product-name">@service.Name</h3>
-                                        <p class="product-description">@service.Description</p>
-                                        <p class="product-price">Price: @service.Price.ToString("N2")</p>
-                                    </div>
-                                </div>
-                            </div>
-                        }
-
-                        <!-- amenities card ends -->
-
-                    </div>
-                </div>
-
-                <hr />
-                <!--Working Times-->
-                <div class="Working-times">
-                    <h2 class="card-header-title"> Working Times </h2>
-                    <div class="grid-wdays">
-                        @foreach (var day in Model.SelectedSpace.WorkingDays)
-                        {
-                            <div>
-                                <p><b>@day.Day</b></p>
-                                <p>
-                                    @{
-                                        var start = new DateTime(day.OpeningTime.Ticks).ToString("hh:mm tt");
-                                    }
-                                    @start
-                                    -
-                                    @{
-                                        var end = new DateTime(day.ClosingTime.Ticks).ToString("hh:mm tt");
-                                    }
-                                    @end
-                                </p>
-                            </div>
-                        }
-                    </div>
-                </div>
                 <hr />
                 <!--Schedule-->
                 <h3 class="card-header-title">Booking schedule : <span>@Model.SlotsForWeek[0].Keys.First().ToString("D")</span></h3>
@@ -213,9 +153,8 @@
 
                         <h3>@Model.SelectedHall.Type :  $<span id="hall-cost">@Model.SelectedHall.CostPerHour</span> /hr  </h3>
                         <span asp-validation-for="@Model.DesiredDate" class="text-danger"></span>
-
                         <input type="date" asp-for="DesiredDate" class="p-date-picker" id="date-input">
-                        <a id="date-filter" asp-action="Index" asp-route-date="@DateTime.Now" asp-route-HallID="@Model.SelectedHall.Id">Check Date Availability</a>
+                        <a id="date-filter" asp-action="Index" asp-route-date="@DateTime.Now" asp-route-HallId="@Model.SelectedHall.Id">Check Date Availability</a>
                         <!--Select start & end time-->
                         <div class="select-time">
                             <div class="select-wrapper">
@@ -283,7 +222,28 @@
                                 </div>
                             </div>
                         </div>
-
+                        <!--Guest Data-->
+                        <div class="row">
+                            <div class="col-md-6 mb-2">
+                                <div class="form-outline">
+                                    <label class="form-label" asp-for="@Model.FirstName"></label>
+                                    <input style="font-size: 12px;" type="text" asp-for="@Model.FirstName" class="form-control form-control-lg" />
+                                    <span asp-validation-for="@Model.FirstName" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <div class="form-outline">
+                                    <label class="form-label" asp-for="@Model.LastName"></label>
+                                    <input style="font-size: 12px;" type="text" asp-for="@Model.LastName" class="form-control form-control-lg" />
+                                    <span asp-validation-for="@Model.LastName" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-outline mb-2">
+                            <label class="form-label" asp-for="@Model.PhoneNumber"></label>
+                            <input style="font-size: 12px;" type="text" asp-for="@Model.PhoneNumber" class="form-control form-control-lg" />
+                            <span asp-validation-for="@Model.PhoneNumber" class="text-danger"></span>
+                        </div>
                         <!--Add services to booking -->
                         <div class="btn-group ">
                             <button class="btn btn-secondary dropdown-toggle emen-btn" type="button"
@@ -386,10 +346,7 @@
             $('#date-input').on('change', () => {
                 var date = $('#date-input').val();
                 var hallId = $("#hallId").val();
-                $('#date-filter').attr('href', `/Booking?date=${date}&HallID=${hallId}`);
-
-
-
+                $('#date-filter').attr('href', `/GuestBooking?date=${date}&HallId=${hallId}`);
             })
         }
 
