@@ -200,6 +200,7 @@ section.active {
     font-family: 'Poppins';
     font-style: normal;
     font-weight: 700;
+    width: fit-content;
 }
 
 @media (max-width: 800px) {
@@ -365,4 +366,28 @@ section.active {
     .addHall-left-column {
         width: 90%;
     }
+}
+.slider-image {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+}
+.slider-card {
+    width: 60%;
+}
+
+.slider-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    margin: 20px 0px;
+}
+.carousel-item a {
+    position: absolute;
+    font-size: 1.5rem;
+    color: white;
+    top: 10px;
+    right: 20px;
+    z-index:5;
 }

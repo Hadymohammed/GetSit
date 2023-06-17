@@ -1,4 +1,5 @@
-﻿using GetSit.Models;
+﻿using GetSit.Data.enums;
+using GetSit.Models;
 
 namespace GetSit.Data.ViewModels
 {
