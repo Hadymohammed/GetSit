@@ -10,12 +10,12 @@
         <!--Profile Data-->
         <div class="profile-data">
             <div class="profile-cover">
-                <img src="@Model.Space.Photos.First().Url"/>
+                <img src="@Model.Space.SpaceCover"/>
             </div>
-            <div>
+            <div style="position: relative;">
                 <div class="profile-card">
                     @{
-                        var url="../"+Model.Space.Photos.First().Url;
+                        var url="../"+Model.Space.SpaceLogo;
                                         <img src="@url" />
                     }
                     <div class="profile-name">@Model.Space.Name</div>
@@ -23,8 +23,39 @@
                         @Model.Space.Bio
                     </div>
                 </div>
+                <a asp-action="SpaceDetails" asp-controller="SpaceManagement" asp-route-SpaceId="@Model.Space.Id" class="edit-link">
+                    <i class="fa-regular fa-pen-to-square"></i>
+                    <span>Edit Details</span>
+                </a>
+            </div>
+            <div class="phone-numbers">
+                @foreach (var phone in Model.Space.Phones)
+                {
+                    <a href="#" class="phone-number">
+                        <i class="fas fa-phone"></i>
+                        @phone.PhoneNumber</a>
+                }
             </div>
             <div class="profile-meta">
+                <div class="social-links">
+                    @if (Model.Space.Facebook != null)
+                    {
+                        <a href="@Model.Space.Facebook" target="_blank" class="social-link"><i class="fab fa-facebook"></i></a>
+                    }
+
+                    @if (Model.Space.Instagram != null)
+                    {
+                        <a href="@Model.Space.Instagram" target="_blank" class="social-link"><i class="fab fa-instagram"></i></a>
+                    }
+                    @if(Model.Space.Twitter != null)
+                    {
+                        <a href="@Model.Space.Twitter" target="_blank" class="social-link"><i class="fab fa-twitter"></i></a>
+                    }
+                    @if (Model.Space.Email != null)
+                    {
+                        <a href="mailto:@Model.Space.Email" class="social-link"><i class="fas fa-envelope"></i></a>
+                    }
+                </div>
                 <div class="Location">
                     <i class="fa-solid fa-location-dot" style="color: #545454;"></i>
                     <span>@Model.Space.Country, @Model.Space.City</span>

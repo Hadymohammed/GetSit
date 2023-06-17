@@ -24,8 +24,11 @@ namespace GetSit.Models
         [Required]
         [DataType(DataType.Date)]
         public DateTime Birthdate { get; set; }
-        [DataType(DataType.Url), AllowNull, DefaultValue("./resources/site/user-profile-icon.jpg")]
+        [AllowNull,DataType(DataType.Url), DefaultValue("resource/site/user-profile-icon.jpg")]
         public string? ProfilePictureUrl { get; set; }
+        [DataType(DataType.Url), AllowNull,DefaultValue("resource/site/Cover_PlaceHolder.png")]
+        public string? CoverPrictureUrl { get; set; }
+
         [AllowNull]
         public string? Country { get; set; }
         [AllowNull]
