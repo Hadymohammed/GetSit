@@ -222,7 +222,7 @@
                                     <span class="badge">@facility.Facility</span>
                                 }
                             </div>
-                            <button class="buy-button">Edit</button>
+                            <a asp-controller="SpaceManagement" asp-action="EditHall" asp-route-HallId="@hall.Id" class="buy-button">Edit</a>
                         </div>
                     </div>
                 </div>
@@ -257,7 +257,7 @@
                                     <span class="badge">Free Shipping</span>
                                     <span class="badge">1-Year Warranty</span>
                                 </div>
-                                <button class="buy-button">Edit</button>
+                                <a asp-controller="SpaceManagement" asp-action="EditService" asp-route-ServiceId="@service.Id" class="buy-button">Edit</a>
                             </div>
                         </div>
                     </div>
