@@ -63,7 +63,8 @@ namespace GetSit.Controllers
             {
                 var providerId = _userManager.GetCurrentUserId(HttpContext);
                 var provider = await _providerService.GetByIdAsync(providerId);
-                SpaceIdStirng = provider.SpaceId.ToString();
+                spaceIdInt = (int)provider.SpaceId;
+                SpaceIdStirng = spaceIdInt.ToString();
                 if(SpaceIdStirng != String.Empty)
                     HttpContext.Response.Cookies.Append("SpaceId", SpaceIdStirng);
             }
@@ -184,7 +185,8 @@ namespace GetSit.Controllers
             {
                 var providerId = _userManager.GetCurrentUserId(HttpContext);
                 var provider = _context.SpaceEmployee.Where(e => e.Id == providerId).FirstOrDefault();
-                SpaceIdStirng = provider.SpaceId.ToString();
+                spaceIdInt = (int)provider.SpaceId;
+                SpaceIdStirng = spaceIdInt.ToString();
                 if (SpaceIdStirng != String.Empty)
                     HttpContext.Response.Cookies.Append("SpaceId", SpaceIdStirng);
             }
@@ -215,7 +217,7 @@ namespace GetSit.Controllers
             var service = new SpaceService()
             {
                 SpaceId = vm.SpaceId,
-                Name=vm.SpaceName,
+                Name=vm.ServiceName,
                 Description = vm.Description,
                 Price = vm.CostPerUnit
             };

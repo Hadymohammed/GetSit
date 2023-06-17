@@ -1,4 +1,4 @@
-﻿using GetSit.Data;
+using GetSit.Data;
 using GetSit.Data.enums;
 using GetSit.Models;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +15,7 @@ namespace GetSit.Common
         {
             _context = context;
         }
-         public List<Tuple<TimeSpan,bool>> GetAvailableSlotsForDay(int hallId, DateTime date)
+        public List<Tuple<TimeSpan,bool>> GetAvailableSlotsForDay(int hallId, DateTime date)
         {
             var bookings = _context.Booking
                            .Where(b => b.BookingHalls.Any(h => h.HallId == hallId && b.DesiredDate == date))
@@ -86,7 +86,6 @@ namespace GetSit.Common
             }
             return timeSlots;
         }
-
         public List<Dictionary<DateTime, List<Tuple<TimeSpan, bool>>>> GetAvailableSlotsForWeek(int hallId, DateTime date)
         {
             
@@ -117,8 +116,7 @@ namespace GetSit.Common
 
             return !NotAvailable;
         }
-    
-        public List<TimeSpan> GetAvailableEndSlots(int hallId, DateTime date,TimeSpan startTime)
+public List<TimeSpan> GetAvailableEndSlots(int hallId, DateTime date,TimeSpan startTime)
         {
             var bookings = _context.Booking
                            .Where(b => b.BookingHalls.Any(h => h.HallId == hallId && b.DesiredDate == date))
