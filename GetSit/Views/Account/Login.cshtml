@@ -9,6 +9,8 @@
     <div class="box-header">
         <h2>Login</h2>
         <div class="mt-3">Login for free to access any of our services </div>
+        <div class="mt-3">Are you a Co-Working space manager? <a asp-action="Index" asp-controller="JoinRequest"> Join Us now </a></div>
+
     </div>
     <form asp-action="Login" class="form">
         <div class="row">
@@ -29,6 +31,7 @@
                 </div>
                 <input type="password" asp-for="@Model.Password" class="form-control form-control-lg" />
                 <span asp-validation-for="@Model.Password" class="text-danger"></span>
+                <a asp-action="Index" asp-controller="ForgetPassword">Forget password?</a>
             </div>
         </div>
         <div class="row">

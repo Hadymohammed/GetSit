@@ -1,4 +1,4 @@
-﻿using GetSit.Models;
+using GetSit.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 

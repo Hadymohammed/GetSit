@@ -28,6 +28,7 @@ namespace GetSit.Models
         public string? ProfilePictureUrl { get; set; }
         [DataType(DataType.Url), AllowNull,DefaultValue("resource/site/Cover_PlaceHolder.png")]
         public string? CoverPrictureUrl { get; set; }
+
         [AllowNull]
         public string? Country { get; set; }
         [AllowNull]

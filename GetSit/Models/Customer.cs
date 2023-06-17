@@ -1,4 +1,4 @@
-﻿using GetSit.Data.Base;
+using GetSit.Data.Base;
 using GetSit.Data.enums;
 using GetSit.Data.Security;
 using System.ComponentModel;

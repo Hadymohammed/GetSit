@@ -28,6 +28,7 @@ namespace GetSit.Models
         public string? ProfilePictureUrl { get; set; }
         [DataType(DataType.Url), AllowNull, DefaultValue("resource/site/Cover_PlaceHolder.png")]
         public string? CoverPrictureUrl { get; set; }
+
         [AllowNull]
         public string? Country { get; set; }
         [AllowNull]
@@ -37,5 +38,10 @@ namespace GetSit.Models
         [ForeignKey("SpaceId"), AllowNull]
         public int? SpaceId { get; set; }
         public Space? Space { get; set; }
+
+        public List<GuestBooking>? GuestBookings { get; set; }
+
+        [Required, DefaultValue(false)]
+        public bool IsApproved { get; set; }
     }
 }
