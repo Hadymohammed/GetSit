@@ -1,4 +1,4 @@
-﻿using GetSit.Common;
+using GetSit.Common;
 using GetSit.Data;
 using GetSit.Data.enums;
 using GetSit.Data.Security;
@@ -9,9 +9,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
+using static System.Reflection.Metadata.BlobBuilder;
+
 namespace GetSit.Controllers
 {
     [Authorize(Roles = "Provider")]//Error:Convert UserRole to class
@@ -31,7 +34,8 @@ namespace GetSit.Controllers
         readonly IServicePhotoService _servicePhotoService;
         readonly IBookingService _bookingService;
         readonly ISpacePhotoService _spacePhotoService;
-
+        readonly IGuestBookingService _guestBookingService;
+        
         public SpaceManagementController(IUserManager userManager,
             AppDBcontext context,
             ISpaceEmployeeService spaceEmployeeService,
@@ -43,6 +47,7 @@ namespace GetSit.Controllers
             IServicePhotoService servicePhotoService,
             IBookingService bookingService,
             ISpacePhotoService spacePhotoService,
+            IGuestBookingService guestBookingService,
             IWebHostEnvironment env)
         {
             _env = env;
@@ -57,6 +62,7 @@ namespace GetSit.Controllers
             _servicePhotoService = servicePhotoService;
             _bookingService = bookingService;
             _spacePhotoService = spacePhotoService;
+            _guestBookingService = guestBookingService;
         }
         #endregion
 
@@ -88,6 +94,8 @@ namespace GetSit.Controllers
                 Services = _spaceService_service.GetBySpaceId(spaceIdInt, s => s.ServicePhotos),
                 Employees = _providerService.GetBySpaceId(spaceIdInt),
                 Bookings = _bookingService.GetBySpaceId(spaceIdInt)
+                Bookings = _bookingService.GetBySpaceId(spaceIdInt),
+                GuestBookings=_guestBookingService.GetBySpaceId(spaceIdInt)
             };
             return View(viewModel);
         }

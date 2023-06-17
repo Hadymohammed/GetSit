@@ -9,8 +9,10 @@
     <div class="box-header">
         <h2>Sign up</h2>
         <div class="mt-3">Sign up for free to access any of our services </div>
+        <div class="mt-3">Are you a Co-Working space manager? <a asp-action="Index" asp-controller="JoinRequest"> Join Us now </a></div>
     </div>
     <form asp-action="Register" class="form">
+        <input name="Role" value="@UserRole.Customer" hidden/>
         <div class="row">
             <div class="col-md-6 mb-2">
                 <div class="form-outline">
@@ -61,7 +63,8 @@
                 <span asp-validation-for="@Model.Password" class="text-danger"></span>
             </div>
         </div>
-        <div class="row">
+        @*
+            <div class="row">
             <div class="form-outline mb-2">
                 <div class="mb-3">Which account services you want?</div>
                 <div class="user-roles">
@@ -77,6 +80,7 @@
                 <span asp-validation-for="@Model.Role" class="text-danger"></span>
             </div>
         </div>
+        *@
         <div class="row">
             <div class="form-outline">
                 <input class="purple-btn float-right" type="submit" value="Sign up">

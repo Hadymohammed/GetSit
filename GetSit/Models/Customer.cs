@@ -26,8 +26,8 @@ namespace GetSit.Models
         public string PhoneNumber { get; set; }
         [DataType(DataType.Date)]
         public DateTime Birthdate { get; set; }
-        [DataType(DataType.Url), AllowNull]
-        public string ProfilePictureUrl { get; set; } = "resource/site/user-profile-icon.jpg";
+        [DataType(DataType.Url), AllowNull,DefaultValue("./resources/site/user-profile-icon.jpg")]
+        public string? ProfilePictureUrl { get; set; }
         public CustomerType CustomerType { get; set; }
         [AllowNull]
         public string? Country { get; set; }

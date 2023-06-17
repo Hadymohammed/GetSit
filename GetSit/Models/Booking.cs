@@ -26,7 +26,7 @@ namespace GetSit.Models
         [Required]
         public BookingType BookingType { get; set; }
         public Payment Payment { get; set; }
-        [AllowNull, ForeignKey("CustomerId")]
+        [ForeignKey("CustomerId")]
         public int CustomerId { get; set; }
         [Required]
         public Customer Customer { get; set; }

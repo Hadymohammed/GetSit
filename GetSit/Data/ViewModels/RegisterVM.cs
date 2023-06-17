@@ -1,6 +1,7 @@
 ﻿using GetSit.Data.enums;
 using GetSit.Data.Validation;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace GetSit.Data.ViewModels
 {
@@ -33,8 +34,7 @@ namespace GetSit.Data.ViewModels
         [DataType(DataType.Password), 
         RegularExpression("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$", ErrorMessage = "Must be at least 8 characters and contain at least one letter and one number.")]
         public string Password { get; set; }
-        [Required(ErrorMessage = "Role is required")]
-        [UserRoleValidator(ErrorMessage ="Must be a Customer or Provider")]
-        public UserRole Role { get; set; }
+        [AllowNull]
+        public UserRole? Role { get; set; }
     }
 }
