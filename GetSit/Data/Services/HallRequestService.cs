@@ -1,14 +1,15 @@
-﻿using GetSit.Data.enums;
+﻿using GetSit.Data.Base;
+using GetSit.Data.enums;
 using GetSit.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace GetSit.Data.Services
 {
-    public class HallRequestService : IHallRequestService
+    public class HallRequestService : EntityBaseRepository<HallRequest>, IHallRequestService
     {
         readonly AppDBcontext _context;
-        public HallRequestService(AppDBcontext context) 
+        public HallRequestService(AppDBcontext context) : base(context)
         {
             _context = context;
         }

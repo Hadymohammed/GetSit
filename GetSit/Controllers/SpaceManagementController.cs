@@ -502,6 +502,20 @@ namespace GetSit.Controllers
             await _hallService.UpdateAsync(hall.Id, hall);
             return RedirectToAction("EditHall", new { hallId = hall.Id });
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Revalidate(int RequestId)
+        {
+            if (RequestId < 1)
+                return NotFound();
+            var request = await _hallRequestService.GetByIdAsync(RequestId, r => r.Hall);
+            request.Status = ReqestStatus.pending;
+            var hall = await _hallService.GetByIdAsync(request.HallId);
+            hall.Status = HallStatus.Pending;
+            await _hallRequestService.UpdateAsync(request.Id, request);
+            await _hallService.UpdateAsync(hall.Id, hall);
+            return RedirectToAction("Index");
+        }
         [HttpGet]
         public async Task<ActionResult> DeleteHallPhoto(int PhotoId)
         {

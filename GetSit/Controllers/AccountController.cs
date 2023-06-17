@@ -98,7 +98,7 @@ namespace GetSit.Controllers
                         return View(login);
                     }
                     _userManager.SignIn(HttpContext, provider);
-                    return RedirectToAction("ProviderProfile", "Account");
+                    return RedirectToAction("Index", "SpaceManagement");
                     break;
                 case UserRole.Customer:
         
@@ -247,7 +247,7 @@ namespace GetSit.Controllers
                     {
                         await _spaceEmployeeService.AddAsync(provider);
                         await _userManager.SignIn(HttpContext, provider);
-                        return RedirectToAction("ProviderProfile", "Account");
+                        return RedirectToAction("Index", "SpaceManagement");
                     }
                     catch (Exception error)
                     {
