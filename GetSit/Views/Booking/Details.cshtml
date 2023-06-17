@@ -32,13 +32,13 @@
                                 {
                                     <div class="booking-status paid">Paid</div>
                                 }
-                                else if(Model.HallDetail.Status == PaymentStatus.Paid)
+                                else if (Model.HallDetail.Status == PaymentStatus.Uncompleted)
                                 {
-                                        <a asp-action="Pay" asp-controller="Booking" asp-route-detailId="@Model.HallDetail.Id" class="booking-status not-paid">Accept Payment</a>
+                                    <div class="booking-status not-paid">Not Completed</div>
                                 }
                                 else
                                 {
-                                        <a asp-action="Pay" asp-controller="Booking" asp-route-detailId="@Model.HallDetail.Id" class="booking-status not-paid">Accept Payment</a>
+                                    <div class="booking-status not-paid">Not Paid</div>
                                 }
                                 <div class="booking-cost">$@Model.HallDetail.TotalCost.ToString("N2")</div>
                             </div>
@@ -64,9 +64,13 @@
                                     {
                                         <div class="booking-status paid">Paid</div>
                                     }
+                                    else if (service.Status == PaymentStatus.Uncompleted)
+                                    {
+                                        <div class="booking-status not-paid">Not Completed</div>
+                                    }
                                     else
                                     {
-                                        <a asp-action="Pay" asp-controller="Booking" asp-route-detailId="@service.Id" class="booking-status not-paid">Accept Payment</a>
+                                        <div class="booking-status not-paid">Not Paid</div>
                                     }
                                     <div class="booking-cost">$@service.TotalCost.ToString("N2")</div>
                                 </div>
@@ -76,6 +80,7 @@
                 </li>
             }
         </ul>
+
         <div style="display: flex;justify-content: flex-end;">
             <div>
                 <div class="total-cost">
@@ -115,9 +120,17 @@
             </div>
         </div>
     </div>
-    @*
-    <a class="add-item-btn" asp-action="Edit" asp-controller="GuestBooking" asp-route-bookingId="@Model.Booking.Id">Edit Booking</a>
-    *@
+    <div class="actions">
+        @if (Model.Role == UserRole.Provider)
+        {
+            <a onclick="return confirmPay();" class="add-item-btn pay-btn" asp-action="Pay" asp-controller="Booking" asp-route-PaymentId="@Model.Booking.Payment.Id">Accept payment</a>
+        }
+        else if(Model.Role==UserRole.Customer)
+        {
+            <a class="add-item-btn apply-btn" asp-action="Edit" asp-controller="Booking" asp-route-bookingId="@Model.Booking.Id">Edit Booking</a>
+            <a onclick="return confirmCancel();" class="add-item-btn cancel-btn" asp-action="Cancel" asp-controller="Booking" asp-route-BookingId="@Model.Booking.Id">Cancel</a>
+        }
+    </div>
 </div>
 @section scripts{
     <script>
@@ -150,6 +163,12 @@
                 // Prevent dropdown from closing when clicking on the counter buttons
                 e.stopPropagation();
             });
+        }
+        function confirmCancel() {
+            return confirm('Are you sure you want to cancel this booking?');
+        }
+        function confirmPay() {
+            return confirm('Are you sure you want to accept this booking payment?');
         }
     </script>
 }

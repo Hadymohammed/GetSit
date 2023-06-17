@@ -1,9 +1,11 @@
-﻿using GetSit.Models;
+﻿using GetSit.Data.enums;
+using GetSit.Models;
 
 namespace GetSit.Data.ViewModels
 {
     public class BookingDetailsVM
     {
+        public UserRole? Role { get; set; }
         public SpaceEmployee? Employee { get; set; }
         public int? HallId { get; set; }
         public Customer? customer { get; set; }
