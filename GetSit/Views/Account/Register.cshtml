@@ -12,6 +12,7 @@
         <div class="mt-3">Are you a Co-Working space manager? <a asp-action="Index" asp-controller="JoinRequest"> Join Us now </a></div>
     </div>
     <form asp-action="Register" class="form">
+        <input name="Role" value="@UserRole.Customer" hidden/>
         <div class="row">
             <div class="col-md-6 mb-2">
                 <div class="form-outline">
