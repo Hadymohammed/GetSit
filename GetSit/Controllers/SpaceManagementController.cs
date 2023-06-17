@@ -36,7 +36,6 @@ namespace GetSit.Controllers
         readonly ISpacePhoneService _spacePhoneService;
         readonly ISpacePhotoService _spacePhotoService;
         readonly IGuestBookingService _guestBookingService;
-        readonly ISpacePhotoService _spacePhotoService;
 
         public SpaceManagementController(IUserManager userManager,
             AppDBcontext context,
@@ -52,7 +51,6 @@ namespace GetSit.Controllers
             ISpacePhoneService spacePhoneService,
             ISpacePhotoService spacePhotoService,
             IGuestBookingService guestBookingService)
-            ISpacePhotoService spacePhotoService)
         {
             _env = env;
             _userManager = userManager;

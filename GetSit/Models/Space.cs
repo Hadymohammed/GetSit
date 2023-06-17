@@ -24,7 +24,7 @@ namespace GetSit.Models
         [Required,DefaultValue(true)]
         public bool IsFast { get; set; }
         [AllowNull]
-        public string ?BankAccount { get; set; 
+        public string? BankAccount { get; set; }
         [Required, DefaultValue(false)]
         public bool IsApproved { get; set; }
         [AllowNull,DefaultValue("resource/site/logo-social.png")]
