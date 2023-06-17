@@ -14,11 +14,22 @@ namespace GetSit.Data.Services
         public Payment GetByBookingId(int bookingId)
         {
             return _context.Payment.Where(b => b.GuestBookingId == bookingId)
-                    .Include(b => b.Booking)
+                    .Include(b => b.GuestBooking)
                         .ThenInclude(bo => bo.BookingHalls)
                             .ThenInclude(bh => bh.BookedServices)
                     .Include(b=>b.Booking)
                         .ThenInclude(bo=>bo.Customer)
+                    .Include(b => b.Details)
+                    .FirstOrDefault();
+        }
+        public Payment GetByCustomerBookingId(int bookingId)
+        {
+            return _context.Payment.Where(b => b.BookingId == bookingId)
+                    .Include(b => b.Booking)
+                        .ThenInclude(bo => bo.BookingHalls)
+                            .ThenInclude(bh => bh.BookedServices)
+                    .Include(b => b.Booking)
+                        .ThenInclude(bo => bo.Customer)
                     .Include(b => b.Details)
                     .FirstOrDefault();
         }
