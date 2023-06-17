@@ -29,6 +29,7 @@ namespace GetSit.Controllers
         private readonly IBookingHallService_Service _bookingService_Serivce;
         private readonly IPaymentService _paymentSerivce;
         private readonly IPaymentDetailService _paymentDetailService;
+        private readonly IBookingService _bookingService;
         public BookingController(AppDBcontext context,
             IUserManager userManager,
             ISpaceEmployeeService spaceEmployeeService,
@@ -38,7 +39,8 @@ namespace GetSit.Controllers
             IBookingHall_Service bookingHall_Service,
             IBookingHallService_Service bookingHallService_Service,
             IPaymentService paymentService,
-            IPaymentDetailService paymentDetailService)
+            IPaymentDetailService paymentDetailService,
+            IBookingService bookingService)
         {
             _context = context;
             _userManager = userManager;
@@ -50,6 +52,7 @@ namespace GetSit.Controllers
             _bookingService_Serivce = bookingHallService_Service;
             _paymentSerivce = paymentService;
             _paymentDetailService = paymentDetailService;
+            _bookingService = bookingService;
         }
         [HttpGet,Authorize(Roles ="Customer")]
         public async Task<IActionResult> Index (int HallID)
@@ -123,7 +126,7 @@ namespace GetSit.Controllers
                 NumberOfHours = NumberOfHours,
                 TotalCost = viewModel.TotalCost,
                 Paid = 0,
-                BookingStatus = BookingStatus.Confirmed,
+                BookingStatus = BookingStatus.Accepted,
                 BookingType = BookingType.Individual,
                 
             };
@@ -243,7 +246,7 @@ namespace GetSit.Controllers
                     .ThenInclude(b => b.BookedServices)
                 .FirstOrDefault();
 
-            var payment = _paymentSerivce.GetByBookingId(bookingId);
+            var payment = _paymentSerivce.GetByCustomerBookingId(bookingId);
             if (booking == null)
                 return NotFound();
 
@@ -285,14 +288,51 @@ namespace GetSit.Controllers
                 DesiredDate = booking.DesiredDate,
                 StartTime = booking.StartTime,
                 EndTime = booking.StartTime.Add(TimeSpan.FromHours(booking.NumberOfHours)),
-                Paid = booking.Paid,
-                TotalCost = booking.TotalCost,
+                Paid = payment.PaidAmount,
+                TotalCost = payment.TotalCost,
                 servicesDetails = servicesDetails,
                 EndSlots = endSlots
             };
             return View(userbooking);
         }
+        [HttpGet, Authorize(Roles = "Provider")]
+        public async Task<IActionResult> Pay(int DetailId)
+        {
+            if (DetailId < 1)
+                return NotFound();
+            #region security
+            var userId = _userManager.GetCurrentUserId(HttpContext);
+            var user = await _providerService.GetByIdAsync(userId);
+            var detail =await _paymentDetailService.GetByIdAsync(DetailId,d=>d.BookingHall,d=>d.BookingHallService);
+            if (detail.BookingHall != null)
+            {
+                detail.BookingHall = await _bookingHall_service.GetByIdAsync(detail.BookingHall.Id, b => b.Hall);
+                if (detail.BookingHall.Hall.SpaceId != user.SpaceId)
+                    return RedirectToAction("AccessDenied", "Account");
+            }
+            if (detail.BookingHallService != null)
+            {
+                detail.BookingHallService = await _bookingService_Serivce.GetByIdAsync(detail.BookingHallService.Id,s=>s.Service);
+                if(detail.BookingHallService.Service.SpaceId!=user.SpaceId)
+                    return RedirectToAction("AccessDenied", "Account");
+            }
+            #endregion
+            if(detail.Status==PaymentStatus.Paid)
+                return NotFound();
+            var payment = await _paymentSerivce.GetByIdAsync(detail.PaymentId);
+            var booking = await _bookingService.GetByIdAsync((int)payment.BookingId);
+            detail.Status = PaymentStatus.Paid;
+            payment.PaidAmount += detail.TotalCost;
+            await _paymentDetailService.UpdateAsync(detail.Id, detail);
+            if (payment.PaidAmount == payment.TotalCost)
+            {
+                payment.Status= PaymentStatus.Paid;
+                booking.BookingStatus = BookingStatus.Confirmed;
+            }
 
+            await _paymentSerivce.UpdateAsync(payment.Id, payment);
+            return RedirectToAction("Details",new { bookingId = payment.BookingId});
+        }
         /*To do*/
         [HttpPost]
         public async Task<IActionResult> EditBookingByCustomer(int ID, BookingVM viewModel)
