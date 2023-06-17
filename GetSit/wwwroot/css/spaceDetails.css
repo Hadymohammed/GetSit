@@ -11,6 +11,7 @@
     text-decoration: none;
     color: black;
 }
+
 .profile-container {
     width: 70%;
 }
@@ -19,9 +20,11 @@
     height: 230px;
     overflow: hidden;
 }
-.profile-cover img {
-    width: 100%;
-}
+
+    .profile-cover img {
+        width: 100%;
+    }
+
 .profile-card {
     display: flex;
     flex-direction: column;
@@ -29,17 +32,19 @@
     position: relative;
     top: -30px;
 }
-.profile-card img {
-    width: 150px;
-    border-radius: 50%;
-    
-    border: solid white 4px;
-}
+
+    .profile-card img {
+        width: 150px;
+        border-radius: 50%;
+        border: solid white 4px;
+    }
+
 .profile-meta {
     display: flex;
     justify-content: space-between;
     padding: 5px 50px;
 }
+
 .profile-name {
     font-family: 'Poppins';
     font-style: normal;
@@ -87,6 +92,7 @@ button {
     button.edit-profile-picture-button {
         margin-top: 10px;
     }
+
 .phone-input-group {
     position: relative;
 }
@@ -99,6 +105,7 @@ button {
         cursor: pointer;
         z-index: 5;
     }
+
     .phone-input-group .remove-saved-phone {
         position: absolute;
         top: 50%;

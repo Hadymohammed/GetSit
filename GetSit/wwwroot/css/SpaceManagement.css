@@ -44,11 +44,12 @@
     height:100vh;
     overflow:scroll;
 }
-.dashboard nav {
-    position: sticky;
-    top:-5px;
-    padding:0;
-}
+    .dashboard nav {
+        position: sticky;
+        top: 0;
+        padding: 0;
+        height: 50px;
+    }
 .dashboard nav a {
     font-family: 'Poppins';
     font-style: normal;

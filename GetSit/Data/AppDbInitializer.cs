@@ -205,17 +205,17 @@ namespace GetSit.Data
                         new SpacePhoto
                         {
                             SpaceId=1,
-                            Url="./resources/space.webp"
+                            Url="./resources/m1.jpg"
                         },
                         new SpacePhoto
                         {
                             SpaceId=2,
-                            Url="./resources/space1.webp"
+                            Url="./resources/m2.jpg"
                         },
                         new SpacePhoto
                         {
                             SpaceId=2,
-                            Url = "./resources/space.webp"
+                            Url = "./resources/m3.jpg"
                         }
                     });
                     context.SaveChanges();
@@ -359,7 +359,7 @@ namespace GetSit.Data
                         new HallPhoto
                         {
                             HallId=3,
-                            Url="./resources/meetingRoom.webp"
+                            Url="./resources/m3.jpg"
                         },
                         new HallPhoto
                         {
@@ -374,22 +374,22 @@ namespace GetSit.Data
                         new HallPhoto
                         {
                             HallId=5,
-                            Url="./resources/classroom3.webp"
+                            Url="./resources/m5.jpg"
                         },
                         new HallPhoto
                         {
                             HallId=5,
-                            Url="./resources/classroom2.webp"
+                            Url="./resources/m55.jpg"
                         },
                         new HallPhoto
                         {
                             HallId=6,
-                            Url="./resources/classroom.webp"
+                            Url="./resources/m6.jpg"
                         },
                         new HallPhoto
                         {
                             HallId=7,
-                            Url="./resources/meetingRoom.webp"
+                            Url="./resources/m66.jpeg"
                         },
                         new HallPhoto
                         {
