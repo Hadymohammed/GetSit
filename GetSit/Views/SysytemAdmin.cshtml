@@ -332,7 +332,7 @@
 											<td>
 												<!-- The button triggers the message -->
 												<!-- Note : ID in <a> and collapse div must be unique  -->
-												<a href="view-request.html" class="btn badge btn-primary">View Details</a>
+													<a asp-action="ViewSpaceRequest" asp-controller="SystemAdminController" asp-route-SpaceId="@space.Item1.Id" class="btn badge btn-primary">View Details</a>
 												
 												<!-- <span class="btn badge bg-danger">Reject</span>
 												<span>
@@ -395,7 +395,7 @@
 											</td>
 											<td class="d-none d-xl-table-cell"> </td>
 											<td>
-												<a href="view-request.html" class="btn badge btn-primary">View Details</a>
+													<a asp-action="ViewRepest" asp-controller="SystemAdminController" asp-route-requestId="@hall.Item1.Id" class="btn badge btn-primary">View Details</a>
 											</td>
 										</tr>
 
