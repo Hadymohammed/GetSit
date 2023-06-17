@@ -27,7 +27,7 @@ namespace GetSit.Controllers
         bool VerifyPassword(string encodedPassword, string password)
         {
 
-            return (PasswordHashing.Decode (encodedPassword) == password);
+            return (PasswordHashing.Decode(encodedPassword) == password);
         }
         bool PresirvedEmail(string email)
         {
@@ -36,7 +36,7 @@ namespace GetSit.Controllers
                     _adminSerivce.GetByEmail(email) != null
                     );
         }
-        public AccountController(AppDBcontext context, IUserManager userManager,ICustomerService customerService, ISpaceEmployeeService spaceEmployeeService, ISystemAdminService adminSerivce)
+        public AccountController(AppDBcontext context, IUserManager userManager, ICustomerService customerService, ISpaceEmployeeService spaceEmployeeService, ISystemAdminService adminSerivce)
         {
             _context = context;
             _userManager = userManager;
@@ -59,7 +59,7 @@ namespace GetSit.Controllers
             {
                 return View(login);
             }
-            if(!PresirvedEmail(login.Email))
+            if (!PresirvedEmail(login.Email))
             {
                 ModelState.AddModelError("Email", "Invalid email");
                 return View(login);
@@ -101,21 +101,21 @@ namespace GetSit.Controllers
                     return RedirectToAction("Index", "SpaceManagement");
                     break;
                 case UserRole.Customer:
-        
+
                     var customer = _customerService.GetByEmail(login.Email);
                     if (customer == null)
                     {
                         // Email not found in database
                         ModelState.AddModelError("Role", "Wrong Role");
-                            return View(login);
-                        
+                        return View(login);
+
                     }
                     if (!VerifyPassword(customer.Password, login.Password))
                     {
                         // Password is incorrect
                         ModelState.AddModelError("Password", "Invalid login attempt, incorrect password.");
-                            return View(login);
-                        
+                        return View(login);
+
                     }
                     await _userManager.SignIn(HttpContext, customer);
                     return RedirectToAction("Index", "Customer");
@@ -131,9 +131,14 @@ namespace GetSit.Controllers
             _userManager.SignOut(HttpContext);
             return RedirectToAction("Login");
         }
-        public IActionResult Register()
+        [HttpGet]
+        public IActionResult RegisterGet(RegisterVM? registerVM)
         {
-            return View();
+            if (registerVM != null)
+            {
+                return View("Register", registerVM);
+            }
+            return View("Register");
         }
         [HttpPost]
         public async Task<IActionResult> Register(RegisterVM register)
@@ -144,8 +149,9 @@ namespace GetSit.Controllers
             }
             
             /*check if the entered email in register is already in database*/
-            if (PresirvedEmail(register.Email))
+            if ((register.Role!=UserRole.Provider|| register.Role != UserRole.Admin) && PresirvedEmail(register.Email))
             {
+
                 ModelState.AddModelError("Email", "This email already has an account.");
                 return View(register);
             }
@@ -160,7 +166,7 @@ namespace GetSit.Controllers
         {
             if (otpVm is null)
                 RedirectToAction("Register");
-            OTPServices.SendPhoneOTP(HttpContext,otpVm.Phone);
+            OTPServices.SendPhoneOTP(HttpContext, otpVm.Phone);
             return View(otpVm);
         }
         [HttpPost]
@@ -173,10 +179,10 @@ namespace GetSit.Controllers
             if (OTPServices.VerifyOTP(HttpContext, otp) == false)
             {
                 ModelState.AddModelError("OTP", "InValid Code");
-                return View(otp); 
+                return View(otp);
             }
-            
-            return RedirectToAction("EmailOTP",otp);
+
+            return RedirectToAction("EmailOTP", otp);
         }
         [HttpGet]
         public IActionResult EmailOTP(OTPVM? otpVm)
@@ -208,7 +214,7 @@ namespace GetSit.Controllers
                 case UserRole.Admin:
                     var admin = new SystemAdmin()
                     {
-
+                        Id= (int)register.UserId,
                         FirstName = register.FirstName,
                         LastName = register.LastName,
                         Email = register.Email,
@@ -216,14 +222,13 @@ namespace GetSit.Controllers
                         Birthdate = register.Birthdate,
                         Password = PasswordHashing.Encode (register.Password),/*Here password should be hashed*/
                         ProfilePictureUrl = "./resources/site/user-profile-icon.jpg"
-
                     };
 
                     try
                     {
-                       await _adminSerivce.AddAsync(admin);
-                       await _userManager.SignIn(HttpContext, admin);
-                       return RedirectToAction("AdminProfile", "Account");
+                        await _adminSerivce.UpdateAsync(admin.Id,admin);
+                        await _userManager.SignIn(HttpContext, admin);
+                        return RedirectToAction("AdminProfile", "Account");
                     }
                     catch (Exception error)
                     {
@@ -233,6 +238,7 @@ namespace GetSit.Controllers
                 case UserRole.Provider:
                     var provider = new SpaceEmployee()
                     {
+                        Id = (int)register.UserId,
                         FirstName = register.FirstName,
                         LastName = register.LastName,
                         Email = register.Email,
@@ -245,7 +251,7 @@ namespace GetSit.Controllers
 
                     try
                     {
-                        await _spaceEmployeeService.AddAsync(provider);
+                        await _spaceEmployeeService.UpdateAsync(provider.Id,provider);
                         await _userManager.SignIn(HttpContext, provider);
                         return RedirectToAction("Index", "SpaceManagement");
                     }
@@ -261,8 +267,8 @@ namespace GetSit.Controllers
                         LastName = register.LastName,
                         Email = register.Email,
                         PhoneNumber = register.PhoneNumber,
-                        CustomerType=CustomerType.Registered,
-                        Birthdate=register.Birthdate,
+                        CustomerType = CustomerType.Registered,
+                        Birthdate = register.Birthdate,
                         Password = PasswordHashing.Encode(register.Password),/*Here password should be hashed*/
                         ProfilePictureUrl= "./resources/site/user-profile-icon.jpg"
                     };
@@ -299,14 +305,37 @@ namespace GetSit.Controllers
         [Authorize(Roles = "Provider")]//error enum must be used
         public async Task<IActionResult> ProviderProfileAsync()
         {
-            var user =(SpaceEmployee) await _userManager.GetCurrentUserAsync(HttpContext);
+            var user = (SpaceEmployee)await _userManager.GetCurrentUserAsync(HttpContext);
             return View(user);
         }
         public IActionResult AccessDenied()
         {
             return View();
         }
-
-        
+        [HttpGet]
+        public async Task<IActionResult> RegisterProvider(int UID, UserRole Role,string token)
+        {
+            
+            if (_context.Token.Where(t => t.Id == UID) == null || Common.JwtTokenHelper.ValidateToken(token) == null)
+            {
+                return RedirectToAction("AccessDenied");
+            }
+            var UserIdStr = Common.JwtTokenHelper.ValidateToken(token);
+            var UserId = 0;
+            int.TryParse(UserIdStr, out UserId);
+            var SpaceEmployee = await _spaceEmployeeService.GetByIdAsync(UserId);
+            Common.SessoinHelper.saveObject(HttpContext,  "TokenId" ,new {id=UID}  );
+            return RedirectToAction("RegisterGet", new RegisterVM()
+            {
+                UserId = SpaceEmployee.Id,
+                FirstName = SpaceEmployee.FirstName,
+                LastName = SpaceEmployee.LastName,
+                Email = SpaceEmployee.Email,
+                PhoneNumber = SpaceEmployee.PhoneNumber,
+                Birthdate = SpaceEmployee.Birthdate,
+                Role=Role
+            });
+            return View();
+        }
     }
 }

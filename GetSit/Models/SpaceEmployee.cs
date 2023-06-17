@@ -8,7 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace GetSit.Models
 {
-    public class SpaceEmployee:IAbstractUser,IEntityBase
+    public class SpaceEmployee : IAbstractUser, IEntityBase
     {
         [Key]
         public int Id { get; set; }
@@ -28,11 +28,12 @@ namespace GetSit.Models
         public string? ProfilePictureUrl { get; set; }
         [DataType(DataType.Url), AllowNull, DefaultValue("resource/site/Cover_PlaceHolder.png")]
         public string? CoverPrictureUrl { get; set; }
-
         [AllowNull]
         public string? Country { get; set; }
         [AllowNull]
         public string? City { get; set; }
+        [AllowNull, DefaultValue(false)]
+        public Boolean? Registerd { get; set; }
         [Required]
         public SpaceEmployeeRole EmployeeRole { get; set; } = SpaceEmployeeRole.Super;
         [ForeignKey("SpaceId"), AllowNull]

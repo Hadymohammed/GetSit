@@ -7,7 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace GetSit.Models
 {
-    public class SystemAdmin:IAbstractUser,IEntityBase
+    public class SystemAdmin : IAbstractUser, IEntityBase
     {
         [Key]
         public int Id { get; set; }
@@ -21,6 +21,8 @@ namespace GetSit.Models
         public string Password { get; set; }
         [Required, Phone]
         public string PhoneNumber { get; set; }
+        [AllowNull, DefaultValue(false)]
+        public Boolean? Registerd { get; set; }
         [Required]
         [DataType(DataType.Date)]
         public DateTime Birthdate { get; set; }

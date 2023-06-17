@@ -1,5 +1,6 @@
 ﻿using GetSit.Models;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Numerics;
 
@@ -45,7 +46,6 @@ namespace GetSit.Data
             //Space has Photos and phones
             modelBuilder.Entity<SpacePhone>().HasOne(m => m.Space).WithMany(am => am.Phones).HasForeignKey(m => m.SpaceId);
             modelBuilder.Entity<SpacePhoto>().HasOne(m => m.Space).WithMany(am => am.Photos).HasForeignKey(m => m.SpaceId);
-
             //Hall Has Facilities and Photos
             modelBuilder.Entity<HallFacility>().HasOne(m => m.Hall).WithMany(am => am.HallFacilities).HasForeignKey(m => m.HallId);
             modelBuilder.Entity<HallPhoto>().HasOne(m => m.Hall).WithMany(am => am.HallPhotos).HasForeignKey(m => m.HallId);
@@ -106,6 +106,8 @@ namespace GetSit.Data
         public DbSet<SpaceWorkingDay> SpaceWorkingDay { get; set; }
         public DbSet<SystemAdmin> SystemAdmin { get; set; }
         public DbSet<Title> Title { get; set; }
+        public DbSet<Token> Token { get; set; }
+
 
         public DbSet<HallRequest> HallRequest { get; set; }
 

@@ -4,6 +4,7 @@ using GetSit.Data.enums;
 using GetSit.Data.Security;
 using GetSit.Data.Services;
 using GetSit.Data.ViewModels;
+using System.Web;
 using GetSit.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -11,6 +12,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Win32;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Linq;
+using Microsoft.AspNetCore.Http.Extensions;
 using System;
 using System.Linq;
 using static System.Reflection.Metadata.BlobBuilder;
@@ -20,9 +26,10 @@ namespace GetSit.Controllers
     [Authorize(Roles = "Provider")]//Error:Convert UserRole to class
     public class SpaceManagementController : Controller
     {
-        private readonly IWebHostEnvironment _env;
-
         #region Dependacies
+        private readonly ISpaceEmployeeService _spaceEmployeeService;
+        private readonly ISystemAdminService _adminSerivce;
+        private readonly IWebHostEnvironment _env;
         readonly IUserManager _userManager;
         readonly AppDBcontext _context;
         readonly ISpaceEmployeeService _providerService;
@@ -48,6 +55,7 @@ namespace GetSit.Controllers
             IHallPhotoService hallPhotoService,
             ISpaceService_Service SpaceService_service,
             IServicePhotoService servicePhotoService,
+            IBookingService bookingService, 
             IBookingService bookingService,
             IHallRequestService HallRequestService,
             ISpacePhotoService spacePhotoService,
@@ -84,9 +92,7 @@ namespace GetSit.Controllers
                 var provider = await _providerService.GetByIdAsync(providerId);
 
                 spaceIdInt = (int)provider.SpaceId;
-
-                SpaceIdStirng = provider.ToString();
-
+                SpaceIdStirng = provider.SpaceId.ToString();
                 if (SpaceIdStirng != String.Empty)
                     HttpContext.Response.Cookies.Append("SpaceId", SpaceIdStirng);
             }
@@ -246,11 +252,8 @@ namespace GetSit.Controllers
                 int.TryParse(SpaceIdStirng, out spaceIdInt);
             }
             //Space space = _context.Space.Include(s => s.Photos).Where(s => s.Id.ToString() == SpaceId).FirstOrDefault();
-
-            
             Space space = await _spaceSerivce.GetByIdAsync(spaceIdInt, s => s.Photos);
             AddHallVM vm = new AddHallVM()
-
             {
                 SpaceId = space.Id,
                 SpaceName = space.Name,
@@ -336,8 +339,7 @@ namespace GetSit.Controllers
             {
                 var providerId = _userManager.GetCurrentUserId(HttpContext);
                 var provider = _context.SpaceEmployee.Where(e => e.Id == providerId).FirstOrDefault();
-                spaceIdInt = (int)provider.SpaceId;
-                SpaceIdStirng = spaceIdInt.ToString();
+                SpaceIdStirng = provider.SpaceId.ToString();
                 if (SpaceIdStirng != String.Empty)
                     HttpContext.Response.Cookies.Append("SpaceId", SpaceIdStirng);
             }
@@ -405,6 +407,73 @@ namespace GetSit.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");
         }
+        [HttpGet]
+        public async Task<IActionResult> AddStaff()
+        {
+
+            var UserId = _userManager.GetCurrentUserId(HttpContext);
+            var User=await _providerService.GetByIdAsync(UserId);
+            var Space=await _spaceSerivce.GetByIdAsync((int)User.SpaceId,s=>s.Photos);
+            return View(new AddStaffVM() { 
+                SpaceId = Space.Id,
+                SpaceBio = Space.Bio,
+                SpaceName = Space.Name,
+                SpacePicUrl=Space.Photos.First().Url, 
+                SpaceEmployeeId=User.Id
+            });
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddStaff(AddStaffVM NewStaff)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(NewStaff);
+            }
+            var UserId = _userManager.GetCurrentUserId(HttpContext);
+            var User = await _providerService.GetByIdAsync(UserId);
+            var Space = await _spaceSerivce.GetByIdAsync(User.Id, s => s.Photos);
+            if (User.SpaceId != NewStaff.SpaceId)
+            {
+                return RedirectToAction("AccessDenied","Account");
+            }
+            string password = RandomPassword.GenerateRandomPassword(8);
+            // Using SpaceId as default value here
+            var AddNewstaff = new SpaceEmployee()
+            {
+                FirstName = NewStaff.FirstName,
+                LastName = NewStaff.LastName,
+                Email = NewStaff.Email,
+                Password = PasswordHashing.Encode(password),
+                PhoneNumber = NewStaff.PhoneNumber,
+                Birthdate = NewStaff.Birthdate,
+                Registerd=false,
+                SpaceId=Space.Id
+            };
+
+            try
+            {
+                await _providerService.AddAsync(AddNewstaff);
+                var SpaceEmployeeId = AddNewstaff.Id;
+                var JwtSecurtiyToken = Common.JwtTokenHelper.GenerateJwtToken(NewStaff.Email, SpaceEmployeeId);
+                var Token = new Token
+                {
+                    token = JwtSecurtiyToken
+                };
+                await _context.Token.AddAsync(Token);
+                _context.SaveChanges();
+                var UId = Token.Id;
+
+                string oneTimeAddStaffLink = Url.Action("RegisterProvider", "Account", new { uid = UId, role=UserRole.Provider,token = Token.token }, Request.Scheme);
+                Common.AddStaffEmail.SendEmailAddStaff(NewStaff.Email, oneTimeAddStaffLink);
+                return RedirectToAction("Index");
+            }
+            catch (Exception error)
+            {
+                return View(NewStaff);
+            }
+            return RedirectToAction("AddNewstaff");
+        }
+
         #endregion
 
         #region Request Deteles
