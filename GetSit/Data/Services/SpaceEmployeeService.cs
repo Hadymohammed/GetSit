@@ -16,7 +16,7 @@ namespace GetSit.Data.Services
         {
             IQueryable<SpaceEmployee> query = _context.Set<SpaceEmployee>();
             query = includeProperties.Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
-            return query.Where(n => n.Id == spaceId).ToList();
+            return query.Where(n => n.SpaceId == spaceId).ToList();
         }
         public SpaceEmployee? GetByEmail(string email)
         {
