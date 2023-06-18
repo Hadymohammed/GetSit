@@ -1,14 +1,15 @@
-﻿using GetSit.Data.enums;
+﻿using GetSit.Data.Base;
+using GetSit.Data.enums;
 using GetSit.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace GetSit.Data.Services
 {
-    public class HallRequestService : IHallRequestService
+    public class HallRequestService : EntityBaseRepository<HallRequest>, IHallRequestService
     {
         readonly AppDBcontext _context;
-        public HallRequestService(AppDBcontext context) 
+        public HallRequestService(AppDBcontext context) : base(context)
         {
             _context = context;
         }
@@ -36,7 +37,16 @@ namespace GetSit.Data.Services
         }
         public HallRequest GetById(int RequestId)
         {
-            var ret=_context.HallRequest.Where(h => h.Id == RequestId).Single();
+            var ret = _context.HallRequest.Where(r => r.Id == RequestId).
+                Include(r => r.Hall).
+                ThenInclude(p => p.HallPhotos).
+                Include(r=>r.Hall).
+                 ThenInclude(h => h.Space).
+                 ThenInclude(m => m.Photos).
+                 Include(r => r.Hall).
+                 ThenInclude(h => h.HallFacilities).
+
+                   FirstOrDefault();
             return ret;
         }
 

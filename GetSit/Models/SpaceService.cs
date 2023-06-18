@@ -1,6 +1,7 @@
 ﻿using GetSit.Data.Base;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 
 namespace GetSit.Models
 {
@@ -14,6 +15,8 @@ namespace GetSit.Models
         public float Price { get; set; }
         [Required]
         public string Description { get; set; }
+        [AllowNull]
+        public string? Thumbnail { get; set; } = "resource/site/user-profile-icon.jpg";
         [Required]
         public List<ServicePhoto> ServicePhotos { get; set; }
         [ForeignKey("SpaceId")]

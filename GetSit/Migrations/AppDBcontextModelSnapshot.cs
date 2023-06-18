@@ -153,6 +153,9 @@ namespace GetSit.Migrations
                     b.Property<string>("Country")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("CoverPrictureUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("CustomerType")
                         .HasColumnType("int");
 
@@ -183,7 +186,6 @@ namespace GetSit.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProfilePictureUrl")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("TitleId")
@@ -520,11 +522,17 @@ namespace GetSit.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("DateCreated")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Facebook")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("GPSLocation")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Instagram")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsApproved")
@@ -537,8 +545,17 @@ namespace GetSit.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("SpaceCover")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SpaceLogo")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Street")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Twitter")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -561,6 +578,9 @@ namespace GetSit.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Country")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CoverPrictureUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
@@ -590,8 +610,10 @@ namespace GetSit.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProfilePictureUrl")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("Registerd")
+                        .HasColumnType("bit");
 
                     b.Property<int?>("SpaceId")
                         .HasColumnType("int");
@@ -626,6 +648,9 @@ namespace GetSit.Migrations
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
+
+                    b.Property<string>("Thumbnail")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
@@ -703,6 +728,9 @@ namespace GetSit.Migrations
                     b.Property<int>("SpaceId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Thumbnail")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("SpaceId");
@@ -757,6 +785,9 @@ namespace GetSit.Migrations
                     b.Property<string>("Country")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("CoverPrictureUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -778,8 +809,10 @@ namespace GetSit.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProfilePictureUrl")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("Registerd")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -801,6 +834,23 @@ namespace GetSit.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Title");
+                });
+
+            modelBuilder.Entity("GetSit.Models.Token", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Token");
                 });
 
             modelBuilder.Entity("GetSit.Models.Booking", b =>
@@ -926,7 +976,7 @@ namespace GetSit.Migrations
             modelBuilder.Entity("GetSit.Models.HallRequest", b =>
                 {
                     b.HasOne("GetSit.Models.SpaceHall", "Hall")
-                        .WithMany()
+                        .WithMany("HallRequests")
                         .HasForeignKey("HallId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1136,6 +1186,8 @@ namespace GetSit.Migrations
                     b.Navigation("HallFacilities");
 
                     b.Navigation("HallPhotos");
+
+                    b.Navigation("HallRequests");
                 });
 
             modelBuilder.Entity("GetSit.Models.SpaceService", b =>

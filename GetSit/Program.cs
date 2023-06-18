@@ -66,6 +66,7 @@ builder.Services.AddScoped<ISpaceService_Service, SpaceService_Service>();
 builder.Services.AddScoped<ISpaceWorkingDayService, SpaceWorkingDayService>();
 builder.Services.AddScoped<ISystemAdminService, SystemAdminService>();
 builder.Services.AddScoped<ITitleService, TitleService>();
+builder.Services.AddScoped<IHallRequestService, HallRequestService>();
 
 var app = builder.Build();
 AppDbInitializer.Seed(app);

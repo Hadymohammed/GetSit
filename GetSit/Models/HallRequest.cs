@@ -1,9 +1,10 @@
-﻿using GetSit.Data.enums;
+﻿using GetSit.Data.Base;
+using GetSit.Data.enums;
 using GetSit.Models;
 
 namespace GetSit.Models
 {
-    public class HallRequest
+    public class HallRequest:IEntityBase
     {
         public int Id { get; set; }
         public String? comment { get; set; }

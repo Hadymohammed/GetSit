@@ -58,6 +58,7 @@ namespace GetSit.Controllers
                 Password = PasswordHashing.Encode(password),
                 Email = viewModel.Email,
                 Birthdate = viewModel.Birthdate,
+                ProfilePictureUrl= "./resources/site/user-profile-icon.jpg",
                 IsApproved = false,
             };
             HttpContext.Session.SetString("RegisterModel", JsonConvert.SerializeObject(Manager));
@@ -148,8 +149,7 @@ namespace GetSit.Controllers
                 GPSLocation = spaceVM.SpaceGPSLocation,
                 IsFast = true,
                 IsApproved = false,
-                BankAccount="None",
-                DateCreated = DateTime.Today,
+                BankAccount="None"
             };
             await _spaceService.AddAsync(space);
             manager.SpaceId = space.Id;
@@ -213,7 +213,6 @@ namespace GetSit.Controllers
             }
             Space.IsApproved = true;
             Employee.IsApproved = true;
-            Space.DateCreated = DateTime.Today;
             _context.SaveChanges();
             return View();
         }

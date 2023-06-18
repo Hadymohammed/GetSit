@@ -74,11 +74,32 @@ namespace GetSit.Data
                             Password= PasswordHashing.Encode("Provider1234"),
                             Birthdate= new DateTime(1980,7,7),
                             PhoneNumber= "01013205017",
-                            SpaceId=2
+                            SpaceId=2,
+                            ProfilePictureUrl="./resources/site/user1.jpg",
+                            Registerd=true,
                         }
                     });
+                    context.SaveChanges();
                 }
+                ///Customer
+                if (!context.Customer.Any())
+                {
+                    context.Customer.AddRange(new List<Customer>()
+                    {
+                        new Customer
+                        {
+                            FirstName="Khalid",
+                            LastName="Ali",
+                            Email="Customer@meto.com",
+                            Password=PasswordHashing.Encode("Customer1234"),
+                            PhoneNumber="01015608885",
+                            Birthdate= new DateTime(1980,7,7),
+                            ProfilePictureUrl="./resources/site/user1.jpg"
+
+                        }
+                    });
                 context.SaveChanges();
+                }
                 //Space Phone
                 if (!context.SpacePhone.Any())
                 {
@@ -223,17 +244,17 @@ namespace GetSit.Data
                         new SpacePhoto
                         {
                             SpaceId=1,
-                            Url="./resources/space.webp"
+                            Url="./resources/m1.jpg"
                         },
                         new SpacePhoto
                         {
                             SpaceId=2,
-                            Url="./resources/space1.webp"
+                            Url="./resources/m2.jpg"
                         },
                         new SpacePhoto
                         {
                             SpaceId=2,
-                            Url = "./resources/space.webp"
+                            Url = "./resources/m3.jpg"
                         }
                     });
                     context.SaveChanges();
@@ -377,7 +398,7 @@ namespace GetSit.Data
                         new HallPhoto
                         {
                             HallId=3,
-                            Url="./resources/meetingRoom.webp"
+                            Url="./resources/m3.jpg"
                         },
                         new HallPhoto
                         {
@@ -392,22 +413,22 @@ namespace GetSit.Data
                         new HallPhoto
                         {
                             HallId=5,
-                            Url="./resources/classroom3.webp"
+                            Url="./resources/m5.jpg"
                         },
                         new HallPhoto
                         {
                             HallId=5,
-                            Url="./resources/classroom2.webp"
+                            Url="./resources/m55.jpg"
                         },
                         new HallPhoto
                         {
                             HallId=6,
-                            Url="./resources/classroom.webp"
+                            Url="./resources/m6.jpg"
                         },
                         new HallPhoto
                         {
                             HallId=7,
-                            Url="./resources/meetingRoom.webp"
+                            Url="./resources/m66.jpeg"
                         },
                         new HallPhoto
                         {

@@ -3,10 +3,9 @@ using GetSit.Data.Services;
 using GetSit.Data;
 using Microsoft.AspNetCore.Mvc;
 using GetSit.Data.enums;
-using GetSit.Models;
-using Microsoft.EntityFrameworkCore;
+using GetSit.Common;
 using GetSit.Data.ViewModels;
-using System;
+using GetSit.Models;
 
 namespace GetSit.Controllers
 {
@@ -148,5 +147,7 @@ namespace GetSit.Controllers
 
             return View("Index");
         }
+
+
     }
 }

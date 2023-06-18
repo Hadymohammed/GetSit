@@ -1,9 +1,10 @@
-﻿using GetSit.Models;
+﻿using GetSit.Data.Base;
+using GetSit.Models;
 using System.Linq.Expressions;
 
 namespace GetSit.Data.Services
 {
-    public interface IHallRequestService
+    public interface IHallRequestService:IEntityBaseRepository<HallRequest>
     {
 
         void AddRequest(HallRequest request);
