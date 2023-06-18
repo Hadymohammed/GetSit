@@ -26,7 +26,8 @@ namespace GetSit.Data
                             Street="Al Tagned",
                             GPSLocation="26.172879278940762, 32.730838529460435",
                             IsFast=true,
-                            BankAccount="1111222233334444"
+                            BankAccount="1111222233334444",
+                            IsApproved=true,
                         },
                         new Space
                         {
@@ -37,7 +38,8 @@ namespace GetSit.Data
                             Street="Omar Effendi",
                             GPSLocation="26.164065, 32.719766",
                             IsFast=true,
-                            BankAccount="1111222233334444"
+                            BankAccount="1111222233334444",
+                            IsApproved=true,
                         }
                     });
                     context.SaveChanges();
@@ -123,7 +125,7 @@ namespace GetSit.Data
                     });
                     context.SaveChanges();
                 }
-                ///Customer
+                ///SystemAdmin
                 if (!context.SystemAdmin.Any())
                 {
                     context.SystemAdmin.AddRange(new List<SystemAdmin>()
@@ -136,7 +138,7 @@ namespace GetSit.Data
                             Password=PasswordHashing.Encode("Admin1234"),
                             PhoneNumber="01015608885",
                             Birthdate= new DateTime(1980,7,7),
-                            ProfilePictureUrl="./resources/site/user-profile-icon.jpg"
+                            ProfilePictureUrl="./resources/site/user1.jpg"
 
                         }
                     });
