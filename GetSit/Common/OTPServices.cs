@@ -48,28 +48,7 @@ namespace GetSit.Common
                 int otpValue = new Random().Next(100000, 999999);
                 httpContext.Session.SetString(SessionKey, otpValue.ToString());
                 #region sendingProcess
-                var fromAddress = new MailAddress("getsit594@gmail.com", "GetSit");
-                var toAddress = new MailAddress(email, "New User");
-                const string fromPassword = "esyqrxcqijyqnpwf";
-                const string subject = "Your OTP";
-                string body = $"Sent from GetSit , Here is your OTP is {otpValue} . ";
-                var smtp = new SmtpClient
-                {
-                    Host = "smtp.gmail.com",
-                    Port = 587,
-                    EnableSsl = true,
-                    DeliveryMethod = SmtpDeliveryMethod.Network,
-                    UseDefaultCredentials = false,
-                    Credentials = new NetworkCredential(fromAddress.Address, fromPassword)
-                };
-                using (var message = new MailMessage(fromAddress, toAddress)
-                {
-                    Subject = subject,
-                    Body = body
-                })
-                {
-                    smtp.Send(message);
-                }
+                EmailHelper.SendOTP(email, otpValue.ToString());
                 #endregion
                 return true;
             }
