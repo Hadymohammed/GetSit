@@ -4,6 +4,9 @@ using GetSit.Data;
 
 using Microsoft.AspNetCore.Mvc;
 using GetSit.Data.enums;
+using GetSit.Common;
+using GetSit.Data.ViewModels;
+using GetSit.Models;
 
 namespace GetSit.Controllers
 {
@@ -65,7 +68,6 @@ namespace GetSit.Controllers
             _hallRequestService.DeleteRequest(request);
             return View("Index");
         }
-
         [HttpPost]
         public IActionResult RejectRepest(int requestId, string comment)
         {
@@ -77,5 +79,7 @@ namespace GetSit.Controllers
 
             return View("Index");
         }
+
+
     }
 }

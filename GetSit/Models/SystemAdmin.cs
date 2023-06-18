@@ -11,6 +11,8 @@ namespace GetSit.Models
     {
         [Key]
         public int Id { get; set; }
+        [AllowNull, DefaultValue(false)]
+        public Boolean? Registerd { get; set; }
         [Required]
         public string FirstName { get; set; }
         [Required]
