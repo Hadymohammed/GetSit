@@ -173,6 +173,55 @@
                         </div>
                     </div>
                 }
+                @foreach (var booking in Model.GuestBookings)
+                {
+                    <div class="product-card booking-hall fade-in">
+                    <div id="BookingDate" hidden>@booking.DesiredDate.ToShortDateString()</div>
+                    <div id="BookingHallId" hidden>@booking.BookingHalls[0].HallId</div>
+                        <div class="product-content">
+                            <div class="product-photo">
+                                <div>@booking.DesiredDate.Day</div>
+                                <div>@booking.DesiredDate.ToString("MMM")</div>
+                                <div>@booking.DesiredDate.Year</div>
+                            </div>
+                            <div class="booking-details">
+                                <div>
+                                    <h3 class="product-name">@booking.BookingHalls[0].Hall.Type : @booking.BookingHalls[0].HallId</h3>
+                                    <p class="product-description">@booking.BookingDate.DayOfWeek @booking.StartTime <span>: @booking.EndTime</span></p>
+                                    <p>Guest : @booking.FirstName @booking.LastName</p>
+                                </div>
+                                <div class="booking-actions">
+                                    @if(booking.BookingStatus == BookingStatus.Pending)
+                                    {
+                                        <div class="booking-status pending-color">@booking.BookingStatus</div>
+                                    }
+                                    @if (booking.BookingStatus == BookingStatus.Missed)
+                                    {
+                                        <div class="booking-status missed-color">@booking.BookingStatus</div>
+                                    }
+                                    @if (booking.BookingStatus == BookingStatus.Cancelled)
+                                    {
+                                        <div class="booking-status cancelled-color">@booking.BookingStatus</div>
+                                    }
+                                    @if (booking.BookingStatus == BookingStatus.Accepted)
+                                    {
+                                        <div class="booking-status accepted-color">@booking.BookingStatus</div>
+                                    }
+                                    @if (booking.BookingStatus == BookingStatus.Rejected)
+                                    {
+                                        <div class="booking-status rejected-color">@booking.BookingStatus</div>
+                                    }
+                                    @if (booking.BookingStatus == BookingStatus.Confirmed
+                                    )
+                                    {
+                                        <div class="booking-status confirmed-color">@booking.BookingStatus</div>
+                                    }
+                                    <a>Details and actions</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
                 <div style="text-align: center;">
                     <a href="#" class="add-hall-btn" data-bs-toggle="modal" data-bs-target="#addBookingModal">
                         <div><i class="fa-solid fa-circle-plus" style="color: #23B000;"></i></div>

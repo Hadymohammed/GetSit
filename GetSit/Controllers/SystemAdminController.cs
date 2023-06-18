@@ -1,7 +1,6 @@
-﻿using GetSit.Data.Security;
+using GetSit.Data.Security;
 using GetSit.Data.Services;
 using GetSit.Data;
-
 using Microsoft.AspNetCore.Mvc;
 using GetSit.Data.enums;
 using GetSit.Common;
@@ -49,14 +48,83 @@ namespace GetSit.Controllers
             _bookingService = bookingService;
             _hallRequestService = HallRequestService;
         }
-        #endregion
-        public IActionResult Index()
+        #endregion          
+        [HttpGet]
+        public async Task<IActionResult> Index() 
         {
-            return View();
+			List<Tuple<Space, SpaceEmployee>> Spaces = new List<Tuple<Space, SpaceEmployee>>();
+			foreach (var space in _context.Space)
+			{
+                if (space.IsApproved == false)
+                {
+                    var provider = _context.SpaceEmployee.Where(i => i.SpaceId == space.Id).FirstOrDefault();
+					Spaces.Add(Tuple.Create(space, provider));
+
+				}
+
+			}
+			var halls = _context.HallRequest.Where(i => i.Status == 0 ).ToList();
+            List<Tuple<HallRequest, Space>> requests = new List<Tuple<HallRequest, Space>>();
+            foreach (var hall in halls)
+            {
+                var currentHall = _context.SpaceHall.Where(i=>i.Id == hall.Id).FirstOrDefault();
+                var space = _context.Space.Where(i => i.Id == currentHall.SpaceId).FirstOrDefault();
+                requests.Add(Tuple.Create(hall, space));
+            }
+            var viewModel = new SystemAdminVM
+            {
+                hallRequest = requests,
+                Spaces = Spaces,
+                NumberOfCustomers = _context.Customer.Count(),
+                NumberOfSpaces = _context.Space.Count(),
+                NumberOfGuestBookings = _context.GuestBooking.Count(),
+				NumberOfBookings = _context.Booking.Count(),
+		};
+
+            return View(viewModel);
         }
-        public IActionResult ViewRepest(int requestId)
+        public IActionResult ViewSpaceRequest (int spaceId)
         {
-            return View();
+            var space = _context.Space.Where(i=>i.Id==spaceId).FirstOrDefault();
+			var provider = _context.SpaceEmployee.Where(i => i.SpaceId == space.Id).FirstOrDefault();
+            var viewModel = new ReviewSpaceVM
+            {
+                Space = space,
+                spaceEmployee = provider,
+            };
+			return View(viewModel);
+        }
+		[HttpGet]
+		public IActionResult AcceptSpace(int SpaceId)
+		{
+			var space = _context.Space.Where(i => i.Id == SpaceId).FirstOrDefault();
+			space.IsApproved=true;
+			_spaceSerivce.UpdateSpace(space);
+			return View("Index");
+		}
+		[HttpPost]
+		public IActionResult RejectSpace(int spaceId,string message)
+		{
+			var space = _context.Space.Where(i => i.Id == spaceId).FirstOrDefault();
+			space.IsApproved = false;
+			_spaceSerivce.UpdateSpace(space);
+			return View("Index");
+		}
+		public async Task <IActionResult> ViewRepest(int requestId)
+        {
+			var request = _hallRequestService.GetById(requestId);
+			var hall =await _hallService.GetByIdAsync(request.HallId,h=>h.HallPhotos);
+            var currentHall = _context.SpaceHall.Where(i=>i.Id == hall.Id).FirstOrDefault();
+            var space = _context.Space.Where(i => i.Id == currentHall.SpaceId).FirstOrDefault();
+			var provider = _context.SpaceEmployee.Where(i => i.SpaceId == space.Id).FirstOrDefault();
+            var viewModel = new ReviewSpaceVM
+            {
+                Space = space,
+                spaceEmployee = provider,
+                hallRequest = request,
+                Hall = hall,
+            };
+			return View(viewModel);
         }
         [HttpGet]
         public IActionResult AcceptRepest(int requestId)

@@ -69,7 +69,6 @@ namespace GetSit.Controllers
             // Get the current user 
             int id = _userManager.GetCurrentUserId(HttpContext);
             var emp = await _providerService.GetByIdAsync(id);
-
             var hall = await _hallService.GetByIdAsync(HallId, h => h.HallFacilities, h => h.HallPhotos);
             if (HallId < 1 || hall == null)
                 return NotFound();
@@ -214,7 +213,6 @@ namespace GetSit.Controllers
                     {
                         continue;
                     }
-
                     var service = await _serviceService.GetByIdAsync(ServiceQuantity.Key);
                     var BookingHallService = new BookingHallService
                     {
@@ -289,7 +287,6 @@ namespace GetSit.Controllers
 
             /* create object from the class to get the available timeslots*/
             AvailableSlots slots = new AvailableSlots(_context);
-
             var endSlots = slots.GetAvailableEndSlots(hall.Id, booking.DesiredDate, booking.StartTime);
 
             var userbooking = new BookingDetailsVM

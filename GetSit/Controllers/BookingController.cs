@@ -540,7 +540,6 @@ namespace GetSit.Controllers
                 if (ServiceQuantity.Value > 0)
                 {
                     //viewModel.ServicesStatus.Add(ServiceQuantity.Key, PaymentStatus.Pending);
-
                     // Add a new service to the booking and related payment detail
                     var BookingHallService = new BookingHallService
                     {
@@ -551,12 +550,12 @@ namespace GetSit.Controllers
                         Service = service,
                     };
                     await _bookingService_Serivce.AddAsync(BookingHallService);
-
                     var paymentServiceDetail = new PaymentDetail
                     {
                         TotalCost = service.Price * ServiceQuantity.Value,
                         Status = PaymentStatus.Pending,
                         Type = PaymentType.Cash,
+
                         BookingHallServiceId = BookingHallService.Id,
                         PaymentId=payment.Id
                     };

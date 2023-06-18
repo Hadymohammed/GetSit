@@ -211,11 +211,9 @@ namespace GetSit.Controllers
             {
                 smtp.Send(message);
             }
-
             Space.IsApproved = true;
             Employee.IsApproved = true;
             _context.SaveChanges();
-
             return View();
         }
         [Authorize(Roles = "Admin")]
