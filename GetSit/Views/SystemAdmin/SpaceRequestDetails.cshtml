@@ -1,0 +1,167 @@
+﻿ @using GetSit.Data.ViewModels
+@using GetSit.Data.enums
+@model ReviewSpaceVM
+
+<style>
+    .m-edit {
+        margin-top: 4rem !important;
+        display: flex;
+        justify-content: space-between;
+        margin-left: 2rem;
+        margin-right: 2rem;
+    }
+</style>
+
+<link href="@Url.Content("~/css/SystemAdmin.css")" rel="stylesheet" type="text/css" />
+<div class="wrapper">
+    <div class="main">
+            
+        <main class="content">
+            <div class="container-fluid p-0">
+
+                <div class="mb-3">
+                    <h1 class="h3 d-inline align-middle">Request</h1>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 col-xl-3">
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Sender Details</h5>
+                            </div>
+                            <div class="card-body text-center">
+                                <img src=".@Model.spaceEmployee.ProfilePictureUrl" alt="@Model.spaceEmployee.FirstName"
+                                    class="img-fluid rounded-circle mb-2" width="128" height="128" />
+                                <h5 class="card-title mb-0">@Model.spaceEmployee.FirstName &nbsp @Model.spaceEmployee.LastName  </h5>
+                            </div>
+
+                            <hr class="my-0" />
+
+                            <div class="card-body">
+                                <h5 class="h6 card-title">About</h5>
+                                <ul class="list-unstyled mb-0">
+                                    <li class="mb-1"><span data-feather="home" class="feather-sm me-1"></span> Lives
+                                        in <a href="#">@Model.Space.City &nbsp @Model.Space.Street</a>
+                                    </li>
+
+                                    <li class="mb-1"><span data-feather="briefcase" class="feather-sm me-1"></span>
+                                        Works at <a href="#">@Model.Space.Name</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-8 col-xl-9">
+                        <!-- ----------------------- -->
+                        <div class="card">
+                            <div class="card-header">
+
+                                <!-- pfp starts -->
+                                <div class="d-flex align-items-start">
+                                    <img src=".@Model.spaceEmployee.ProfilePictureUrl" class="rounded-circle me-2"
+                                        alt="@Model.spaceEmployee.FirstName" width="36" height="36">
+                                    <div class="flex-grow-1">
+                                        <strong>@Model.spaceEmployee.FirstName &nbsp @Model.spaceEmployee.LastName </strong> Sent you a join request <br>
+                                        <small class="text-muted">@Model.Space.JoinRequestDate</small>
+                                    </div>
+                                </div>
+                                <!-- pfp ends -->
+
+                            </div>
+                            <div class="card-body">
+                                <!-- ------ space details starts here ------ -->
+                                <!-- Name -->
+                                <div class="mb-3">
+                                    <label class="form-label" asp-for="Space.Name">Space Name</label>
+                                    <div class="border text-sm text-muted p-2 mt-1 mb-3">
+                                        @Model.Space.Name
+                                    </div>
+                                </div>
+
+                                    
+                                <!-- Bio -->
+                                <div class="mb-3">
+                                    <label class="form-label">Bio</label>
+                                    <div class="border text-sm text-muted p-2 mt-1 mb-3">
+                                        @Model.Space.Bio
+                                    </div>
+                                </div>
+
+                                <!-- Address  -->
+                                <div class="mb-3">
+                                    <label class="form-label">Space Address</label>
+                                    <div class="border text-sm text-muted p-2 mt-1 mb-3">
+                                        @Model.Space.City &nbsp  @Model.Space.Street
+                                    </div>
+                                </div>
+
+                                <!-- Create Space Btn  -->
+
+                                <div class="mb-3 m-edit">
+                                    <!-- Accept  -->
+                                    <a onclick="return confirmAccept();" asp-action="AcceptSpace" asp-controller="SystemAdmin" asp-route-SpaceId="@Model.Space.Id" class="btn btn-success">Create Space</a>
+
+                                    <div>
+                                        <!-- Reject -->
+                                        <!-- The button triggers the message -->
+                                        <span>
+                                            <a class="btn btn-danger" data-bs-toggle="collapse"
+                                                href="#Rejection" role="button" aria-expanded="false"
+                                                aria-controls="collapseExample">
+                                                Reject
+                                            </a>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="collapse mt-3" id="Rejection">
+                                    <div class="card card-body">
+                                        <div class="mb-3">
+                                            <label for="exampleFormControlInput11"
+                                                class="form-label">Message</label>
+
+                                            <div class="d-flex align-items-start mt-1">
+                                                <a class="pe-3" href="#">
+                                                    <img src=".@Model.spaceEmployee.ProfilePictureUrl" class="rounded-circle me-2"
+                                                        alt="@Model.spaceEmployee.FirstName" width="36" height="36">
+                                                </a>
+                                                <form asp-action="RejectSpace" class="flex-grow-1">
+                                                    <input hidden asp-for="SpaceId"/>
+                                                    <textarea rows="2" type="text" name="Messege"
+                                                        class="form-control border text-sm text-muted p-2 mt-1 form-control mb-3"
+                                                        id="exampleFormControlInput11"
+                                                        placeholder="Enter you message"></textarea>
+                                                    <!-- send message  -->
+                                                <button onclick="return confirmReject();" type="submit" class="btn btn-danger mr-5">Reject with email</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- ------ form ends here ------ -->
+                            </div>
+
+
+                        </div>
+                        <!-- ----------------------- -->
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+         function confirmReject() {
+            return confirm('Are you sure you want to reject this space and send your messege?');
+        }
+        function confirmAccept() {
+            return confirm('Are you sure you want to accept this space and add it to the system?');
+        }
+    </script>
+}

@@ -18,6 +18,10 @@ namespace GetSit.Models
         [Required]
         public string City { get; set; }
         [Required]
+        public DateTime JoinRequestDate { get; set; }
+        [AllowNull]
+        public DateTime JoinDate { get; set; }
+        [Required]
         public string Street { get; set; }
         [Required]
         public string GPSLocation { get; set; }

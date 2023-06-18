@@ -6,9 +6,12 @@ using GetSit.Data.enums;
 using GetSit.Common;
 using GetSit.Data.ViewModels;
 using GetSit.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 namespace GetSit.Controllers
 {
+    [Authorize(Roles ="Admin")]
     public class SystemAdminController : Controller
     {
         #region Dependacies
@@ -52,18 +55,26 @@ namespace GetSit.Controllers
         [HttpGet]
         public async Task<IActionResult> Index() 
         {
-			List<Tuple<Space, SpaceEmployee>> Spaces = new List<Tuple<Space, SpaceEmployee>>();
-			foreach (var space in _context.Space)
+            #region Security
+            var userId = _userManager.GetCurrentUserId(HttpContext);
+            var user =await _providerService.GetByIdAsync(userId);
+            #endregion
+            List<Tuple<Space, SpaceEmployee>> Spaces = new List<Tuple<Space, SpaceEmployee>>();
+            var DbSpaces = await _spaceSerivce.GetAllAsync();
+			foreach (var space in DbSpaces)
 			{
                 if (space.IsApproved == false)
                 {
-                    var provider = _context.SpaceEmployee.Where(i => i.SpaceId == space.Id).FirstOrDefault();
-					Spaces.Add(Tuple.Create(space, provider));
+                    var providers = _providerService.GetBySpaceId(space.Id);
+					Spaces.Add(Tuple.Create(space, providers.FirstOrDefault()));
 
 				}
 
 			}
-			var halls = _context.HallRequest.Where(i => i.Status == 0 ).ToList();
+			var halls = _context.HallRequest.Where(i => i.Status == 0 )
+                /*.Include(r=>r.Hall)
+                    .ThenInclude(h=>h.Space)*/
+                .ToList();
             List<Tuple<HallRequest, Space>> requests = new List<Tuple<HallRequest, Space>>();
             foreach (var hall in halls)
             {
@@ -83,32 +94,46 @@ namespace GetSit.Controllers
 
             return View(viewModel);
         }
-        public IActionResult ViewSpaceRequest (int spaceId)
+        public IActionResult SpaceRequestDetails (int spaceId)
         {
             var space = _context.Space.Where(i=>i.Id==spaceId).FirstOrDefault();
 			var provider = _context.SpaceEmployee.Where(i => i.SpaceId == space.Id).FirstOrDefault();
             var viewModel = new ReviewSpaceVM
             {
+                SpaceId = space.Id,
                 Space = space,
                 spaceEmployee = provider,
             };
 			return View(viewModel);
         }
 		[HttpGet]
-		public IActionResult AcceptSpace(int SpaceId)
+		public async Task<IActionResult> AcceptSpaceAsync(int SpaceId)
 		{
-			var space = _context.Space.Where(i => i.Id == SpaceId).FirstOrDefault();
+            var space = await _spaceSerivce.GetByIdAsync(SpaceId, s => s.Employees);
 			space.IsApproved=true;
-			_spaceSerivce.UpdateSpace(space);
-			return View("Index");
+            var JwtSecurtiyToken = JwtTokenHelper.GenerateJwtToken(space.Employees.First().Email, space.Employees.First().Id);
+            var Token = new Token
+            {
+                token = JwtSecurtiyToken
+            };
+            await _context.Token.AddAsync(Token);
+            _context.SaveChanges();
+            var UId = Token.Id;
+			await _spaceSerivce.UpdateAsync(space.Id,space); 
+            string oneTimeAddStaffLink = Url.Action("RegisterProvider", "Account", new { UID = UId, Role = (int)UserRole.Provider, token = Token.token }, Request.Scheme);
+            EmailHelper.SendEmailAddStaff(space.Employees.First().Email, oneTimeAddStaffLink, space.Name);
+
+            return RedirectToAction("Index");
 		}
 		[HttpPost]
-		public IActionResult RejectSpace(int spaceId,string message)
+		public async Task<IActionResult> RejectSpace(RejectSpaceVM vm)
 		{
-			var space = _context.Space.Where(i => i.Id == spaceId).FirstOrDefault();
-			space.IsApproved = false;
-			_spaceSerivce.UpdateSpace(space);
-			return View("Index");
+            var space = await _spaceSerivce.GetByIdAsync(vm.SpaceId,s=>s.Employees);
+            var spaceName = space.Name;
+			await _spaceSerivce.DeleteAsync(space.Id);
+            EmailHelper.SendSpaceRejection(space.Employees.First().Email,vm.Messege,spaceName);
+            
+            return RedirectToAction("Index");
 		}
 		public async Task <IActionResult> ViewRepest(int requestId)
         {

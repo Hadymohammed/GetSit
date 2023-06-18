@@ -75,7 +75,7 @@ namespace GetSit.Controllers
                     {
                         // Email not found in database
                         ModelState.AddModelError("Role", "Wrong Role");
-                        return View(login);
+                        return RedirectToAction("Index", "SystemAdmin");
                     }
                     if (!VerifyPassword(admin.Password, login.Password))
                     {
@@ -323,14 +323,12 @@ namespace GetSit.Controllers
         [Authorize(Roles = "Admin")]//error enum must be used
         public async Task<IActionResult> AdminProfileAsync()
         {
-            var user = (SystemAdminController)await _userManager.GetCurrentUserAsync(HttpContext);
-            return View(user);
+            return RedirectToAction("Index", "SystemAdmin");
         }
         [Authorize(Roles = "Customer")]//error enum must be used
         public async Task<IActionResult> CustomerProfileAsync()
         {
-            var user = (Customer)await _userManager.GetCurrentUserAsync(HttpContext);
-            return View(user);
+            return RedirectToAction("Index", "Customer");
         }
         [Authorize(Roles = "Provider")]//error enum must be used
         public async Task<IActionResult> ProviderProfileAsync()

@@ -722,7 +722,7 @@ namespace GetSit.Controllers
                 _context.SaveChanges();
                 var UId = Token.Id;
                 string oneTimeAddStaffLink = Url.Action("RegisterProvider", "Account", new { UID = UId,Role=(int)UserRole.Provider,token = Token.token }, Request.Scheme);
-                Common.AddStaffEmail.SendEmailAddStaff(NewStaff.Email, oneTimeAddStaffLink);
+                EmailHelper.SendEmailAddStaff(NewStaff.Email,oneTimeAddStaffLink,Space.Name);
                 return RedirectToAction("Index");
             }
             catch (Exception error)

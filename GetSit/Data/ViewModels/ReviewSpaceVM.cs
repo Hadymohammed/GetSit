@@ -6,6 +6,8 @@ namespace GetSit.Data.ViewModels
 	public class ReviewSpaceVM
 	{
 		[Required]
+		public int SpaceId { get; set; }
+		[Required]
 		public Space Space { get; set; }
 		[Required]	
 		public SpaceEmployee ?spaceEmployee { get; set; }
