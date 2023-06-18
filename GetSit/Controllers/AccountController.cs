@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc.Routing;
 using GetSit.Data.Services;
+using System.Diagnostics;
 
 namespace GetSit.Controllers
 {
@@ -59,11 +60,13 @@ namespace GetSit.Controllers
             {
                 return View(login);
             }
+
             if(!PresirvedEmail(login.Email))
             {
                 ModelState.AddModelError("Email", "Invalid email");
                 return View(login);
             }
+            
             switch (login.Role)//Which user role?
             {
                 case UserRole.Admin:
@@ -131,23 +134,55 @@ namespace GetSit.Controllers
             _userManager.SignOut(HttpContext);
             return RedirectToAction("Login");
         }
-        public IActionResult Register()
+        [HttpGet]
+        public IActionResult Register(RegisterVM? vm)
         {
+            ModelState.Clear();
+            if (vm.UserId != null)
+            {
+                return View(vm);
+            }
             return View();
         }
-        [HttpPost]
-        public async Task<IActionResult> Register(RegisterVM register)
+        [HttpGet]
+        public async Task<IActionResult> RegisterProvider(int UID, UserRole Role, string token)
+        {
+            if (_context.Token.Where(t => t.Id == UID).FirstOrDefault() == null || Common.JwtTokenHelper.ValidateToken(token) == null)
+            {
+                return NotFound();
+            }
+            var UserIdStr = Common.JwtTokenHelper.ValidateToken(token);
+            var UserId = 0;
+            int.TryParse(UserIdStr, out UserId);
+            var SpaceEmployee = await _spaceEmployeeService.GetByIdAsync(UserId);
+            Common.SessoinHelper.saveObject(HttpContext, "TokenId", new { id = UID });
+            return RedirectToAction("Register", new RegisterVM()
+            {
+                UserId = SpaceEmployee.Id,
+                FirstName = SpaceEmployee.FirstName,
+                LastName = SpaceEmployee.LastName,
+                Email = SpaceEmployee.Email,
+                PhoneNumber = SpaceEmployee.PhoneNumber,
+                Birthdate = SpaceEmployee.Birthdate,
+                Role = Role
+            });
+        }
+        [HttpPost,ActionName("Register")]
+        public async Task<IActionResult> RegisterPost(RegisterVM register)
         {
             if (!ModelState.IsValid)
             {
                 return View(register);
             }
-            
+
             /*check if the entered email in register is already in database*/
             if (PresirvedEmail(register.Email))
             {
-                ModelState.AddModelError("Email", "This email already has an account.");
-                return View(register);
+                if (register.Role == UserRole.Customer)
+                {
+                    ModelState.AddModelError("Email", "This email already has an account.");
+                    return View(register);
+                }
             }
             HttpContext.Session.SetString("RegisterModel", JsonConvert.SerializeObject(register));
             var otpVm = new OTPVM();
@@ -155,6 +190,7 @@ namespace GetSit.Controllers
             otpVm.Phone = register.PhoneNumber;
             return RedirectToAction("PhoneOTP", otpVm);
         }
+
         [HttpGet]
         public IActionResult PhoneOTP(OTPVM? otpVm)
         {
@@ -208,7 +244,7 @@ namespace GetSit.Controllers
                 case UserRole.Admin:
                     var admin = new SystemAdmin()
                     {
-
+                        Id = (int)register.UserId,
                         FirstName = register.FirstName,
                         LastName = register.LastName,
                         Email = register.Email,
@@ -218,10 +254,9 @@ namespace GetSit.Controllers
                         ProfilePictureUrl = "./resources/site/user-profile-icon.jpg"
 
                     };
-
                     try
                     {
-                       await _adminSerivce.AddAsync(admin);
+                       await _adminSerivce.UpdateAsync(admin.Id,admin);
                        await _userManager.SignIn(HttpContext, admin);
                        return RedirectToAction("AdminProfile", "Account");
                     }
@@ -233,6 +268,7 @@ namespace GetSit.Controllers
                 case UserRole.Provider:
                     var provider = new SpaceEmployee()
                     {
+                        Id = (int)register.UserId,
                         FirstName = register.FirstName,
                         LastName = register.LastName,
                         Email = register.Email,
@@ -245,7 +281,7 @@ namespace GetSit.Controllers
 
                     try
                     {
-                        await _spaceEmployeeService.AddAsync(provider);
+                        await _spaceEmployeeService.UpdateAsync(provider.Id,provider);
                         await _userManager.SignIn(HttpContext, provider);
                         return RedirectToAction("Index", "SpaceManagement");
                     }

@@ -7,6 +7,8 @@ namespace GetSit.Data.ViewModels
 {
     public class RegisterVM
     {
+        [AllowNull]
+        public int? UserId { get; set; }
         [Display(Name = "First name")]
         [Required(ErrorMessage = "First name is required")]
         [RegularExpression("^[\\w'\\-,.][^0-9_!¡?÷?¿/\\\\+=@#$%ˆ&*(){}|~<>;:[\\]]{2,}$",ErrorMessage ="Must be a name")]

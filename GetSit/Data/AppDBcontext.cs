@@ -106,8 +106,8 @@ namespace GetSit.Data
         public DbSet<SpaceWorkingDay> SpaceWorkingDay { get; set; }
         public DbSet<SystemAdmin> SystemAdmin { get; set; }
         public DbSet<Title> Title { get; set; }
-
         public DbSet<HallRequest> HallRequest { get; set; }
+        public DbSet<Token> Token { get; set; }
 
     }
 }

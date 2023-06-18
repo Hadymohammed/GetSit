@@ -56,7 +56,8 @@ namespace GetSit.Data
                             Birthdate= new DateTime(1980,7,7),
                             PhoneNumber= "01013205017",
                             SpaceId=2,
-                            ProfilePictureUrl="./resources/site/user1.jpg"
+                            ProfilePictureUrl="./resources/site/user1.jpg",
+                            Registerd=true,
                         }
                     });
                     context.SaveChanges();

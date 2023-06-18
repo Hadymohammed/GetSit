@@ -41,7 +41,7 @@ namespace GetSit.Controllers
             {
                 case UserRole.Admin:
                     var admin=_adminService.GetByEmail(vm.Email);
-                    if (admin == null)
+                    if (admin == null ||admin.Registerd== false)
                     {
                         ModelState.AddModelError("Email", "This email not registered. Do you choose the wrong role?");
                         return View(vm);
@@ -59,7 +59,7 @@ namespace GetSit.Controllers
                     return RedirectToAction("EmailOTP", "ForgetPassword");
                 case UserRole.Provider:
                     var provider = _providerService.GetByEmail(vm.Email);
-                    if (provider == null)
+                    if (provider == null ||provider.Registerd==false)
                     {
                         ModelState.AddModelError("Email", "This email not registered. Do you choose the wrong role?");
                         return View(vm);
