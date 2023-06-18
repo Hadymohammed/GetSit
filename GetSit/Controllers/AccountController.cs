@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc.Routing;
 using GetSit.Data.Services;
 using System.Diagnostics;
+using Microsoft.EntityFrameworkCore;
 
 namespace GetSit.Controllers
 {
@@ -93,6 +94,10 @@ namespace GetSit.Controllers
                         // Email not found in database
                         ModelState.AddModelError("Role", "Wrong Role");
                         return View(login);
+                    }
+                    if (provider.Registerd == false)
+                    {
+                        ModelState.AddModelError("Email", "Your account has not been varifed, please use the link sent to your email.");
                     }
                     if (!VerifyPassword(provider.Password, login.Password))
                     {
@@ -275,13 +280,21 @@ namespace GetSit.Controllers
                         PhoneNumber = register.PhoneNumber,
                         Birthdate = register.Birthdate,
                         Password = PasswordHashing.Encode(register.Password),/*Here password should be hashed*/
-                        ProfilePictureUrl = "./resources/site/user-profile-icon.jpg"
+                        ProfilePictureUrl = "./resources/site/user-profile-icon.jpg",
+                        Registerd=true,
 
                     };
 
                     try
                     {
                         await _spaceEmployeeService.UpdateAsync(provider.Id,provider);
+                        var tokenString = Common.SessoinHelper.getObject<Token>(HttpContext, "TokenId");
+                        var token = _context.Token.Find(tokenString.Id);
+                        if(token != null)
+                        {
+                            _context.Token.Remove(token);
+                        }
+                        _context.SaveChanges();
                         await _userManager.SignIn(HttpContext, provider);
                         return RedirectToAction("Index", "SpaceManagement");
                     }

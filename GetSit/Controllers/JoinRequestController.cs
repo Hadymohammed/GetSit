@@ -151,6 +151,8 @@ namespace GetSit.Controllers
                 IsApproved = false,
                 BankAccount="None",
                 JoinRequestDate = DateTime.Now,
+                SpaceCover="./resources/site/Cover_PlaceHolder.png",
+                SpaceLogo="./resources/site/logo-social.png"
             };
             await _spaceService.AddAsync(space);
             manager.SpaceId = space.Id;

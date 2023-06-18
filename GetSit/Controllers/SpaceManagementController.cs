@@ -86,36 +86,20 @@ namespace GetSit.Controllers
         }
         public async Task<IActionResult> IndexAsync()
         {
-            var SpaceIdStirng = "";
-            var spaceIdInt = 0;
-            if (HttpContext.Request.Cookies.Where(c => c.Key == "SpaceId").FirstOrDefault().Value is null)
-            {
-                /*replace spaceId cookie (Security)*/
                 var providerId = _userManager.GetCurrentUserId(HttpContext);
                 var provider = await _providerService.GetByIdAsync(providerId);
-
-                spaceIdInt = (int)provider.SpaceId;
-
-                SpaceIdStirng = provider.ToString();
-
-                if (SpaceIdStirng != String.Empty)
-                    HttpContext.Response.Cookies.Append("SpaceId", SpaceIdStirng);
-            }
-            else
-            {
-                SpaceIdStirng = HttpContext.Request.Cookies.Where(c => c.Key == "SpaceId").FirstOrDefault().Value;
-                int.TryParse(SpaceIdStirng, out spaceIdInt);
-            }
-            Space space =await _spaceSerivce.GetByIdAsync(spaceIdInt, s => s.Photos,s=>s.Phones);
+            if (provider == null)
+                return NotFound();
+            Space space =await _spaceSerivce.GetByIdAsync((int)provider.SpaceId, s => s.Photos,s=>s.Phones);
             SpaceManagementVM viewModel = new()
             {
                 Space = space,
-                Halls = _hallService.GetAcceptedBySpaceId(spaceIdInt, h => h.HallPhotos, h => h.HallFacilities),
-                Services = _spaceService_service.GetBySpaceId(spaceIdInt, s => s.ServicePhotos),
-                Employees = _providerService.GetBySpaceId(spaceIdInt),
-                Bookings = _bookingService.GetBySpaceId(spaceIdInt),
-                Requests = _hallRequestService.GetPendingBySpaceId(spaceIdInt),
-                 GuestBookings=_guestBookingService.GetBySpaceId(spaceIdInt)
+                Halls = _hallService.GetAcceptedBySpaceId(space.Id, h => h.HallPhotos, h => h.HallFacilities),
+                Services = _spaceService_service.GetBySpaceId(space.Id, s => s.ServicePhotos),
+                Employees = _providerService.GetBySpaceId(space.Id),
+                Bookings = _bookingService.GetBySpaceId(space.Id),
+                Requests = _hallRequestService.GetPendingBySpaceId(space.Id),
+                 GuestBookings=_guestBookingService.GetBySpaceId(space.Id)
             };
             return View(viewModel);
         }

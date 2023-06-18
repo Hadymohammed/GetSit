@@ -130,8 +130,15 @@ namespace GetSit.Controllers
 		{
             var space = await _spaceSerivce.GetByIdAsync(vm.SpaceId,s=>s.Employees);
             var spaceName = space.Name;
-			await _spaceSerivce.DeleteAsync(space.Id);
-            EmailHelper.SendSpaceRejection(space.Employees.First().Email,vm.Messege,spaceName);
+            var ManagerEmail = space.Employees.First().Email;
+            var employeeIdsToDelete = space.Employees.Select(emp => emp.Id).ToList();
+
+            foreach (var empId in employeeIdsToDelete)
+            {
+                await _providerService.DeleteAsync(empId);
+            }
+            await _spaceSerivce.DeleteAsync(space.Id);
+            EmailHelper.SendSpaceRejection(ManagerEmail,vm.Messege,spaceName);
             
             return RedirectToAction("Index");
 		}
