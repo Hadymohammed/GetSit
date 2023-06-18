@@ -66,7 +66,9 @@ namespace GetSit.Controllers
             customer.FavoriteHalls = _favoriteService.GetByUserId(customerId);
             customer.Bookings = _context.Booking.Where(c => c.CustomerId == customerId)
                                       .Include(b => b.BookingHalls)
-                                            .ThenInclude(h => h.Hall).ToList();
+                                            .ThenInclude(h => h.Hall)
+                                                .ThenInclude(h=>h.Space )
+                                      .ToList();
             return View(customer);
         }
         [HttpGet]
