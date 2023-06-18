@@ -245,7 +245,6 @@ namespace GetSit.Controllers
             
             Space space = await _spaceSerivce.GetByIdAsync(spaceIdInt, s => s.Photos);
             AddHallVM vm = new AddHallVM()
-
             {
                 SpaceId = space.Id,
                 SpaceName = space.Name,
@@ -343,7 +342,7 @@ namespace GetSit.Controllers
             }
             //Space space = _context.Space.Include(s => s.Photos).Where(s => s.Id.ToString() == SpaceId).FirstOrDefault();
             Space space = await _spaceSerivce.GetByIdAsync(spaceIdInt, s => s.Photos);
-            AddServiceVM vm = new()
+            AddServiceVM vm = new AddServiceVM()
             {
                 SpaceId = space.Id,
                 SpaceName = space.Name,

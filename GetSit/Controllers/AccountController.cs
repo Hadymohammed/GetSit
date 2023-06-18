@@ -78,6 +78,11 @@ namespace GetSit.Controllers
                         ModelState.AddModelError("Role", "Wrong Role");
                         return RedirectToAction("Index", "SystemAdmin");
                     }
+                    if (admin.Registerd != true)
+                    {
+                        ModelState.AddModelError("Email", "Your account has not been varifed, please use the link sent to your email.");
+                        return View(login);
+                    }
                     if (!VerifyPassword(admin.Password, login.Password))
                     {
                         // Password is incorrect
@@ -95,9 +100,10 @@ namespace GetSit.Controllers
                         ModelState.AddModelError("Role", "Wrong Role");
                         return View(login);
                     }
-                    if (provider.Registerd == false)
+                    if (provider.Registerd != true)
                     {
                         ModelState.AddModelError("Email", "Your account has not been varifed, please use the link sent to your email.");
+                        return View(login);
                     }
                     if (!VerifyPassword(provider.Password, login.Password))
                     {
@@ -247,18 +253,16 @@ namespace GetSit.Controllers
             switch (register.Role)
             {
                 case UserRole.Admin:
-                    var admin = new SystemAdmin()
-                    {
-                        Id = (int)register.UserId,
-                        FirstName = register.FirstName,
-                        LastName = register.LastName,
-                        Email = register.Email,
-                        PhoneNumber = register.PhoneNumber,
-                        Birthdate = register.Birthdate,
-                        Password = PasswordHashing.Encode (register.Password),/*Here password should be hashed*/
-                        ProfilePictureUrl = "./resources/site/user-profile-icon.jpg"
-
-                    };
+                    var admin = await _adminSerivce.GetByIdAsync((int)register.UserId);
+                    admin.Id = (int)register.UserId;
+                    admin.FirstName = register.FirstName;
+                    admin.LastName = register.LastName;
+                    admin.Email = register.Email;
+                    admin.PhoneNumber = register.PhoneNumber;
+                    admin.Birthdate = register.Birthdate;
+                    admin.Password = PasswordHashing.Encode (register.Password);/*Here password should be hashed*/
+                    admin.ProfilePictureUrl = "./resources/site/user-profile-icon.jpg";
+                    
                     try
                     {
                        await _adminSerivce.UpdateAsync(admin.Id,admin);
@@ -271,20 +275,15 @@ namespace GetSit.Controllers
                     }
                     break;
                 case UserRole.Provider:
-                    var provider = new SpaceEmployee()
-                    {
-                        Id = (int)register.UserId,
-                        FirstName = register.FirstName,
-                        LastName = register.LastName,
-                        Email = register.Email,
-                        PhoneNumber = register.PhoneNumber,
-                        Birthdate = register.Birthdate,
-                        Password = PasswordHashing.Encode(register.Password),/*Here password should be hashed*/
-                        ProfilePictureUrl = "./resources/site/user-profile-icon.jpg",
-                        Registerd=true,
-
-                    };
-
+                    var provider = await _spaceEmployeeService.GetByIdAsync((int)register.UserId);
+                    provider.FirstName = register.FirstName;
+                    provider.LastName = register.LastName;
+                    provider.Email = register.Email;
+                    provider.PhoneNumber = register.PhoneNumber;
+                    provider.Birthdate = register.Birthdate;
+                    provider.Password = PasswordHashing.Encode(register.Password);/*Here password should be hashed*/
+                    provider.ProfilePictureUrl = "./resources/site/user-profile-icon.jpg";
+                    provider.Registerd = true;
                     try
                     {
                         await _spaceEmployeeService.UpdateAsync(provider.Id,provider);
