@@ -108,6 +108,13 @@ namespace GetSit.Common
         public bool IsTimeSlotAvailable(int hallId, DateTime desiredDate, TimeSpan startTime, TimeSpan endTime)
         {
             TimeSpan duration = endTime - startTime;
+            DayOfWeek day = desiredDate.DayOfWeek;
+            var hall = _context.SpaceHall.Where(h => h.Id == hallId).FirstOrDefault();
+
+            var workingDays = _context.SpaceWorkingDay.Where(s => s.SpaceId == hall.SpaceId && s.Day==day).FirstOrDefault();
+            if(workingDays == null)
+                return false;
+
             var bookings = _context.Booking
                 .Where(b =>
                     b.BookingHalls.Any(bh => bh.HallId == hallId) &&

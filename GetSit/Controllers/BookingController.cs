@@ -159,6 +159,7 @@ namespace GetSit.Controllers
             /*Send unavailable error to client*/
             if (!slots.IsTimeSlotAvailable(viewModel.HallId, viewModel.DesiredDate, start, end))
             {
+                ModelState.AddModelError("DesiredDate", "Choose a valid booking date, Make sure you press the Check availability then choose your timing.");
                 return View(IndexModel);
             }
             // Get the current user 
