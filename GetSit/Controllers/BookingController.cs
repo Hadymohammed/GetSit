@@ -142,6 +142,11 @@ namespace GetSit.Controllers
                 ModelState.AddModelError("DesiredDate", "Make sure you press the Check availability then choose your timing.");
                 return View(IndexModel);
             }
+            if(viewModel.DesiredDate < DateTime.Now)
+            {
+                ModelState.AddModelError("DesiredDate", "Choose a valid booking date.");
+                return View(IndexModel);
+            }
             int startH = 0, startM = 0; GetHoursAndMinutes(viewModel.StartTime, out startH, out startM);
             TimeSpan start = new TimeSpan(startH, startM, 0);
             int endH = 0, endM = 0; GetHoursAndMinutes(viewModel.EndTime, out endH, out endM);

@@ -40,19 +40,19 @@
                         @{
                             var j = 0;
 
-                            @foreach (var photo in Model.SelectedHall.HallPhotos)
+                                    @foreach (var photo in Model.SelectedHall.HallPhotos)
                             {
-                                @if (j++ == 0)
+                                        @if (j++ == 0)
                                 {
-                                    <div class="carousel-item active">
-                                        <img class="slider-image" src="@photo.Url" alt="@j slide">
-                                    </div>
+                                            <div class="carousel-item active">
+                                                <img class="slider-image" src="@photo.Url" alt="@j slide">
+                                            </div>
                                 }
                                 else
                                 {
-                                    <div class="carousel-item">
-                                        <img class="slider-image" src="@photo.Url" alt="@j slide">
-                                    </div>
+                                            <div class="carousel-item">
+                                                <img class="slider-image" src="@photo.Url" alt="@j slide">
+                                            </div>
                                 }
                             }
                         }
@@ -75,7 +75,7 @@
                 <!--Space-->
                 <div class="space">
                     <div class="space-image">
-                        <img class="avatar-md" src="@Model.SelectedSpace.Photos.FirstOrDefault().Url" />
+                        <img class="avatar-md" src="@Model.SelectedSpace.SpaceLogo" />
                     </div>
                     <div class="space-details">
                         <div class="space-name">@Model.SelectedSpace.Name</div>
@@ -219,8 +219,7 @@
                         <!--Select start & end time-->
                         <div class="select-time">
                             <div class="select-wrapper">
-
-                                @if (Model.StartTime == string.Empty || Model.StartTime is null)
+                                @if (ViewData.ModelState.IsValid)
                                 {
                                     <span>@Model.StartTime</span>
                                     <label class="select-label select-start-label" for="start-time">Start Time</label>
@@ -252,7 +251,7 @@
                             </div>
 
                             <div class="select-wrapper">
-                                @if (Model.EndTime == string.Empty || Model.EndTime is null)
+                                @if (ViewData.ModelState.IsValid)
                                 {
                                     <span>@Model.EndTime</span>
                                     <label class="select-label select-end-label" for="end-time">End Time</label>
@@ -596,9 +595,9 @@
                     tableBody.append(newRow);
                 }
                 //Add total cost
+            });
                 $('.receipt-total div').text('$' + parseFloat(totalCost).toFixed(2));
                 box.removeClass("none");
-            });
         }
     </script>
 }

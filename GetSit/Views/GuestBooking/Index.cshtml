@@ -159,7 +159,7 @@
                         <div class="select-time">
                             <div class="select-wrapper">
 
-                                @if (Model.StartTime == string.Empty || Model.StartTime is null)
+                                @if (ViewData.ModelState.IsValid)
                                 {
                                     <span>@Model.StartTime</span>
                                     <label class="select-label select-start-label" for="start-time">Start Time</label>
@@ -191,7 +191,7 @@
                             </div>
 
                             <div class="select-wrapper">
-                                @if (Model.EndTime == string.Empty || Model.EndTime is null)
+                                @if (ViewData.ModelState.IsValid)
                                 {
                                     <span>@Model.EndTime</span>
                                     <label class="select-label select-end-label" for="end-time">End Time</label>
@@ -553,9 +553,9 @@
                     tableBody.append(newRow);
                 }
                 //Add total cost
-                $('.receipt-total div').text('$' + parseFloat(totalCost).toFixed(2));
-                box.removeClass("none");
             });
+            $('.receipt-total div').text('$' + parseFloat(totalCost).toFixed(2));
+            box.removeClass("none");
         }
     </script>
 }

@@ -97,6 +97,11 @@ namespace GetSit.Controllers
         [HttpPost]
         public async Task<IActionResult> Index(GuestBookingVM viewModel)
         {
+            if (viewModel.DesiredDate < DateTime.Now)
+            {
+                ModelState.AddModelError("DesiredDate", "Choose a valid booking date.");
+                return View(viewModel);
+            }
             int id = _userManager.GetCurrentUserId(HttpContext);
             var emp = await _providerService.GetByIdAsync(id);
             #region GET view model for errors
