@@ -9,6 +9,7 @@ namespace GetSit.Data.ViewModels
         public IFormFile? Cover { get; set; }
         public IFormFile? Logo { get; set; }
         public List<string>? NewPhones { get; set; }
+        public List<Tuple<SpaceWorkingDay,string,string>>? WorkingDays { get; set; }
 
     }
 }

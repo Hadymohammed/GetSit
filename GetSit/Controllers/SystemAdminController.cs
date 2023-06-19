@@ -71,7 +71,9 @@ namespace GetSit.Controllers
 				}
 
 			}
-			var halls = _context.HallRequest.Where(i => i.Status == 0 )
+			var halls = _context.HallRequest.Where(i => i.Status == ReqestStatus.pending )
+                .Include(r=>r.Hall)
+                    .ThenInclude(h=>h.HallPhotos)
                 /*.Include(r=>r.Hall)
                     .ThenInclude(h=>h.Space)*/
                 .ToList();
@@ -142,42 +144,45 @@ namespace GetSit.Controllers
             
             return RedirectToAction("Index");
 		}
-		public async Task <IActionResult> ViewRepest(int requestId)
+		public async Task <IActionResult> HallRequest(int requestId)
         {
-			var request = _hallRequestService.GetById(requestId);
+			var request =await _hallRequestService.GetByIdAsync(requestId);
 			var hall =await _hallService.GetByIdAsync(request.HallId,h=>h.HallPhotos);
             var currentHall = _context.SpaceHall.Where(i=>i.Id == hall.Id).FirstOrDefault();
             var space = _context.Space.Where(i => i.Id == currentHall.SpaceId).FirstOrDefault();
 			var provider = _context.SpaceEmployee.Where(i => i.SpaceId == space.Id).FirstOrDefault();
-            var viewModel = new ReviewSpaceVM
+            var viewModel = new ReviewSpaceVM()
             {
                 Space = space,
                 spaceEmployee = provider,
                 hallRequest = request,
                 Hall = hall,
+                RequestId=request.Id,
             };
 			return View(viewModel);
         }
         [HttpGet]
-        public IActionResult AcceptRepest(int requestId)
+        public async Task<IActionResult> AcceptHallReqestAsync(int requestId)
         {
-            var request = _hallRequestService.GetById(requestId);
+            var request = await _hallRequestService.GetByIdAsync(requestId,r=>r.Hall);
             var hall = request.Hall;
             hall.Status = HallStatus.Accepted;
-            _hallService.UpdateHall(hall);
-            _hallRequestService.DeleteRequest(request);
-            return View("Index");
+            await _hallService.UpdateAsync(hall.Id,hall);
+            await _hallRequestService.DeleteAsync(request.Id);
+            return RedirectToAction("Index");
         }
         [HttpPost]
-        public IActionResult RejectRepest(int requestId, string comment)
+        public async Task<IActionResult> RejectHallRequestAsync(RejectHallVM vm)
         {
-            var request = _hallRequestService.GetById(requestId);
-            request.comment = comment;
+            var request = await _hallRequestService.GetByIdAsync(vm.RequestId,r=>r.Hall);
+            request.Hall = await _hallService.GetByIdAsync(request.HallId, h => h.Space);
+            var space = await _spaceSerivce.GetByIdAsync(request.Hall.SpaceId, s => s.Employees);
+            request.comment = vm.Messege;
             request.Status = ReqestStatus.Rejected;
             request.Date = DateTime.Now;
-            _hallRequestService.UpdateRequest(request);
-
-            return View("Index");
+            await _hallRequestService.UpdateAsync(request.Id,request);
+            EmailHelper.SendHallRejection(space.Employees.First().Email, request.comment, space.Name);
+            return RedirectToAction("Index");
         }
 
 

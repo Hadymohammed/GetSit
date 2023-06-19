@@ -108,14 +108,14 @@ namespace GetSit.Controllers
                 int.TryParse(SpaceIdStirng, out spaceIdInt);
             }
             Space space = await _spaceSerivce.GetByIdAsync(spaceIdInt, s => s.Photos, s => s.Phones);
-            SpaceManagementVM viewModel = new()
+            SpaceManagementVM viewModel = new SpaceManagementVM()
             {
                 Space = space,
                 Halls = _hallService.GetAcceptedBySpaceId(spaceIdInt, h => h.HallPhotos, h => h.HallFacilities),
                 Services = _spaceService_service.GetBySpaceId(spaceIdInt, s => s.ServicePhotos),
                 Employees = _providerService.GetBySpaceId(spaceIdInt),
                 Bookings = _bookingService.GetBySpaceId(spaceIdInt),
-                Requests = _hallRequestService.GetPendingBySpaceId(spaceIdInt),
+                Requests = _hallRequestService.GetPendingBySpaceId(spaceIdInt,r=>r.Hall),
                 GuestBookings = _guestBookingService.GetBySpaceId(spaceIdInt)
             };
             return View(viewModel);
@@ -420,17 +420,30 @@ namespace GetSit.Controllers
         }
         #endregion
 
-        #region Request Deteles
-        public async Task<IActionResult> RequestDeteles(int RequestId)
+        #region Request Details
+        public async Task<IActionResult> RequestDetails(int RequestId)
         {
 
-            var request = _hallRequestService.GetById(RequestId);
+            var request = await _hallRequestService.GetByIdAsync(RequestId, r=>r.Hall);
+            request.Hall = await _hallService.GetByIdAsync(request.HallId, h => h.HallFacilities, h => h.HallPhotos,h=>h.Space);
             return View(request);
         }
-
+        
+        [HttpGet]
+        public async Task<IActionResult> RevalidateHallRequest(int RequestId)
+        {
+            if (RequestId < 1)
+                return NotFound();
+            var request = await _hallRequestService.GetByIdAsync(RequestId, r => r.Hall);
+            var hall = await _hallService.GetByIdAsync(request.HallId);
+            request.Status = ReqestStatus.pending;
+            hall.Status = HallStatus.Pending;
+            await _hallRequestService.UpdateAsync(request.Id, request);
+            await _hallService.UpdateAsync(hall.Id, hall);
+            return RedirectToAction("Index");
+        }
         #endregion
 
-        
         #region Edit Hall
         [HttpGet]
         public async Task<IActionResult> EditHall(int HallId)
@@ -452,7 +465,7 @@ namespace GetSit.Controllers
                 SpaceId = space.Id,
                 SpaceBio = space.Bio,
                 SpaceName = space.Name,
-                SpacePhotoUrl = space.Photos.First().Url,
+                SpacePhotoUrl = space.SpaceLogo,
                 Description = hall.Description,
                 CostPerHour = hall.CostPerHour,
                 Type = hall.Type,
@@ -475,6 +488,7 @@ namespace GetSit.Controllers
             var hall = await _hallService.GetByIdAsync(vm.HallId,h=>h.HallFacilities);
             hall.Description = vm.Description;
             hall.CostPerHour = vm.CostPerHour;
+            hall.Capacity = vm.Capacity;
             //Add new Photos
             if (vm.Files != null)
             {
@@ -517,19 +531,6 @@ namespace GetSit.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Revalidate(int RequestId)
-        {
-            if (RequestId < 1)
-                return NotFound();
-            var request = await _hallRequestService.GetByIdAsync(RequestId, r => r.Hall);
-            request.Status = ReqestStatus.pending;
-            var hall = await _hallService.GetByIdAsync(request.HallId);
-            hall.Status = HallStatus.Pending;
-            await _hallRequestService.UpdateAsync(request.Id, request);
-            await _hallService.UpdateAsync(hall.Id, hall);
-            return RedirectToAction("Index");
-        }
-        [HttpGet]
         public async Task<ActionResult> DeleteHallPhoto(int PhotoId)
         {
             var userId =_userManager.GetCurrentUserId(HttpContext);
@@ -539,11 +540,11 @@ namespace GetSit.Controllers
             var hallId = photo.HallId;
             var hall = await _hallService.GetByIdAsync(hallId,h=>h.HallPhotos);
 
-            if(user==null)
-                return RedirectToAction("Index");
+            if (user == null)
+                return NotFound();
             if (user.SpaceId != hall.SpaceId)
                 return RedirectToAction("AccessDenied", "Account");
-                return NotFound();
+
             if (hall.HallPhotos.Count() <= 1)
             {
                 return NotFound();
@@ -581,7 +582,7 @@ namespace GetSit.Controllers
                 SpaceId = space.Id,
                 SpaceBio = space.Bio,
                 SpaceName = space.Name,
-                SpacePhotoUrl = space.Photos.First().Url,
+                SpacePhotoUrl = space.SpaceLogo,
                 ServiceId=service.Id,
                 ServiceName = service.Name,
                 Description=service.Description,

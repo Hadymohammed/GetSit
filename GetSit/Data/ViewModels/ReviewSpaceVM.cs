@@ -1,6 +1,8 @@
 ﻿using GetSit.Models;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
+
 namespace GetSit.Data.ViewModels
 {
 	public class ReviewSpaceVM
@@ -15,6 +17,7 @@ namespace GetSit.Data.ViewModels
 		public HallRequest? hallRequest { get; set; }
 		[Required]
 		public SpaceHall Hall { get; set; }
-
+		[AllowNull]
+		public int? RequestId { get; set; }
 	}
 }

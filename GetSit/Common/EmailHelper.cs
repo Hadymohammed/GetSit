@@ -59,6 +59,12 @@ namespace GetSit.Common
             string reciverName = $"{SpaceName} Manager";
             return SendEmail(email, Messege, subject, reciverName);
         }
+        static public bool SendHallRejection(string email, string Messege, string SpaceName)
+        {
+            const string subject = "Hall Rejection";
+            string reciverName = $"{SpaceName} Manager";
+            return SendEmail(email, Messege, subject, reciverName);
+        }
         static public bool SendOTP(string email,string OTP)
         {
             string body = $"Sent from GetSit , Here is your OTP is {OTP} . Don't share it with anyone. ";

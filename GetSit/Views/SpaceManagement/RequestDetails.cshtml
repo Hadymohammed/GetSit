@@ -39,7 +39,7 @@
 
                                 <!-- pfp starts -->
                                 <div class="d-flex align-items-start">
-                                    <img src=".@Model.Hall.Space.Photos.First().Url" class="rounded-circle me-2"
+                                    <img src=".@Model.Hall.Space.SpaceLogo" class="rounded-circle me-2"
                                          alt="Christina Mason" width="36" height="36">
                                     <div class="flex-grow-1">
                                         <strong>@Model.Hall.Space.Name</strong> Sent to a add hall request <br>
@@ -129,7 +129,7 @@
 
                                     <div>
                                         <!-- Revalidate -->
-                                        <span class="btn btn-danger mr-5">Revalidate</span>
+                                        <a asp-action="RevalidateHallRequest" asp-controller="SpaceManagement" asp-route-RequestId="@Model.Id" class="btn btn-danger mr-5">Revalidate</a>
 
                                         <!-- The button triggers the message -->
                                         @if (Model.comment != null)

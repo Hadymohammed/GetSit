@@ -138,10 +138,10 @@ namespace GetSit.Data
                             Password=PasswordHashing.Encode("Admin1234"),
                             PhoneNumber="01015608885",
                             Birthdate= new DateTime(1980,7,7),
-                            ProfilePictureUrl="./resources/site/user1.jpg"
-
+                            ProfilePictureUrl="./resources/site/user1.jpg",
+                            Registerd=true
                         }
-                    });
+                    }); 
                     context.SaveChanges();
                 }
                 //Space WorkingDay

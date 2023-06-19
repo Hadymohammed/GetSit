@@ -353,17 +353,19 @@
                                 <div class="booking-actions">
                                     @if (request.Status == ReqestStatus.pending)
                                     {
-                                        <a asp-controller="SpaceManagement" asp-action="RequestDeteles" asp-route-RequestID="@request.Id"> <div class="booking-status pending-color">@request.Status</div></a>
+                                        <a asp-controller="SpaceManagement" asp-action="RequestDetails" asp-route-RequestID="@request.Id"> <div class="booking-status pending-color">@request.Status</div></a>
                                     }
                                     @if (request.Status == ReqestStatus.Accepted)
                                     {
-                                        <a asp-controller="SpaceManagement" asp-action="RequestDeteles" asp-route-RequestID="@request.Id"> <div class="booking-status accepted-color">@request.Status</div></a>
+                                        <a asp-controller="SpaceManagement" asp-action="RequestDetails" asp-route-RequestID="@request.Id"> <div class="booking-status accepted-color">@request.Status</div></a>
 
                                         
                                     }
                                     @if (request.Status == ReqestStatus.Rejected)
                                     {
-                                        <a asp-controller="SpaceManagement" asp-action="RequestDeteles" asp-route-RequestID="@request.Id"> <div class="booking-status cancelled-color">@request.Status
+                                        <a asp-controller="SpaceManagement" asp-action="RequestDetails" asp-route-RequestID="@request.Id">
+                                            <div class="booking-status rejected-color">
+                                                @request.Status
                                     </div> </a>
                                         
                                     }
