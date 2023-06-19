@@ -487,15 +487,16 @@ namespace GetSit.Controllers
             }
 
             /*Send unavailable error to the employee*/
-            if (!slots.IsTimeSlotAvailable(hall.Id, Booking.DesiredDate, start, end))
+            if (NumberOfHours != 0)
             {
-                return RedirectToAction("Details", new { BookingId = viewModel.BookingId });
+                if (!slots.IsTimeSlotAvailable(hall.Id, Booking.DesiredDate, start, end))
+                {
+                    return RedirectToAction("Details", new { BookingId = viewModel.BookingId });
+                }
+                // save the new timing in database
+                Booking.NumberOfHours = NumberOfHours;
+                Booking.TotalCost += hall.CostPerHour * NumberOfHours;
             }
-
-            // save the new timing in database
-            Booking.NumberOfHours = NumberOfHours;
-            Booking.TotalCost += hall.CostPerHour * NumberOfHours;
-
             var payment = await _paymentSerivce.GetByIdAsync(Booking.Payment.Id);
             PaymentDetail halldetail = (PaymentDetail)_context.PaymentDetail.Where(i => i.BookingHallId == Booking.BookingHalls.First().Id).FirstOrDefault();
             halldetail.TotalCost += hall.CostPerHour * NumberOfHours;
