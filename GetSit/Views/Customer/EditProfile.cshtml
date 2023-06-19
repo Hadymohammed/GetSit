@@ -22,7 +22,7 @@
                         <div class="col-lg-3 order-lg-2">
                             <div class="card-profile-image">
                                 <!--Img-->
-                                <img src="https://st3.depositphotos.com/6672868/13701/v/1600/depositphotos_137014128-stock-illustration-user-profile-icon.jpg" class="rounded-circle" />
+                                <img src=".@Model.ProfilePictureUrl" class="rounded-circle" />
                             </div>
                         </div>
                     </div>
@@ -124,7 +124,7 @@
                                         <div class="col-md-12">
                                             <div class="form-group focused">
                                                 <label class="form-control-label" for="input-faculty"> Faculty </label>
-                                                <input asp-for="@Model.Faculty" class="form-control form-control-alternative" placeholder="Faculty" value="Faculty" type="text">
+                                                <input asp-for="@Model.Faculty" class="form-control form-control-alternative" placeholder="Faculty" type="text" readonly>
                                             </div>
                                         </div>
 
