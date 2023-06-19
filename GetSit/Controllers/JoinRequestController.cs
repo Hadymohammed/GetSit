@@ -68,7 +68,7 @@ namespace GetSit.Controllers
                 Email=viewModel.Email,
                 Phone=viewModel.PhoneNumber
             };
-            return RedirectToAction("PhoneOTP", otpVm);
+            return RedirectToAction("EmailOTP", otpVm);//Skip Phone otp
         }
         #region OTP verfication
         [HttpGet]
