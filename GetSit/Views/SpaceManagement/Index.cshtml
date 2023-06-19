@@ -16,7 +16,7 @@
                 <div class="profile-card">
                     @{
                         var url="../"+Model.Space.SpaceLogo;
-                                        <img src="@url" />
+                                                <img src="@url" />
                     }
                     <div class="profile-name">@Model.Space.Name</div>
                     <div class="profile-bio">
@@ -113,12 +113,37 @@
                             </div>
                             <div class="booking-details">
                                 <div>
-                                <div>
                                     <h3 class="product-name">@booking.BookingHalls[0].Hall.Type : @booking.BookingHalls[0].HallId</h3>
                                     <p class="product-description">@booking.BookingDate.DayOfWeek @booking.StartTime <span>(@booking.NumberOfHours hours)</span></p>
                                     <p>@booking.Customer.FirstName @booking.Customer.LastName</p>
                                 </div>
-                                
+                                <div class="booking-actions">
+                                    @if(booking.BookingStatus == BookingStatus.Pending)
+                                    {
+                                        <div class="booking-status pending-color">@booking.BookingStatus</div>
+                                    }
+                                    @if (booking.BookingStatus == BookingStatus.Missed)
+                                    {
+                                        <div class="booking-status missed-color">@booking.BookingStatus</div>
+                                    }
+                                    @if (booking.BookingStatus == BookingStatus.Cancelled)
+                                    {
+                                        <div class="booking-status cancelled-color">@booking.BookingStatus</div>
+                                    }
+                                    @if (booking.BookingStatus == BookingStatus.Accepted)
+                                    {
+                                        <div class="booking-status accepted-color">@booking.BookingStatus</div>
+                                    }
+                                    @if (booking.BookingStatus == BookingStatus.Rejected)
+                                    {
+                                        <div class="booking-status rejected-color">@booking.BookingStatus</div>
+                                    }
+                                    @if (booking.BookingStatus == BookingStatus.Confirmed
+                                    )
+                                    {
+                                        <div class="booking-status confirmed-color">@booking.BookingStatus</div>
+                                    }
+                                    <a asp-action="Details" asp-controller="Booking" asp-route-BookingId="@booking.Id">Details and actions</a>
                                 </div>
                             </div>
                         </div>
@@ -168,55 +193,6 @@
                                         <div class="booking-status confirmed-color">@booking.BookingStatus</div>
                                     }
                                     <a asp-action="Details" asp-controller="GuestBooking" asp-route-BookingId="@booking.Id">Details and actions</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                }
-                @foreach (var booking in Model.GuestBookings)
-                {
-                    <div class="product-card booking-hall fade-in">
-                    <div id="BookingDate" hidden>@booking.DesiredDate.ToShortDateString()</div>
-                    <div id="BookingHallId" hidden>@booking.BookingHalls[0].HallId</div>
-                        <div class="product-content">
-                            <div class="product-photo">
-                                <div>@booking.DesiredDate.Day</div>
-                                <div>@booking.DesiredDate.ToString("MMM")</div>
-                                <div>@booking.DesiredDate.Year</div>
-                            </div>
-                            <div class="booking-details">
-                                <div>
-                                    <h3 class="product-name">@booking.BookingHalls[0].Hall.Type : @booking.BookingHalls[0].HallId</h3>
-                                    <p class="product-description">@booking.BookingDate.DayOfWeek @booking.StartTime <span>: @booking.EndTime</span></p>
-                                    <p>Guest : @booking.FirstName @booking.LastName</p>
-                                </div>
-                                <div class="booking-actions">
-                                    @if(booking.BookingStatus == BookingStatus.Pending)
-                                    {
-                                        <div class="booking-status pending-color">@booking.BookingStatus</div>
-                                    }
-                                    @if (booking.BookingStatus == BookingStatus.Missed)
-                                    {
-                                        <div class="booking-status missed-color">@booking.BookingStatus</div>
-                                    }
-                                    @if (booking.BookingStatus == BookingStatus.Cancelled)
-                                    {
-                                        <div class="booking-status cancelled-color">@booking.BookingStatus</div>
-                                    }
-                                    @if (booking.BookingStatus == BookingStatus.Accepted)
-                                    {
-                                        <div class="booking-status accepted-color">@booking.BookingStatus</div>
-                                    }
-                                    @if (booking.BookingStatus == BookingStatus.Rejected)
-                                    {
-                                        <div class="booking-status rejected-color">@booking.BookingStatus</div>
-                                    }
-                                    @if (booking.BookingStatus == BookingStatus.Confirmed
-                                    )
-                                    {
-                                        <div class="booking-status confirmed-color">@booking.BookingStatus</div>
-                                    }
-                                    <a>Details and actions</a>
                                 </div>
                             </div>
                         </div>
@@ -455,6 +431,7 @@
     const matchDateFilter = (element, filterDate) => {
             var bookingDate = (new Date($(element).find('#BookingDate').text())).getTime();
             var isMatch = true;
+            console.log(filterDate.add,bookingDate);
             if (filterDate > bookingDate)//start displaying from the filterDate
                 isMatch = false;
 
@@ -472,7 +449,9 @@
     }
     const filter=()=>{
             var bookings = $('.booking-hall');
-            var filterDate = (new Date($('#date-filter').val())).getTime();
+            var filterDate = (new Date($('#date-filter').val()));
+             filterDate = new Date(filterDate);
+             filterDate.setDate(filterDate.getDate() - 1);
             var filterHallId = $('#hall-id-filter').val();
             bookings.each((index, element) => {
                 var display = matchDateFilter(element, filterDate) && matchHallIdFilter(element, filterHallId);
