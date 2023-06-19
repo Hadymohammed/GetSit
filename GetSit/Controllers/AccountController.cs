@@ -20,6 +20,7 @@ namespace GetSit.Controllers
 {
     public class AccountController : Controller
     {
+        #region Dependencies
         const string userPhotoTemp = "./resources/site/user1.jpg";
         AppDBcontext _context;
         private readonly IUserManager _userManager;
@@ -47,6 +48,8 @@ namespace GetSit.Controllers
             _spaceEmployeeService = spaceEmployeeService;
             _adminSerivce = adminSerivce;
         }
+        #endregion
+
         public IActionResult Index()
         {
             return View();
@@ -226,7 +229,7 @@ namespace GetSit.Controllers
             otpVm.Phone = register.PhoneNumber;
             return RedirectToAction("EmailOTP", otpVm);//skip phone otp 
         }
-
+        #region verification
         [HttpGet]
         public IActionResult PhoneOTP(OTPVM? otpVm)
         {
@@ -360,6 +363,31 @@ namespace GetSit.Controllers
                     break;
             }
             return RedirectToAction("Register");
+        }
+        #endregion
+
+        [Authorize(Roles ="Customer , Provider , Admin")]
+        public async Task<IActionResult> ProfileAsync()
+        {
+            var userRole = _userManager.GetUserRole(HttpContext);
+            if (userRole == null)
+                return NotFound();
+
+            switch (userRole)
+            {
+                case "Customer":
+                    return RedirectToAction("Index", "Customer");
+                    break;
+                case "Admin":
+                    return RedirectToAction("Index", "SystemAdmin");
+                    break;
+                case "Provider":
+                    return RedirectToAction("Index", "SpaceManagement");
+                    break;
+                default:
+                    return NotFound();
+            }
+            return RedirectToAction("Index", "SystemAdmin");
         }
         [Authorize(Roles = "Admin")]//error enum must be used
         public async Task<IActionResult> AdminProfileAsync()

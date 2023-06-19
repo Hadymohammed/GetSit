@@ -73,7 +73,7 @@
                         {
                             if(i==0)
                             {
-                                <div class="carousel-item active">
+                                <div class="carousel-item active" >
                                     <img  src="@hall.HallPhotos[i].Url"
                                          class="slider-image" alt="...">
                                 </div>
@@ -143,87 +143,3 @@
 
 </div>
 
-@*<div class="body">
-    <div class="main">
-
-        <!-- Filters-container starts -->
-        <div class="Filters-container">
-            <p class="Filters-label">
-                Filter Spaces
-            </p>
-
-            <div class="edit-container">
-                <div>
-                    <button type="button" class="btn btn-dark btn-sm btn-edit">Within 256km</button>
-                    <button type="button" class="btn btn-dark btn-sm btn-edit">Up to $ __ / hr</button>
-                    <button type="button" class="btn btn-dark btn-sm btn-edit">Capacity</button>
-                    <button type="button" class="btn btn-dark btn-sm btn-edit">Activities </button>
-                    <button type="button" class="btn btn-dark btn-sm btn-edit">Amenities </button>
-                </div>
-            </div>
-
-            <p class="Clear-Filters">Clear Filters</p>
-        </div>
-        <!-- Filters-container ends -->
-        <!-- search input  -->
-        <input class="search-input-edit" type="text" placeholder="Search by city, host or space name">
-        <p class="Spaces-near">Spaces near Qena </p>
-
-        <br><br>
-        <!-- spaces container starts -->
-        <div class="wrapper">
-
-           
-            @foreach(var hall in Model)
-            {
-                <!-- card 1 -->
-               //user without login
-              @* @if()
-                {
-                    <a asp-controller=<!--login controller Name--> asp-action=<!--login action Name-->><i class="bi bi-star"></i></a>
-            ViewBag.ErrorMessage = "Delete failed. Try again, and if the problem persists see your system administrator.";
-                }
-                else if (/*customer*/)
-                {
-                    @if(/*not fav*/)
-                    {
-                        <a asp-action="fav"><i class="bi bi-star"></i></a>
-                    }
-                    else
-                    {
-                        <a asp-action="un_fav"><i class="bi bi-star"></i></a>
-                    }
-                }
-                else
-                {
-                    /*what to do??*/
-                }
-                
-                <div class="card card-edit">
-
-                   @foreach(var i in hall.HallPhotos)
-                    {
-                    //<p>@i.Url</p>
-                    <img src="@i.Url"
-                         class="card-img-top" alt="...">
-                        
-                    }
-                    <div class="card-body">
-
-                        <a asp-action="Fav" >fav</a>
-
-                        <p><b>@hall.Space.Name</b></p>
-                        <p class="card-text">
-                            @hall.Description
-                        </p>
-                    </div>
-                </div>
-                
-            }
-           
-
-            
-        <!-- spaces container ends -->
-
-    </div>
-</div>*@
