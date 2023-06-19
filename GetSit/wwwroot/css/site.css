@@ -19,7 +19,11 @@ body {
     font-size: 16px;    
   }
 }
-
+.empty {
+    text-align: center;
+    margin: 30px;
+    font-size: 20px;
+}
 
 .purple-btn {
     background-color: var(--purple-color);

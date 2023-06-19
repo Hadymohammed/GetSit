@@ -77,7 +77,6 @@ namespace GetSit.Controllers
             _serviceService = serviceService;
         }
         #endregion
-        [HttpGet,Authorize(Roles ="Customer")]
         public async Task<IActionResult> Index(int HallID,DateTime? date)
         {
             if(HallID==0)

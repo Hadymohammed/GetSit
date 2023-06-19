@@ -60,16 +60,22 @@
 
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav links-container-edit">
+                        @if (Context.User.Identity.IsAuthenticated && Context.User.Claims.Where(c => c.Type == ClaimTypes.Role).FirstOrDefault().Value == UserRole.Admin.ToString())
+                        { 
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="SystemAdmin" asp-action="Index">Dashboard</a>
+                            </li>
+                        }
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Explore" asp-action="Index">Explore</a>
                         </li>
-                        @if (Context.User.Identity.IsAuthenticated&&Context.User.Claims.Where(c => c.Type == ClaimTypes.Role).FirstOrDefault().Value == UserRole.Customer.ToString())
+                        @if (Context.User.Identity.IsAuthenticated && Context.User.Claims.Where(c => c.Type == ClaimTypes.Role).FirstOrDefault().Value == UserRole.Customer.ToString())
                         {
                             <li class="nav-item">
                                 <a class="nav-link" asp-action="Index" asp-controller="Customer">My Booking</a>
-                            </li>                    
+                            </li>
                         }
-                        else if (Context.User.Identity.IsAuthenticated&&Context.User.Claims.Where(c => c.Type == ClaimTypes.Role).FirstOrDefault().Value == UserRole.Provider.ToString())
+                        else if (Context.User.Identity.IsAuthenticated && Context.User.Claims.Where(c => c.Type == ClaimTypes.Role).FirstOrDefault().Value == UserRole.Provider.ToString())
                         {
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="SpaceManagement" asp-action="Index">My Space</a>

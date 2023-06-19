@@ -16,17 +16,19 @@
     <div class="container responsive-timeline-container">
         <aside class="profile item-responsive item-1">
             <img src="@Model.ProfilePictureUrl" class="avatar" alt="profile image">
-            <h1>@Model.FirstName </h1>
+            <h1>@Model.FirstName @Model.LastName</h1>
             <p>@Model.Bio</p>
 
             <ul class="list">
                 <li><span class="material-symbols-outlined" style="font-size: 1.4rem;">calendar_month</span>Born the @Model.Birthdate.Day th of @Model.Birthdate.ToString("MMMM") @Model.Birthdate.Year</li>
-                <li><span class="material-symbols-outlined" style="font-size: 1.4rem;">location_on </span> @Model.Country, @Model.City</li>
+                @if(Model.Country!=null&&Model.City!=null){
+                    <li><span class="material-symbols-outlined" style="font-size: 1.4rem;">location_on </span> @Model.Country, @Model.City</li>
+                }
                 @if(Model.Faculty!=null)
                 {
                      <li><span class="material-symbols-outlined" style="font-size: 1.4rem;">school </span>@Model.Faculty.Name</li>
                 }
-                <li><span class="material-symbols-outlined" style="font-size: 1.4rem;">groups</span>Teams</li>
+                <!--<li><span class="material-symbols-outlined" style="font-size: 1.4rem;">groups</span>Teams</li>-->
 
                 
             </ul>
@@ -34,7 +36,11 @@
         <section class="timeline item-responsive item-2">
             <h2>My booking</h2>
             <br> <br>
-
+            @if(Model.Bookings.Count()==0){
+                <div class="empty">
+                        No Bookings yet! Explore more halls.
+                </div>
+            }
             @foreach(var booking in Model.Bookings)
             {
                 <div class="product-card booking-hall fade-in">
@@ -92,6 +98,11 @@
                     <strong>Favorite Hall</strong>
                     <!-- <a href="">View all</a> -->
                 </div>
+                @if(Model.FavoriteHalls.Count()==0){
+                <div class="empty">
+                        No Favoirtes! Add some to get fast access.
+                </div>
+            }
                 <ul>
                     @foreach(var hall in Model.FavoriteHalls)
                     {
@@ -101,7 +112,7 @@
                                 <div class="info">
                                     <div>
                                         <div>
-                                            <a href="#" class="no-decor">
+                                            <a asp-action="Index" asp-action="Booking" asp-route-HallId="@hall.Id" class="no-decor">
                                                 <strong>@hall.SpaceHall.Space.Name</strong>
                                             </a>
                                         </div>

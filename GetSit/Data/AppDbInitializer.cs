@@ -28,6 +28,8 @@ namespace GetSit.Data
                             IsFast=true,
                             BankAccount="1111222233334444",
                             IsApproved=true,
+                            SpaceCover="./resources/site/Cover_PlaceHolder.png",
+                            SpaceLogo="./resources/site/logo-social.png"
                         },
                         new Space
                         {
@@ -40,6 +42,8 @@ namespace GetSit.Data
                             IsFast=true,
                             BankAccount="1111222233334444",
                             IsApproved=true,
+                            SpaceCover="./resources/site/Cover_PlaceHolder.png",
+                             SpaceLogo="./resources/site/logo-social.png"
                         }
                     });
                     context.SaveChanges();
@@ -57,7 +61,7 @@ namespace GetSit.Data
                             Password=PasswordHashing.Encode("Customer1234"),
                             PhoneNumber="01015608885",
                             Birthdate= new DateTime(1980,7,7),
-                            ProfilePictureUrl="./resources/site/user-profile-icon.jpg"
+                            ProfilePictureUrl="./resources/site/user1.jpg"
 
                         }
                     });
