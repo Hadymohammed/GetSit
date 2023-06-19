@@ -6,14 +6,15 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
-var DBconnection= builder.Configuration["DBconnection"];
+var DBconnection = builder.Configuration.GetConnectionString("DBconnection");
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddDbContext<AppDBcontext>(options => options.UseSqlServer(
-        DBconnection
-        ));
+builder.Services.AddDbContext<AppDBcontext>(options => options.UseSqlServer(DBconnection));
+
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 builder.Services.AddAuthentication("Cookies")
     .AddCookie("Cookies",config =>
