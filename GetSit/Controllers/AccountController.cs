@@ -221,7 +221,7 @@ namespace GetSit.Controllers
             var otpVm = new OTPVM();
             otpVm.Email = register.Email;
             otpVm.Phone = register.PhoneNumber;
-            return RedirectToAction("PhoneOTP", otpVm);
+            return RedirectToAction("EmailOTP", otpVm);//skip phone otp 
         }
 
         [HttpGet]
@@ -272,6 +272,9 @@ namespace GetSit.Controllers
             var register = JsonConvert.DeserializeObject<RegisterVM>(stringUser) as RegisterVM;
             if (register is null)
                 RedirectToAction("Register");
+            if (register.Role == null)
+                register.Role = UserRole.Customer;
+
             switch (register.Role)
             {
                 case UserRole.Admin:
