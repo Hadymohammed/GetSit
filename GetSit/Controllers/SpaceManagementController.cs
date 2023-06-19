@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 using static System.Reflection.Metadata.BlobBuilder;
+using System.Globalization;
 
 namespace GetSit.Controllers
 {
@@ -39,7 +40,7 @@ namespace GetSit.Controllers
         readonly IGuestBookingService _guestBookingService;
         readonly ICustomerService _customerService;
         readonly ISystemAdminService _systemAdminService;
-
+        readonly ISpaceWorkingDayService _workingDayService;
         public SpaceManagementController(IUserManager userManager,
             AppDBcontext context,
             ISpaceEmployeeService spaceEmployeeService,
@@ -56,7 +57,8 @@ namespace GetSit.Controllers
             IWebHostEnvironment env,
             IGuestBookingService guestBookingService,
             ICustomerService customerService,
-            ISystemAdminService systemAdminService)
+            ISystemAdminService systemAdminService,
+            ISpaceWorkingDayService spaceWorkingDayService)
         {
             _env = env;
             _userManager = userManager;
@@ -75,6 +77,7 @@ namespace GetSit.Controllers
             _guestBookingService = guestBookingService;
             _customerService = customerService;
             _systemAdminService = systemAdminService;
+            _workingDayService = spaceWorkingDayService;
         }
         #endregion
         bool PresirvedEmail(string email)
@@ -83,6 +86,24 @@ namespace GetSit.Controllers
                     _providerService.GetByEmail(email) != null ||
                     _systemAdminService.GetByEmail(email) != null
                     );
+        }
+        public static void GetHoursAndMinutes(string timeSpanString, out int hours, out int minutes)
+        {
+            DateTime time;
+            if (timeSpanString.Length == 7)
+            {
+                timeSpanString = '0' + timeSpanString;
+            }
+            if (DateTime.TryParseExact(timeSpanString, "hh:mm tt", CultureInfo.InvariantCulture, DateTimeStyles.None, out time))
+            {
+                hours = time.Hour;
+                minutes = time.Minute;
+            }
+            else
+            {
+                hours = 0;
+                minutes = 0;
+            }
         }
         public async Task<IActionResult> IndexAsync()
         {
@@ -132,21 +153,21 @@ namespace GetSit.Controllers
             if(user.SpaceId!=SpaceId)
                 return RedirectToAction("AccessDenied", "Account");
 
-            var space = await _spaceSerivce.GetByIdAsync((int)user.SpaceId,s=>s.Photos,s=>s.Phones);
+            var space = await _spaceSerivce.GetByIdAsync((int)user.SpaceId,s=>s.Photos,s=>s.Phones,s=>s.WorkingDays);
             return View(new SpaceDetailsVM()
             {
                 Space=space
             });
         }
         [HttpPost]
-        public async Task<IActionResult> SpaceDetails(SpaceDetailsVM vm)
+        public async Task<IActionResult> SpaceDetails(SpaceDetailsVM vm, AddWorkingDaysVM[]? workingDays)
         {
             if (!ModelState.IsValid)
             {
                 vm.Space= await _spaceSerivce.GetByIdAsync(vm.Space.Id, s => s.Photos, s => s.Phones);
                 return View(vm);
             }
-            var space = await _spaceSerivce.GetByIdAsync(vm.Space.Id);
+            var space = await _spaceSerivce.GetByIdAsync(vm.Space.Id,s=>s.WorkingDays);
             int userId = _userManager.GetCurrentUserId(HttpContext);
             var user = await _providerService.GetByIdAsync(userId);
             if (user == null)
@@ -162,7 +183,25 @@ namespace GetSit.Controllers
             space.Country = vm.Space.Country;
             space.City=vm.Space.City;
             space.Street = vm.Space.Street;
-
+            if (workingDays.Count() !=0)
+            {
+                space.WorkingDays.Clear();
+                foreach (var day in workingDays)
+                {
+                    int startH = 0, startM = 0; GetHoursAndMinutes(day.OpeningTime, out startH, out startM);
+                    TimeSpan start = new TimeSpan(startH, startM, 0);
+                    int endH = 0, endM = 0; GetHoursAndMinutes(day.ClosingTime, out endH, out endM);
+                    TimeSpan end = new TimeSpan(endH, endM, 0);
+                    SpaceWorkingDay d = new()
+                    {
+                        SpaceId = space.Id,
+                        Day = day.Day,
+                        OpeningTime = start,
+                        ClosingTime = end
+                    };
+                    await _workingDayService.AddAsync(d);
+                }
+            }
             /*save phones*/
             if (vm.NewPhones != null)
             {
@@ -181,8 +220,15 @@ namespace GetSit.Controllers
             {
                 /*delete old one*/
                 var oldPath = space.SpaceLogo;
-
-                if ((oldPath != null && SaveFile.DeleteFile(oldPath))|| oldPath == null)
+                if(oldPath == "./resources/site/logo-social.png")
+                {
+                    string nwPath = await SaveFile.SpaceLogo(vm.Logo, space.Name);
+                    if (nwPath != null)
+                    {
+                        space.SpaceLogo = nwPath;
+                    }
+                }
+                else if ((oldPath != null && SaveFile.DeleteFile(oldPath))|| oldPath == null)
                 {
                     string nwPath = await SaveFile.SpaceLogo(vm.Logo, space.Name);
                     if (nwPath != null)
@@ -199,8 +245,17 @@ namespace GetSit.Controllers
             {
                 /*delete old one*/
                 var oldPath = space.SpaceCover;
+                if(oldPath == "./resources/site/Cover_PlaceHolder.png")
+                {
+                    string nwPath = await SaveFile.SpaceCover(vm.Cover, space.Name);
+                    if (nwPath != null)
+                    {
+                        space.SpaceCover = nwPath;
+                    }
 
-                if ((oldPath != null && SaveFile.DeleteFile(oldPath))|| oldPath == null)
+                    else space.SpaceCover = "resource/site/Cover_PlaceHolder.png";
+                }
+                else if ((oldPath != null && SaveFile.DeleteFile(oldPath))|| oldPath == null)
                 {
                     string nwPath = await SaveFile.SpaceCover(vm.Cover, space.Name);
                     if (nwPath != null)

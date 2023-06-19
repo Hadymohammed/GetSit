@@ -20,7 +20,7 @@
                 <div class="profile-card">
                     @{
                         string url = "." + Model.Space.SpaceLogo;
-                                <img style="width: 100px;" class="silder-image" src="@url" />
+                                    <img style="width: 100px;" class="silder-image" src="@url" />
                     }
                     <div class="profile-name">@Model.Space.Name</div>
                     <div class="profile-bio">
@@ -86,6 +86,7 @@
 
                             </div>
                         </div>
+                        
                         <h3>Working days</h3>
                         <div class="mb-3 col-md-12">
                             <div class="card">
@@ -93,7 +94,34 @@
                                     <h5 class="card-title">Working Days</h5>
                                     <button class="btn btn-primary" id="addWorkingDayBtn">Add Working Day</button>
                                     <div id="workingDaysContainer">
-                                        <!-- Working day inputs will be added here dynamically -->
+                                        @foreach (var workingDay in Model.Space.WorkingDays)
+                {
+                    <div class="working-day">
+                        <input type="hidden" name="WorkingDays.Index" value="@workingDay.Id" />
+                        <div class="form-group">
+                            <label>Day</label>
+                            <select class="form-control" name="WorkingDays[@workingDay.Id].Day">
+                                <option value="Monday" selected="@(workingDay.Day == DayOfWeek.Monday ? "selected" : null)">Monday</option>
+                                <option value="Tuesday" selected="@(workingDay.Day == DayOfWeek.Tuesday ? "selected" : null)">Tuesday</option>
+                                <option value="Wednesday" selected="@(workingDay.Day == DayOfWeek.Wednesday ? "selected" : null)">Wednesday</option>
+                                <option value="Thursday" selected="@(workingDay.Day == DayOfWeek.Thursday ? "selected" : null)">Thursday</option>
+                                <option value="Friday" selected="@(workingDay.Day == DayOfWeek.Friday ? "selected" : null)">Friday</option>
+                                <option value="Saturday" selected="@(workingDay.Day == DayOfWeek.Saturday ? "selected" : null)">Saturday</option>
+                                <option value="Sunday" selected="@(workingDay.Day == DayOfWeek.Sunday ? "selected" : null)">Sunday</option>
+
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Opening Time</label>
+                            <input type="time" class="form-control timepicker" name="WorkingDays[@workingDay.Id].OpeningTime" value="@workingDay.OpeningTime" />
+                        </div>
+                        <div class="form-group">
+                            <label>Closing Time</label>
+                                                    <input type="time" class="form-control timepicker" name="WorkingDays[@workingDay.Id].ClosingTime" value="@workingDay.ClosingTime" />
+                        </div>
+                        <button class="btn btn-danger removeWorkingDayBtn">Remove</button>
+                    </div>
+                }
                                     </div>
                                 </div>
                             </div>
@@ -230,18 +258,18 @@
 
             var workingDayDiv = $("<div>").addClass("mt-3");
 
-            var daySelect = $("<select>").addClass("form-select").attr("name", "day").html(`
-            <option value="monday">Monday</option>
-            <option value="tuesday">Tuesday</option>
-            <option value="wednesday">Wednesday</option>
-            <option value="thursday">Thursday</option>
-            <option value="friday">Friday</option>
-            <option value="saturday">Saturday</option>
-            <option value="sunday">Sunday</option>
+            var daySelect = $("<select>").addClass("form-select").attr("name", "WorkingDays[" + container.children().length + "].Day").html(`
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+            <option value="Saturday">Saturday</option>
+            <option value="Sunday">Sunday</option>
           `);
 
-            var startTimeInput = $("<select>").addClass("form-select mt-2").attr("name", "startTime");
-            var endTimeInput = $("<select>").addClass("form-select mt-2").attr("name", "endTime");
+            var startTimeInput = $("<select>").addClass("form-select mt-2").attr("name", "WorkingDays[" + container.children().length + "].OpeningTime");
+            var endTimeInput = $("<select>").addClass("form-select mt-2").attr("name", "WorkingDays[" + container.children().length + "].ClosingTime");
 
             var removeBtn = $("<button>").addClass("btn btn-danger removeDayBtn").text("Remove Day");
 
@@ -258,7 +286,7 @@
                     time.setHours(hour);
                     time.setMinutes(minute);
 
-                    var timeLabel = time.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+                    var timeLabel = time.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true });
 
                     // Add the time option to the start time input
                     startTimeInput.append($("<option>").attr("value", timeLabel).text(timeLabel));
@@ -281,7 +309,7 @@
                         time.setHours(hour);
                         time.setMinutes(minute);
 
-                        var timeLabel = time.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+                        var timeLabel = time.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true });
 
                         // Add the time option to the end time input
                         endTimeInput.append($("<option>").attr("value", timeLabel).text(timeLabel));
@@ -289,7 +317,6 @@
                 }
             });
         }
-
         // Function to remove a working day input
         function removeWorkingDay(event) {
             event.preventDefault();
