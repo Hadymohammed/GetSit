@@ -33,8 +33,8 @@ namespace GetSit.Data.ViewModels
         public string PhoneNumber { get; set; }
 
         [Required(ErrorMessage = "Password is required")]
-        [DataType(DataType.Password), 
-        RegularExpression("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$", ErrorMessage = "Must be at least 8 characters and contain at least one letter and one number.")]
+        [DataType(DataType.Password)]
+        [RegularExpression("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@#$%^&+=]{8,}$", ErrorMessage = "Must be at least 8 characters and contain at least one letter and one number.")]
         public string Password { get; set; }
         [AllowNull]
         public UserRole? Role { get; set; }
