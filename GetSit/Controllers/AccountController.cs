@@ -142,7 +142,9 @@ namespace GetSit.Controllers
         [HttpGet]
         public IActionResult logout()
         {
+
             _userManager.SignOut(HttpContext);
+            HttpContext.Response.Cookies.Delete("SpaceId");
             return RedirectToAction("Login");
         }
         [HttpGet]

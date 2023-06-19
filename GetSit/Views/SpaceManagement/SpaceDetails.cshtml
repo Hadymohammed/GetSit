@@ -20,7 +20,7 @@
                 <div class="profile-card">
                     @{
                         string url = "." + Model.Space.SpaceLogo;
-                                    <img style="width: 100px;" class="silder-image" src="@url" />
+                                        <img style="width: 100px;" class="silder-image" src="@url" />
                     }
                     <div class="profile-name">@Model.Space.Name</div>
                     <div class="profile-bio">
@@ -88,6 +88,7 @@
                         </div>
                         
                         <h3>Working days</h3>
+                        <div class="danger">Don't enter duplicate days, and use only timeslots of size 15 minutes.</div>
                         <div class="mb-3 col-md-12">
                             <div class="card">
                                 <div class="card-body">
@@ -96,11 +97,11 @@
                                     <div id="workingDaysContainer">
                                         @foreach (var workingDay in Model.Space.WorkingDays)
                 {
-                    <div class="working-day">
+                    <div class="working-day" id="#workingDaysContainer">
                         <input type="hidden" name="WorkingDays.Index" value="@workingDay.Id" />
                         <div class="form-group">
                             <label>Day</label>
-                            <select class="form-control" name="WorkingDays[@workingDay.Id].Day">
+                            <select class="form-control" name="workingDays">
                                 <option value="Monday" selected="@(workingDay.Day == DayOfWeek.Monday ? "selected" : null)">Monday</option>
                                 <option value="Tuesday" selected="@(workingDay.Day == DayOfWeek.Tuesday ? "selected" : null)">Tuesday</option>
                                 <option value="Wednesday" selected="@(workingDay.Day == DayOfWeek.Wednesday ? "selected" : null)">Wednesday</option>
@@ -113,13 +114,13 @@
                         </div>
                         <div class="form-group">
                             <label>Opening Time</label>
-                            <input type="time" class="form-control timepicker" name="WorkingDays[@workingDay.Id].OpeningTime" value="@workingDay.OpeningTime" />
+                            <input type="time" class="form-control timepicker" name="OpeningTime" value="@workingDay.OpeningTime" />
                         </div>
                         <div class="form-group">
                             <label>Closing Time</label>
-                                                    <input type="time" class="form-control timepicker" name="WorkingDays[@workingDay.Id].ClosingTime" value="@workingDay.ClosingTime" />
+                            <input type="time" class="form-control timepicker" name="ClosingTime" value="@workingDay.ClosingTime" />
                         </div>
-                        <button class="btn btn-danger removeWorkingDayBtn">Remove</button>
+                            <button class="btn btn-danger removeWorkingDayBtn">Remove</button>
                     </div>
                 }
                                     </div>
@@ -248,7 +249,8 @@
             });
             $("#addWorkingDayBtn").click(addWorkingDayInput);
             $("#workingDaysContainer").on("change", "select[name='day']", dropUnusedWeekdays);
-            
+            $("#workingDaysContainer").on("click", ".removeWorkingDayBtn", removeWorkingDay);
+
         });
         // Function to add a new working day input
         function addWorkingDayInput(event) {
@@ -256,9 +258,9 @@
 
             var container = $("#workingDaysContainer");
 
-            var workingDayDiv = $("<div>").addClass("mt-3");
+            var workingDayDiv = $("<div>").addClass("working-day mt-3");
 
-            var daySelect = $("<select>").addClass("form-select").attr("name", "WorkingDays[" + container.children().length + "].Day").html(`
+            var daySelect = $("<select>").addClass("form-select").attr("name", "WorkingDays").html(`
             <option value="Monday">Monday</option>
             <option value="Tuesday">Tuesday</option>
             <option value="Wednesday">Wednesday</option>
@@ -268,16 +270,13 @@
             <option value="Sunday">Sunday</option>
           `);
 
-            var startTimeInput = $("<select>").addClass("form-select mt-2").attr("name", "WorkingDays[" + container.children().length + "].OpeningTime");
-            var endTimeInput = $("<select>").addClass("form-select mt-2").attr("name", "WorkingDays[" + container.children().length + "].ClosingTime");
+            var startTimeInput = $("<select>").addClass("form-select mt-2").attr("name", "OpeningTime");
+            var endTimeInput = $("<select>").addClass("form-select mt-2").attr("name", "ClosingTime");
 
-            var removeBtn = $("<button>").addClass("btn btn-danger removeDayBtn").text("Remove Day");
+            var removeBtn = $("<button>").addClass("btn btn-danger removeWorkingDayBtn").text("Remove");
 
             workingDayDiv.append(daySelect, startTimeInput, endTimeInput, removeBtn);
             container.append(workingDayDiv);
-
-            // Remove the selected day from the options
-            daySelect.find("option:selected").remove();
 
             // Generate the options for the time inputs in 15-minute intervals
             for (var hour = 0; hour < 24; hour++) {
@@ -318,32 +317,29 @@
             });
         }
         // Function to remove a working day input
-        function removeWorkingDay(event) {
-            event.preventDefault();
-
-            var workingDayDiv = $(this).closest(".mt-3");
-            var daySelect = workingDayDiv.find("select[name='day']");
-            var selectedDay = daySelect.val();
-
-            daySelect.append($("<option>").attr("value", selectedDay).text(selectedDay)); // Add the removed day back to the options
-            workingDayDiv.remove();
-        }
+       function removeWorkingDay(event) {
+  event.preventDefault();
+  $(this).closest(".working-day").remove();
+}
 
         // Function to drop unused weekdays
         function dropUnusedWeekdays(e) {
-            e.preventDefault();
+    e.preventDefault();
+                
+    var weekdays = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
 
-            var weekdays = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
+    $("#workingDaysContainer > div").each(function () {
+        var daySelect = $(this).find("select[name='day']");
+        var selectedDay = daySelect.val();
 
-            $("#workingDaysContainer > div").each(function () {
-                var daySelect = $(this).find("select[name='day']");
-                var selectedDay = daySelect.val();
-
-                if (!weekdays.includes(selectedDay)) {
-                    $(this).remove();
-                }
-            });
+        if (weekdays.includes(selectedDay)) {
+            weekdays.splice(weekdays.indexOf(selectedDay), 1); // Remove the used day from the array
+            $(this).remove();
         }
+    });
+
+    }
+
 
 
     </script>

@@ -99,6 +99,21 @@ namespace GetSit.Controllers
                 hours = time.Hour;
                 minutes = time.Minute;
             }
+            else if(DateTime.TryParseExact(timeSpanString, "HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out time))
+            {
+                hours = time.Hour;
+                minutes = time.Minute;
+            }
+            else if (DateTime.TryParseExact(timeSpanString, "hh:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out time))
+            {
+                hours = time.Hour;
+                minutes = time.Minute;
+            }
+            else if (DateTime.TryParseExact(timeSpanString, "HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out time))
+            {
+                hours = time.Hour;
+                minutes = time.Minute;
+            }
             else
             {
                 hours = 0;
@@ -160,7 +175,7 @@ namespace GetSit.Controllers
             });
         }
         [HttpPost]
-        public async Task<IActionResult> SpaceDetails(SpaceDetailsVM vm, AddWorkingDaysVM[]? workingDays)
+        public async Task<IActionResult> SpaceDetails(SpaceDetailsVM vm, DayOfWeek[]? workingDays, string[] OpeningTime, string[] ClosingTime)
         {
             if (!ModelState.IsValid)
             {
@@ -183,23 +198,50 @@ namespace GetSit.Controllers
             space.Country = vm.Space.Country;
             space.City=vm.Space.City;
             space.Street = vm.Space.Street;
+            Dictionary<DayOfWeek, bool> weekdays = new Dictionary<DayOfWeek, bool>
+            {
+                { DayOfWeek.Monday, false },
+                { DayOfWeek.Tuesday, false },
+                { DayOfWeek.Wednesday, false },
+                { DayOfWeek.Thursday, false },
+                { DayOfWeek.Friday, false },
+                { DayOfWeek.Saturday, false },
+                { DayOfWeek.Sunday, false }
+            };
             if (workingDays.Count() !=0)
             {
+
                 space.WorkingDays.Clear();
+                var i = 0;
                 foreach (var day in workingDays)
                 {
-                    int startH = 0, startM = 0; GetHoursAndMinutes(day.OpeningTime, out startH, out startM);
+                    if (day == null)
+                        continue;
+                    if(OpeningTime[i]== ClosingTime[i])
+                        continue;
+                    var usedFlag=false;
+                    weekdays.TryGetValue(day, out usedFlag);
+                    if (usedFlag==true)//day already added
+                    {
+                        continue;
+                    }
+
+                        int startH = 0, startM = 0; GetHoursAndMinutes(OpeningTime[i], out startH, out startM);
                     TimeSpan start = new TimeSpan(startH, startM, 0);
-                    int endH = 0, endM = 0; GetHoursAndMinutes(day.ClosingTime, out endH, out endM);
+                    int endH = 0, endM = 0; GetHoursAndMinutes(ClosingTime[i], out endH, out endM);
                     TimeSpan end = new TimeSpan(endH, endM, 0);
+                    if (endM % 15 != 0 || startM % 15 != 0)
+                        continue;
                     SpaceWorkingDay d = new()
                     {
                         SpaceId = space.Id,
-                        Day = day.Day,
+                        Day = day,
                         OpeningTime = start,
                         ClosingTime = end
                     };
                     await _workingDayService.AddAsync(d);
+                    i++;
+                    weekdays[day] = true;
                 }
             }
             /*save phones*/
