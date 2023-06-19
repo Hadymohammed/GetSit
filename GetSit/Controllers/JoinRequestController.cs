@@ -20,17 +20,30 @@ namespace GetSit.Controllers
         private readonly IUserManager _userManager;
         private readonly ISpaceEmployeeService _providerService;
         private readonly ISpaceService _spaceService;
+        private readonly ICustomerService _customerService;
+        private readonly ISystemAdminService _adminService;
         public JoinRequestController(AppDBcontext context,
             IUserManager userManager,
             ISpaceEmployeeService spaceEmployeeService,
-            ISpaceService spaceService)
+            ISpaceService spaceService,
+            ICustomerService customerService,
+            ISystemAdminService adminService)
         {
             _context = context;
             _userManager = userManager;
             _providerService = spaceEmployeeService;
             _spaceService = spaceService;
+            _customerService = customerService;
+            _adminService = adminService;
         }
         #endregion
+        bool PresirvedEmail(string email)
+        {
+            return (_customerService.GetByEmail(email) != null ||
+                    _providerService.GetByEmail(email) != null ||
+                    _adminService.GetByEmail(email) != null
+                    );
+        }
         [HttpGet]
         public async Task<IActionResult> Index()
         {
@@ -43,7 +56,7 @@ namespace GetSit.Controllers
             {
                 return View(viewModel);
             }
-            if(_providerService.GetByEmail(viewModel.Email) != null)
+            if(PresirvedEmail(viewModel.Email))
             {
                 ModelState.AddModelError("Email", "This email already has an account.");
                 return View(viewModel);
