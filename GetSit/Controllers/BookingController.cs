@@ -493,7 +493,6 @@ namespace GetSit.Controllers
             }
 
             // save the new timing in database
-            Booking.StartTime = start;
             Booking.NumberOfHours = NumberOfHours;
             Booking.TotalCost += hall.CostPerHour * NumberOfHours;
 
