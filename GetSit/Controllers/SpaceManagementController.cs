@@ -144,6 +144,7 @@ namespace GetSit.Controllers
                 int.TryParse(SpaceIdStirng, out spaceIdInt);
             }
             Space space = await _spaceSerivce.GetByIdAsync(spaceIdInt, s => s.Photos, s => s.Phones);
+            var Customers = _spaceSerivce.GetCustomersWithMostBookings(space.Id, 3);
             SpaceManagementVM viewModel = new SpaceManagementVM()
             {
                 Space = space,
@@ -151,8 +152,9 @@ namespace GetSit.Controllers
                 Services = _spaceService_service.GetBySpaceId(spaceIdInt, s => s.ServicePhotos),
                 Employees = _providerService.GetBySpaceId(spaceIdInt),
                 Bookings = _bookingService.GetBySpaceId(spaceIdInt),
-                Requests = _hallRequestService.GetPendingBySpaceId(spaceIdInt,r=>r.Hall),
-                GuestBookings = _guestBookingService.GetBySpaceId(spaceIdInt)
+                Requests = _hallRequestService.GetPendingBySpaceId(spaceIdInt, r => r.Hall),
+                GuestBookings = _guestBookingService.GetBySpaceId(spaceIdInt),
+                Customers = Customers
             };
             return View(viewModel);
         }

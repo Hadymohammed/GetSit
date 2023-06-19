@@ -12,5 +12,6 @@ namespace GetSit.Data.ViewModels
         public List<Booking> Bookings { get; set; }
         public List<HallRequest> Requests { get; set; }
         public List<GuestBooking> GuestBookings { get; set; }
+        public List<CustomerWithTotalBookings> Customers { get; set; } 
     }
 }

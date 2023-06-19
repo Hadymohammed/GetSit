@@ -363,18 +363,17 @@
     <div class="members-menu fade-in">
         <div class="side-menu">
             <header>Our Staff</header>
-            @for(var i=0;i<3;i++)
+            @foreach(var emp in @Model.Employees)
             {
                 <div class="user-profile">
                     <div class="profile-picture">
-                        <img src="./resources/site/user1.jpg" alt="User 1 Photo">
+                        <img src="@emp.ProfilePictureUrl" alt="@emp.FirstName">
                     </div>
                     <div class="user-info">
                         <div class="member-data">
-                            <h3 class="member-name">John Doe</h3> 
-                            <div class="member-username">@@username</div>
+                            <h3 class="member-name">@emp.FirstName @emp.LastName</h3> 
+                            <div class="member-username">@emp.Email</div>
                         </div>
-                        <button class="follow-button">Follow</button>
                     </div>
                 </div>
             }
@@ -388,18 +387,18 @@
     <!--Top Customers-->
         <div class="side-menu">
             <header>Our Best Costumers</header>
-            @for (var i = 0; i < 3; i++)
+            @foreach (var record in Model.Customers)
             {
                 <div class="user-profile">
                     <div class="profile-picture">
-                        <img src="./resources/site/user1.jpg" alt="User 1 Photo">
+                        <img src="@record.Customer.ProfilePictureUrl" alt="@record.Customer.FirstName">
                     </div>
                     <div class="user-info">
                         <div class="member-data">
-                            <h3 class="member-name">John Doe</h3>
-                            <div class="member-username">@@username</div>
+                            <h3 class="member-name">@record.Customer.FirstName @record.Customer.LastName</h3>
+                            <div class="member-username">@record.Customer.Email</div>
                         </div>
-                        <button class="follow-button">Follow</button>
+                        
                     </div>
                 </div>
             }
