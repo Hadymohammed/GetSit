@@ -697,7 +697,11 @@ namespace GetSit.Controllers
             {
                 return View(NewStaff);
             }
-
+            if (PresirvedEmail(NewStaff.Email))
+            {
+                ModelState.AddModelError("Email", "This email already has an account.");
+                return View(NewStaff);
+            }
             string password = RandomPassword.GenerateRandomPassword(8);
             // Using SpaceId as default value here
             var AddNewstaff = new SpaceEmployee()

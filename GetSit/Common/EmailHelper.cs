@@ -53,6 +53,13 @@ namespace GetSit.Common
                 const string reciverName = "New Staff";
             return SendEmail(email, body, subject, reciverName);
         }
+        static public bool SendEmailAddAdmin(string email, string Url)
+        {
+            string body = $"Sent from GetSit , here is your invetation link to be an admin at GetSit , do not share it with anyone  {Url} . ";
+            const string subject = "Your invetation";
+            const string reciverName = "New Admin";
+            return SendEmail(email, body, subject, reciverName);
+        }
         static public bool SendSpaceRejection(string email, string Messege,string SpaceName)
         {
             const string subject = "Space Rejection";

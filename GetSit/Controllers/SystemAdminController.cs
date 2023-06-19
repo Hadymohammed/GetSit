@@ -26,6 +26,8 @@ namespace GetSit.Controllers
         readonly IServicePhotoService _servicePhotoService;
         readonly IBookingService _bookingService;
         readonly IHallRequestService _hallRequestService;
+        readonly ISystemAdminService _systemAdminService;
+        readonly ICustomerService _customerService;
         public SystemAdminController(IUserManager userManager,
             AppDBcontext context,
             ISpaceEmployeeService spaceEmployeeService,
@@ -36,7 +38,9 @@ namespace GetSit.Controllers
             ISpaceService_Service spaceService_service,
             IServicePhotoService servicePhotoService,
             IBookingService bookingService,
-            IHallRequestService HallRequestService)
+            IHallRequestService HallRequestService,
+            ISystemAdminService systemAdminService,
+            ICustomerService customerService)
 
         {
             _userManager = userManager;
@@ -50,6 +54,15 @@ namespace GetSit.Controllers
             _servicePhotoService = servicePhotoService;
             _bookingService = bookingService;
             _hallRequestService = HallRequestService;
+            _systemAdminService = systemAdminService;
+            _customerService = customerService;
+        }
+        bool PresirvedEmail(string email)
+        {
+            return (_customerService.GetByEmail(email) != null ||
+                    _providerService.GetByEmail(email) != null ||
+                    _systemAdminService.GetByEmail(email) != null
+                    );
         }
         #endregion          
         [HttpGet]
@@ -183,6 +196,69 @@ namespace GetSit.Controllers
             await _hallRequestService.UpdateAsync(request.Id,request);
             EmailHelper.SendHallRejection(space.Employees.First().Email, request.comment, space.Name);
             return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> AddAdmin()
+        {
+
+            var UserId = _userManager.GetCurrentUserId(HttpContext);
+            var User = await _systemAdminService.GetByIdAsync(UserId);
+            //var Space = await _spaceSerivce.GetByIdAsync((int)User.SpaceId, s => s.Photos);
+            return View(new SystemAdmin()
+            {
+                ProfilePictureUrl = User.ProfilePictureUrl,
+            });
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddAdmin(SystemAdmin NewAdmin)
+        {
+            
+            ModelState.Remove("Password");
+            if (!ModelState.IsValid)
+            {
+                return View(NewAdmin);
+            }
+            if (PresirvedEmail(NewAdmin.Email))
+            {
+                ModelState.AddModelError("Email", "This email already has an account.");
+                return View(NewAdmin);
+            }
+
+            string password = RandomPassword.GenerateRandomPassword(8);
+            // Using SpaceId as default value here
+            var AddNewAdmin = new SystemAdmin()
+            {
+                FirstName = NewAdmin.FirstName,
+                Birthdate = NewAdmin.Birthdate,
+                LastName = NewAdmin.LastName,
+                Email = NewAdmin.Email,
+                Password = password,
+                PhoneNumber = NewAdmin.PhoneNumber,
+                Registerd = false
+            };
+
+            try
+            {
+                await _systemAdminService.AddAsync(AddNewAdmin);
+                var AdminId = AddNewAdmin.Id;
+                var JwtSecurtiyToken = Common.JwtTokenHelper.GenerateJwtToken(NewAdmin.Email, AdminId);
+                var Token = new Token
+                {
+                    token = JwtSecurtiyToken
+                };
+                await _context.Token.AddAsync(Token);
+                _context.SaveChanges();
+                var UId = Token.Id;
+                string oneTimeAddStaffLink = Url.Action("RegisterAdmin", "Account", new { UID = UId, Role = (int)UserRole.Admin, token = Token.token }, Request.Scheme);
+                EmailHelper.SendEmailAddAdmin(NewAdmin.Email, oneTimeAddStaffLink);
+                return RedirectToAction("Index");
+            }
+            catch (Exception error)
+            {
+                return View(NewAdmin);
+            }
+            return RedirectToAction("AddNewstaff");
         }
 
 

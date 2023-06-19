@@ -178,6 +178,28 @@ namespace GetSit.Controllers
                 Role = Role
             });
         }
+        public async Task<IActionResult> RegisterAdmin(int UID, UserRole Role, string token)
+        {
+            if (_context.Token.Where(t => t.Id == UID).FirstOrDefault() == null || Common.JwtTokenHelper.ValidateToken(token) == null)
+            {
+                return NotFound();
+            }
+            var UserIdStr = Common.JwtTokenHelper.ValidateToken(token);
+            var UserId = 0;
+            int.TryParse(UserIdStr, out UserId);
+            var SpaceAdmin = await _adminSerivce.GetByIdAsync(UserId);
+            Common.SessoinHelper.saveObject(HttpContext, "TokenId", new { id = UID });
+            return RedirectToAction("Register", new RegisterVM()
+            {
+                UserId = SpaceAdmin.Id,
+                FirstName = SpaceAdmin.FirstName,
+                LastName = SpaceAdmin.LastName,
+                Email = SpaceAdmin.Email,
+                PhoneNumber = SpaceAdmin.PhoneNumber,
+                Birthdate = SpaceAdmin.Birthdate,
+                Role = Role
+            });
+        }
         [HttpPost,ActionName("Register")]
         public async Task<IActionResult> RegisterPost(RegisterVM register)
         {
@@ -262,6 +284,7 @@ namespace GetSit.Controllers
                     admin.Birthdate = register.Birthdate;
                     admin.Password = PasswordHashing.Encode (register.Password);/*Here password should be hashed*/
                     admin.ProfilePictureUrl = "./resources/site/user-profile-icon.jpg";
+                    admin.Registerd = true;
                     
                     try
                     {
