@@ -213,7 +213,7 @@ namespace GetSit.Controllers
             /*check if the entered email in register is already in database*/
             if (PresirvedEmail(register.Email))
             {
-                if (register.Role == UserRole.Customer)
+                if (register.Role != UserRole.Admin && register.Role != UserRole.Provider)
                 {
                     ModelState.AddModelError("Email", "This email already has an account.");
                     return View(register);
