@@ -28,8 +28,8 @@ namespace GetSit.Data
                             IsFast=true,
                             BankAccount="1111222233334444",
                             IsApproved=true,
-                            SpaceCover="./resources/site/Cover_PlaceHolder.png",
-                            SpaceLogo="./resources/site/logo-social.png"
+                            SpaceCover=Consts.SpaceCoverHolder,
+                            SpaceLogo=Consts.SpaceLogoHolder
                         },
                         new Space
                         {
@@ -42,8 +42,8 @@ namespace GetSit.Data
                             IsFast=true,
                             BankAccount="1111222233334444",
                             IsApproved=true,
-                            SpaceCover="./resources/site/Cover_PlaceHolder.png",
-                             SpaceLogo="./resources/site/logo-social.png"
+                            SpaceCover=Consts.SpaceCoverHolder,
+                             SpaceLogo=Consts.SpaceLogoHolder
                         }
                     });
                     context.SaveChanges();
@@ -61,9 +61,9 @@ namespace GetSit.Data
                             Password=PasswordHashing.Encode("Customer1234"),
                             PhoneNumber="01015608885",
                             Birthdate= new DateTime(1980,7,7),
-                            ProfilePictureUrl="./resources/site/user1.jpg"
+                            ProfilePictureUrl=Consts.userProfilePhotoHolder
 
-                        }
+                }
                     });
                     context.SaveChanges();
                 }
@@ -81,31 +81,13 @@ namespace GetSit.Data
                             Birthdate= new DateTime(1980,7,7),
                             PhoneNumber= "01013205017",
                             SpaceId=2,
-                            ProfilePictureUrl="./resources/site/user1.jpg",
-                            Registerd=true,
+                            ProfilePictureUrl=Consts.userProfilePhotoHolder,
+                            Registerd =true,
                         }
                     });
                     context.SaveChanges();
                 }
-                ///Customer
-                if (!context.Customer.Any())
-                {
-                    context.Customer.AddRange(new List<Customer>()
-                    {
-                        new Customer
-                        {
-                            FirstName="Khalid",
-                            LastName="Ali",
-                            Email="Customer@meto.com",
-                            Password=PasswordHashing.Encode("Customer1234"),
-                            PhoneNumber="01015608885",
-                            Birthdate= new DateTime(1980,7,7),
-                            ProfilePictureUrl="./resources/site/user1.jpg"
-
-                        }
-                    });
-                context.SaveChanges();
-                }
+                
                 //Space Phone
                 if (!context.SpacePhone.Any())
                 {
@@ -142,8 +124,8 @@ namespace GetSit.Data
                             Password=PasswordHashing.Encode("Admin1234"),
                             PhoneNumber="01015608885",
                             Birthdate= new DateTime(1980,7,7),
-                            ProfilePictureUrl="./resources/site/user1.jpg",
-                            Registerd=true
+                            ProfilePictureUrl=Consts.userProfilePhotoHolder,
+                            Registerd =true
                         }
                     }); 
                     context.SaveChanges();

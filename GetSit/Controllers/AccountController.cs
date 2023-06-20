@@ -21,7 +21,6 @@ namespace GetSit.Controllers
     public class AccountController : Controller
     {
         #region Dependencies
-        const string userPhotoTemp = "./resources/site/user1.jpg";
         AppDBcontext _context;
         private readonly IUserManager _userManager;
         private readonly ICustomerService _customerService;
@@ -292,7 +291,7 @@ namespace GetSit.Controllers
                     admin.PhoneNumber = register.PhoneNumber;
                     admin.Birthdate = register.Birthdate;
                     admin.Password = PasswordHashing.Encode (register.Password);/*Here password should be hashed*/
-                    admin.ProfilePictureUrl = userPhotoTemp;
+                    admin.ProfilePictureUrl = Consts.userProfilePhotoHolder;
                     admin.Registerd = true;
                     
                     try
@@ -314,7 +313,7 @@ namespace GetSit.Controllers
                     provider.PhoneNumber = register.PhoneNumber;
                     provider.Birthdate = register.Birthdate;
                     provider.Password = PasswordHashing.Encode(register.Password);/*Here password should be hashed*/
-                    provider.ProfilePictureUrl = userPhotoTemp;
+                    provider.ProfilePictureUrl = Consts.userProfilePhotoHolder;
                     provider.Registerd = true;
                     try
                     {
@@ -344,8 +343,8 @@ namespace GetSit.Controllers
                         CustomerType=CustomerType.Registered,
                         Birthdate=register.Birthdate,
                         Password = PasswordHashing.Encode(register.Password),/*Here password should be hashed*/
-                        ProfilePictureUrl=userPhotoTemp
-                    };
+                        ProfilePictureUrl= Consts.userProfilePhotoHolder
+            };
 
                     try
                     {

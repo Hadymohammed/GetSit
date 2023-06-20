@@ -71,7 +71,7 @@ namespace GetSit.Controllers
                 Password = PasswordHashing.Encode(password),
                 Email = viewModel.Email,
                 Birthdate = viewModel.Birthdate,
-                ProfilePictureUrl= "./resources/site/user1.jpg",
+                ProfilePictureUrl= Consts.userProfilePhotoHolder,
                 IsApproved = false,
             };
             HttpContext.Session.SetString("RegisterModel", JsonConvert.SerializeObject(Manager));
@@ -164,8 +164,8 @@ namespace GetSit.Controllers
                 IsApproved = false,
                 BankAccount="None",
                 JoinRequestDate = DateTime.Now,
-                SpaceCover="./resources/site/Cover_PlaceHolder.png",
-                SpaceLogo="./resources/site/logo-social.png"
+                SpaceCover=Consts.SpaceCoverHolder,
+                SpaceLogo=Consts.SpaceLogoHolder
             };
             await _spaceService.AddAsync(space);
             manager.SpaceId = space.Id;
@@ -193,81 +193,6 @@ namespace GetSit.Controllers
             if (vm == null)
                 return NotFound();
             return View(vm);
-        }
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> ApproveRequest(int SpaceID, int ManagerID)
-        {
-            var Space = _context.Space.Where(i => i.Id == SpaceID).FirstOrDefault();
-            var Employee = _context.SpaceEmployee.Where(i => i.Id == ManagerID).FirstOrDefault();
-
-            // Send Acceptance Email with Password
-            var fromAddress = new MailAddress("getsit594@gmail.com", "GetSit");
-            var toAddress = new MailAddress(Employee.Email, "New User");
-            const string fromPassword = "esyqrxcqijyqnpwf";
-            const string subject = "GetSit Join Request Acceptance";
-            string body = $"Sent from GetSit , you succefully joined Us; " +
-                $"Here is your password {PasswordHashing.Decode(Employee.Password)}, " +
-                $"You can now use it with your Email to log in." +
-                $"To change your password go to Settings in your profile." +
-                $"If you have any qustions regarding your upcoming processes do not hesitate to contact us.";
-            var smtp = new SmtpClient
-            {
-                Host = "smtp.gmail.com",
-                Port = 587,
-                EnableSsl = true,
-                DeliveryMethod = SmtpDeliveryMethod.Network,
-                UseDefaultCredentials = false,
-                Credentials = new NetworkCredential(fromAddress.Address, fromPassword)
-            };
-            using (var message = new MailMessage(fromAddress, toAddress)
-            {
-                Subject = subject,
-                Body = body
-            })
-            {
-                smtp.Send(message);
-            }
-            Space.IsApproved = true;
-            Employee.IsApproved = true;
-            _context.SaveChanges();
-            return View();
-        }
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> RejectRequest(int SpaceID, int ManagerID)
-        {
-            var Space = _context.Space.Where(i => i.Id == SpaceID).FirstOrDefault();
-            var Employee = _context.SpaceEmployee.Where(i => i.Id == ManagerID).FirstOrDefault();
-
-            // Send Rejection Email 
-            var fromAddress = new MailAddress("getsit594@gmail.com", "GetSit");
-            var toAddress = new MailAddress(Employee.Email, "New User");
-            const string fromPassword = "esyqrxcqijyqnpwf";
-            const string subject = "GetSit Join Request Rejection";
-            string body = $"Sent from GetSit ; " +
-                $"We are sorry, The uploaded Data does not match GetSit Criteria." + 
-                $"If you have any qustions do not hesitate to contact us.";
-            var smtp = new SmtpClient
-            {
-                Host = "smtp.gmail.com",
-                Port = 587,
-                EnableSsl = true,
-                DeliveryMethod = SmtpDeliveryMethod.Network,
-                UseDefaultCredentials = false,
-                Credentials = new NetworkCredential(fromAddress.Address, fromPassword)
-            };
-            using (var message = new MailMessage(fromAddress, toAddress)
-            {
-                Subject = subject,
-                Body = body
-            })
-            {
-                smtp.Send(message);
-            }
-
-            _context.Space.Remove(Space);
-            _context.SpaceEmployee.Remove(Employee);
-            _context.SaveChanges();
-            return View();
         }
 
     }
