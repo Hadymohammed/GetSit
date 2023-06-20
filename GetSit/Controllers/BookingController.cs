@@ -487,6 +487,7 @@ namespace GetSit.Controllers
             TimeSpan end = new TimeSpan(endH, endM, 0);
 
             float NumberOfHours = (float)(end - start).TotalHours;
+            var payment = await _paymentSerivce.GetByIdAsync(Booking.Payment.Id);
 
             if (NumberOfHours < 0)
             {
@@ -502,16 +503,15 @@ namespace GetSit.Controllers
                 // save the new timing in database
                 Booking.NumberOfHours += NumberOfHours;
                 Booking.TotalCost += hall.CostPerHour * NumberOfHours;
+                PaymentDetail halldetail = (PaymentDetail)_context.PaymentDetail.Where(i => i.BookingHallId == Booking.BookingHalls.First().Id).FirstOrDefault();
+                halldetail.TotalCost += hall.CostPerHour * NumberOfHours;
+                if (halldetail.Status == PaymentStatus.Paid)
+                {
+                    halldetail.Status = PaymentStatus.Uncompleted;
+                }
+                await _paymentDetailService.UpdateAsync(halldetail.Id, halldetail);
             }
-            var payment = await _paymentSerivce.GetByIdAsync(Booking.Payment.Id);
-            PaymentDetail halldetail = (PaymentDetail)_context.PaymentDetail.Where(i => i.BookingHallId == Booking.BookingHalls.First().Id).FirstOrDefault();
-            halldetail.TotalCost += hall.CostPerHour * NumberOfHours;
 
-            if (halldetail.Status == PaymentStatus.Paid)
-            {
-                halldetail.Status = PaymentStatus.Uncompleted;
-            }
-            await _paymentDetailService.UpdateAsync(halldetail.Id, halldetail);
 
             foreach (KeyValuePair<int, int> ServiceQuantity in viewModel.SelectedServicesQuantities)
             {
