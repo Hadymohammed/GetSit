@@ -707,25 +707,29 @@ namespace GetSit.Controllers
             service.Name = vm.ServiceName;
             service.Description = vm.Description;
             service.Price = vm.Price;
-
-            foreach (var file in vm.Files)
+            if (vm.Files != null)
             {
-                var photo = new ServicePhoto()
+
+                foreach (var file in vm.Files)
                 {
-                    ServiceId = service.Id,
-                    Url = "Temp",
-                };
-                await _servicePhotoService.AddAsync(photo);
-                var filePath = SaveFile.ServicePhoto(file, vm.SpaceName, service.Id, photo.Id);
-                if (filePath == null)
-                {
-                    await _hallPhotoService.DeleteAsync(photo.Id);
-                }
-                else
-                {
-                    //Undo changes
-                    photo.Url = filePath.Result;
-                    await _servicePhotoService.UpdateAsync(photo.Id, photo);
+                    if (file == null) continue;
+                    var photo = new ServicePhoto()
+                    {
+                        ServiceId = service.Id,
+                        Url = "Temp",
+                    };
+                    await _servicePhotoService.AddAsync(photo);
+                    var filePath = SaveFile.ServicePhoto(file, vm.SpaceName, service.Id, photo.Id);
+                    if (filePath == null)
+                    {
+                        await _hallPhotoService.DeleteAsync(photo.Id);
+                    }
+                    else
+                    {
+                        //Undo changes
+                        photo.Url = filePath.Result;
+                        await _servicePhotoService.UpdateAsync(photo.Id, photo);
+                    }
                 }
             }
             await _spaceService_service.UpdateAsync(service.Id, service);
