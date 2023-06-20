@@ -118,7 +118,7 @@ namespace GetSit.Common
             var bookings = _context.Booking
                 .Where(b =>
                     b.BookingHalls.Any(bh => bh.HallId == hallId) &&
-                    b.DesiredDate.Date == desiredDate.Date)
+                    b.DesiredDate.Date == desiredDate.Date && b.BookingStatus!=BookingStatus.Cancelled&&b.BookingStatus!=BookingStatus.Rejected)
                 .ToList();
             bool NotAvailable = bookings
                 .Any(b =>

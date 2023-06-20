@@ -613,7 +613,15 @@
         width: 100%;
     }
 }
+@media (max-width: 800px) {
+    .carousel-inner {
+        height: 200px;
+    }
 
+    .slider-image {
+        height: auto;
+    }
+}
 .none {
     display: none;
 }
