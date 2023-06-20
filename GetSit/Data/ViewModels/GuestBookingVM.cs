@@ -19,7 +19,7 @@ namespace GetSit.Data.ViewModels
         public Space? SelectedSpace { get; set; }
         public List<Tuple<TimeSpan, bool>>? AvailableSlots { get; set; }
         [AllowNull]
-        public Dictionary<int, int> SelectedServicesQuantities { get; set; }
+        public Dictionary<int, int>? SelectedServicesQuantities { get; set; }
         [Required, DataType(DataType.Date)]
         public DateTime BookingDate { get; set; }
         public DateTime FilterDate { get; set; }
