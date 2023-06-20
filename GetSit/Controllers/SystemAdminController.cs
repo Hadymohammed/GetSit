@@ -93,7 +93,7 @@ namespace GetSit.Controllers
             List<Tuple<HallRequest, Space>> requests = new List<Tuple<HallRequest, Space>>();
             foreach (var hall in halls)
             {
-                var currentHall = _context.SpaceHall.Where(i=>i.Id == hall.Id).FirstOrDefault();
+                var currentHall = _context.SpaceHall.Where(i=>i.Id == hall.HallId).FirstOrDefault();
                 var space = _context.Space.Where(i => i.Id == currentHall.SpaceId).FirstOrDefault();
                 requests.Add(Tuple.Create(hall, space));
             }
