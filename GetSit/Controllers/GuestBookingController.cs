@@ -97,11 +97,6 @@ namespace GetSit.Controllers
         [HttpPost]
         public async Task<IActionResult> Index(GuestBookingVM viewModel)
         {
-            if (viewModel.DesiredDate < DateTime.Now)
-            {
-                ModelState.AddModelError("DesiredDate", "Choose a valid booking date.");
-                return View(viewModel);
-            }
             int id = _userManager.GetCurrentUserId(HttpContext);
             var emp = await _providerService.GetByIdAsync(id);
             #region GET view model for errors
@@ -136,11 +131,24 @@ namespace GetSit.Controllers
                 ModelState.AddModelError("DesiredDate", "Make sure you press the Check availability then choose your timing.");
                 return View(IndexModel);
             }
+            if (viewModel.DesiredDate.Date< DateTime.Now.Date)
+            {
+                ModelState.AddModelError("DesiredDate", "Choose a valid booking date.");
+                return View(viewModel);
+            }
             #endregion
+
             int startH = 0, startM = 0; GetHoursAndMinutes(viewModel.StartTime, out startH, out startM);
             TimeSpan start = new TimeSpan(startH, startM, 0);
             int endH = 0, endM = 0; GetHoursAndMinutes(viewModel.EndTime, out endH, out endM);
             TimeSpan end = new TimeSpan(endH, endM, 0);
+
+            if(start.Ticks < DateTime.Now.TimeOfDay.Ticks)
+            {
+                ModelState.AddModelError("StartTime", "Choose a valid booking time.");
+                return View(viewModel);
+
+            }
 
             float NumberOfHours = (float)(end - start).TotalHours;
 
@@ -450,18 +458,20 @@ namespace GetSit.Controllers
             
             if (NumberOfHours < 0)
             {
+                ModelState.AddModelError("EndTime", "Select valid end time.");
                 return RedirectToAction("Details", new {BookingId=Booking.Id});
             }
-            
-            // Send unavailable error to the employee
-            if (!slots.IsTimeSlotAvailable((int)viewModel.HallId, Booking.DesiredDate, start, end))
+            if (NumberOfHours != 0)
             {
-                return RedirectToAction("Details", new {BookingId=viewModel.BookingId});
+                // Send unavailable error to the employee
+                if (!slots.IsTimeSlotAvailable((int)viewModel.HallId, Booking.DesiredDate, start, end))
+                {
+                    return RedirectToAction("Details", new { BookingId = viewModel.BookingId });
+                }
+                // save the new timing in database
+                Booking.EndTime = end;
+                Booking.TotalCost += hall.CostPerHour * NumberOfHours;
             }
-            // save the new timing in database
-            Booking.EndTime = end;
-            Booking.TotalCost += hall.CostPerHour * NumberOfHours;
-
             var payment = await _paymentSerivce.GetByIdAsync(Booking.Payment.Id);
             PaymentDetail halldetail = (PaymentDetail)_context.PaymentDetail.Where(i => i.BookingHallId == Booking.BookingHalls.First().Id).FirstOrDefault();
            

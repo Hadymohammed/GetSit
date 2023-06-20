@@ -141,7 +141,7 @@ namespace GetSit.Controllers
                 ModelState.AddModelError("DesiredDate", "Make sure you press the Check availability then choose your timing.");
                 return View(IndexModel);
             }
-            if(viewModel.DesiredDate < DateTime.Now)
+            if(viewModel.DesiredDate.Date < DateTime.Now.Date)
             {
                 ModelState.AddModelError("DesiredDate", "Choose a valid booking date.");
                 return View(IndexModel);
@@ -150,6 +150,13 @@ namespace GetSit.Controllers
             TimeSpan start = new TimeSpan(startH, startM, 0);
             int endH = 0, endM = 0; GetHoursAndMinutes(viewModel.EndTime, out endH, out endM);
             TimeSpan end = new TimeSpan(endH, endM, 0);
+
+            if (start.Ticks < DateTime.Now.TimeOfDay.Ticks)
+            {
+                ModelState.AddModelError("StartTime", "Choose a valid booking time.");
+                return View(viewModel);
+
+            }
 
             float NumberOfHours = (float)(end - start).TotalHours;
             if(NumberOfHours<=0)
@@ -485,22 +492,23 @@ namespace GetSit.Controllers
             {
                 return RedirectToAction("Details", new { BookingId = viewModel.BookingId });
             }
-
-            /*Send unavailable error to the employee*/
-            if (!slots.IsTimeSlotAvailable(hall.Id, Booking.DesiredDate, start, end))
+            if (NumberOfHours != 0)
             {
-                return RedirectToAction("Details", new { BookingId = viewModel.BookingId });
+                /*Send unavailable error to the employee*/
+                if (!slots.IsTimeSlotAvailable(hall.Id, Booking.DesiredDate, start, end))
+                {
+                    return RedirectToAction("Details", new { BookingId = viewModel.BookingId });
+                }
+
+                // save the new timing in database
+                Booking.NumberOfHours += NumberOfHours;
+                Booking.TotalCost += hall.CostPerHour * NumberOfHours;
             }
-
-            // save the new timing in database
-            Booking.NumberOfHours = NumberOfHours;
-            Booking.TotalCost += hall.CostPerHour * NumberOfHours;
-
             var payment = await _paymentSerivce.GetByIdAsync(Booking.Payment.Id);
             PaymentDetail halldetail = (PaymentDetail)_context.PaymentDetail.Where(i => i.BookingHallId == Booking.BookingHalls.First().Id).FirstOrDefault();
             halldetail.TotalCost += hall.CostPerHour * NumberOfHours;
 
-            if (NumberOfHours != 0 && halldetail.Status == PaymentStatus.Paid)
+            if (halldetail.Status == PaymentStatus.Paid)
             {
                 halldetail.Status = PaymentStatus.Uncompleted;
             }
