@@ -10,7 +10,7 @@ namespace GetSit.Data.ViewModels
         [Required,EmailAddress]
         public string Email { get; set; }
         [RegularExpression("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@#$%^&+=]{8,}$", ErrorMessage = "Must be at least 8 characters and contain at least one letter and one number.")]
-        public string Password { get; set; }
+        public string? Password { get; set; }
         [Required]
         public UserRole Role { get; set; }
     }

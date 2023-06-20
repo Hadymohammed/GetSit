@@ -361,3 +361,8 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+*/resources/HallPhotos
+*/resources/Profiles
+*/resources/ServicePhotos
+*/resources/SpacePhotos

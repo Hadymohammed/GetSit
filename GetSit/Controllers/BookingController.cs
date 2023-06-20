@@ -499,7 +499,6 @@ namespace GetSit.Controllers
                 {
                     return RedirectToAction("Details", new { BookingId = viewModel.BookingId });
                 }
-
                 // save the new timing in database
                 Booking.NumberOfHours += NumberOfHours;
                 Booking.TotalCost += hall.CostPerHour * NumberOfHours;
