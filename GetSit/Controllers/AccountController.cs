@@ -20,6 +20,7 @@ namespace GetSit.Controllers
 {
     public class AccountController : Controller
     {
+        const string TokenSession = "TokenId";
         #region Dependencies
         AppDBcontext _context;
         private readonly IUserManager _userManager;
@@ -171,7 +172,7 @@ namespace GetSit.Controllers
             var UserId = 0;
             int.TryParse(UserIdStr, out UserId);
             var SpaceEmployee = await _spaceEmployeeService.GetByIdAsync(UserId);
-            Common.SessoinHelper.saveObject(HttpContext, "TokenId", new { id = UID });
+            Common.SessoinHelper.saveObject(HttpContext, TokenSession, new { id = UID });
             return RedirectToAction("Register", new RegisterVM()
             {
                 UserId = SpaceEmployee.Id,
@@ -193,7 +194,7 @@ namespace GetSit.Controllers
             var UserId = 0;
             int.TryParse(UserIdStr, out UserId);
             var SpaceAdmin = await _adminSerivce.GetByIdAsync(UserId);
-            Common.SessoinHelper.saveObject(HttpContext, "TokenId", new { id = UID });
+            Common.SessoinHelper.saveObject(HttpContext, TokenSession, new { id = UID });
             return RedirectToAction("Register", new RegisterVM()
             {
                 UserId = SpaceAdmin.Id,
@@ -296,7 +297,16 @@ namespace GetSit.Controllers
                     
                     try
                     {
-                       await _adminSerivce.UpdateAsync(admin.Id,admin);
+                        await _adminSerivce.UpdateAsync(admin.Id,admin);
+                        //Expire Token
+                        var tokenString = Common.SessoinHelper.getObject<Token>(HttpContext, TokenSession);
+                        var token = _context.Token.Find(tokenString.Id);
+                        if (token != null)
+                        {
+                            _context.Token.Remove(token);
+                        }
+                        _context.SaveChanges();
+
                        await _userManager.SignIn(HttpContext, admin);
                        return RedirectToAction("AdminProfile", "Account");
                     }
@@ -318,13 +328,15 @@ namespace GetSit.Controllers
                     try
                     {
                         await _spaceEmployeeService.UpdateAsync(provider.Id,provider);
-                        var tokenString = Common.SessoinHelper.getObject<Token>(HttpContext, "TokenId");
+                        //Expire Token
+                        var tokenString = Common.SessoinHelper.getObject<Token>(HttpContext, TokenSession);
                         var token = _context.Token.Find(tokenString.Id);
                         if(token != null)
                         {
                             _context.Token.Remove(token);
                         }
                         _context.SaveChanges();
+
                         await _userManager.SignIn(HttpContext, provider);
                         return RedirectToAction("Index", "SpaceManagement");
                     }
