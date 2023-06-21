@@ -134,7 +134,7 @@ namespace GetSit.Controllers
             if (viewModel.DesiredDate.Date< DateTime.Now.Date)
             {
                 ModelState.AddModelError("DesiredDate", "Choose a valid booking date.");
-                return View(viewModel);
+                return View(IndexModel);
             }
             #endregion
 
@@ -146,7 +146,7 @@ namespace GetSit.Controllers
             if(start.Ticks < DateTime.Now.TimeOfDay.Ticks)
             {
                 ModelState.AddModelError("StartTime", "Choose a valid booking time.");
-                return View(viewModel);
+                return View(IndexModel);
 
             }
 

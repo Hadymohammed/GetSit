@@ -154,7 +154,7 @@ namespace GetSit.Controllers
             if (start.Ticks < DateTime.Now.TimeOfDay.Ticks)
             {
                 ModelState.AddModelError("StartTime", "Choose a valid booking time.");
-                return View(viewModel);
+                return View(IndexModel);
 
             }
 
