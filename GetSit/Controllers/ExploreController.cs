@@ -1,4 +1,5 @@
 using GetSit.Data;
+using GetSit.Data.enums;
 using GetSit.Data.Security;
 using GetSit.Data.Services;
 using GetSit.Models;
@@ -28,7 +29,7 @@ namespace GetSit.Controllers
             {
                 data = data.Where(p => p.Space.Name.Contains(Key)|| p.Space.City.Contains(Key) || p.Space.Country.Contains(Key)|| p.Space.Street.Contains(Key));
             }
-            return View(data);
+            return View(data.Where(d=>d.Status==HallStatus.Accepted));
         }
         [HttpGet]
         public async Task<IActionResult> ToggleFavouriteHallAsync(int hallId)

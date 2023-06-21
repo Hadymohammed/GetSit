@@ -148,7 +148,7 @@ namespace GetSit.Controllers
             SpaceManagementVM viewModel = new SpaceManagementVM()
             {
                 Space = space,
-                Halls = _hallService.GetAcceptedBySpaceId(spaceIdInt, h => h.HallPhotos, h => h.HallFacilities),
+                Halls = _hallService.GetAcceptedBySpaceId(spaceIdInt, h => h.HallPhotos, h => h.HallFacilities).Where(h=>h.Status==HallStatus.Accepted).ToList(),
                 Services = _spaceService_service.GetBySpaceId(spaceIdInt, s => s.ServicePhotos),
                 Employees = _providerService.GetBySpaceId(spaceIdInt),
                 Bookings = _bookingService.GetBySpaceId(spaceIdInt),
